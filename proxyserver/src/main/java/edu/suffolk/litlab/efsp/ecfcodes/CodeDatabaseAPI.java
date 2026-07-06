@@ -34,7 +34,7 @@ public abstract class CodeDatabaseAPI extends Database {
   }
 
   /** The jurisdiction (e.g illinois) that this database is working over */
-  public abstract Jurisdiction getDomain();
+  public abstract Jurisdiction getJurisdiction();
 
   /**
    * Gets all court location identifiers (CLI) stored in the database.

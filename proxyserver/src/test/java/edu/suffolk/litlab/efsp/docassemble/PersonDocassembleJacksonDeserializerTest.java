@@ -39,7 +39,7 @@ public class PersonDocassembleJacksonDeserializerTest {
     var allDataFields = mock(DataFields.class);
     when(cd.getStateCodes("adams", "US")).thenReturn(List.of("MA", "TX", "IL", "VT"));
     when(cd.getDataFields("adams")).thenReturn(allDataFields);
-    when(cd.getDomain()).thenReturn(Jurisdiction.ILLINOIS);
+    when(cd.getJurisdiction()).thenReturn(Jurisdiction.ILLINOIS);
     when(allDataFields.getFieldRow("PartyFirstName"))
         .thenReturn(new DataFieldRow("PartyFirstName", "", true, true, "adams"));
     when(allDataFields.getFieldRow("PartyMiddleName"))

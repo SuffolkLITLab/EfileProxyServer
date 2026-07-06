@@ -80,11 +80,11 @@ public class CodeDatabase extends CodeDatabaseAPI {
   }
 
   @Override
-  public Jurisdiction getDomain() {
+  public Jurisdiction getJurisdiction() {
     return jurisdiction;
   }
 
-  private String domainStr() {
+  private String jurisStr() {
     return jurisdiction.getName();
   }
 
@@ -175,7 +175,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     String versionUpdate = CodeTableConstants.updateVersion();
     try (PreparedStatement update = conn.prepareStatement(versionUpdate)) {
       if (tableName.equals("optionalservices")) {
-        OptionalServiceCode.updateOptionalServiceTable(courtName, domainStr(), rows, this.conn);
+        OptionalServiceCode.updateOptionalServiceTable(courtName, jurisStr(), rows, this.conn);
       } else {
         updateTableInner(tableName, courtName, rows);
       }
@@ -185,7 +185,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       update.setString(1, courtName);
       update.setString(2, zipName);
       update.setString(3, newVersion);
-      update.setString(4, domainStr());
+      update.setString(4, jurisStr());
       update.setString(5, newVersion);
       update.executeUpdate();
     } catch (UnsupportedTableException ex) {
@@ -247,7 +247,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       stmt.setString(idx, courtName);
       idx += 1;
     }
-    stmt.setString(idx, domainStr());
+    stmt.setString(idx, jurisStr());
     return stmt;
   }
 
@@ -258,7 +258,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         (term) -> {
           String query = CaseCategory.searchCaseCategories();
           PreparedStatement st = conn.prepareStatement(query);
-          st.setString(1, domainStr());
+          st.setString(1, jurisStr());
           st.setString(2, term);
           return st;
         });
@@ -271,7 +271,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         (term) -> {
           String query = CaseCategory.courtCoverageCaseCategories();
           PreparedStatement st = conn.prepareStatement(query);
-          st.setString(1, domainStr());
+          st.setString(1, jurisStr());
           st.setString(2, term);
           return st;
         });
@@ -284,7 +284,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
           String query = CaseCategory.retrieveCaseCategoryForName();
           List<CodeAndLocation> cats = new ArrayList<>();
           try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, categoryName);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
@@ -301,7 +301,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
           String query = CaseCategory.getCaseCategoriesForLoc();
           List<NameAndCode> nacs = new ArrayList<>();
           try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, courtLocationId);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
@@ -318,7 +318,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
           String query = CaseCategory.getCaseCategoriesForLoc();
           List<CaseCategory> cats = new ArrayList<>();
           try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, courtLocationId);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
@@ -337,9 +337,9 @@ public class CodeDatabase extends CodeDatabaseAPI {
           if (initial.isPresent()) {
             st =
                 CaseCategory.prepFilableQueryTiming(
-                    conn, domainStr(), courtLocationId, initial.get());
+                    conn, jurisStr(), courtLocationId, initial.get());
           } else {
-            st = CaseCategory.prepFileableQuery(conn, domainStr(), courtLocationId);
+            st = CaseCategory.prepFileableQuery(conn, jurisStr(), courtLocationId);
           }
           ResultSet rs = st.executeQuery();
           List<CaseCategory> cats = new ArrayList<>();
@@ -357,7 +357,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         () -> {
           String query = CaseCategory.getCaseCategoryWithCode();
           try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, courtLocationId);
             st.setString(3, caseCatCode);
             ResultSet rs = st.executeQuery();
@@ -374,19 +374,19 @@ public class CodeDatabase extends CodeDatabaseAPI {
 
   @Override
   public List<String> searchCaseType(String searchTerm) {
-    return genericSearch(searchTerm, (term) -> CaseType.prepSearchQuery(conn, domainStr(), term));
+    return genericSearch(searchTerm, (term) -> CaseType.prepSearchQuery(conn, jurisStr(), term));
   }
 
   @Override
   public List<String> courtCoverageCaseType(String searchTerm) {
-    return genericSearch(searchTerm, (term) -> CaseType.prepCourtCoverage(conn, domainStr(), term));
+    return genericSearch(searchTerm, (term) -> CaseType.prepCourtCoverage(conn, jurisStr(), term));
   }
 
   @Override
   public List<CodeAndLocation> retrieveCaseTypeByName(String caseTypeName) {
     return safetyWrap(
         () -> {
-          try (PreparedStatement st = CaseType.prepRetrieveQuery(conn, domainStr(), caseTypeName)) {
+          try (PreparedStatement st = CaseType.prepRetrieveQuery(conn, jurisStr(), caseTypeName)) {
             List<CodeAndLocation> types = new ArrayList<>();
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
@@ -406,9 +406,9 @@ public class CodeDatabase extends CodeDatabaseAPI {
           if (initial.isPresent()) {
             st =
                 CaseType.prepQueryTiming(
-                    conn, domainStr(), courtLocationId, caseCategoryCode, initial);
+                    conn, jurisStr(), courtLocationId, caseCategoryCode, initial);
           } else {
-            st = CaseType.prepQueryBroad(conn, domainStr(), courtLocationId, caseCategoryCode);
+            st = CaseType.prepQueryBroad(conn, jurisStr(), courtLocationId, caseCategoryCode);
           }
           ResultSet rs = st.executeQuery();
           List<NameAndCode> nacs = new ArrayList<>();
@@ -430,9 +430,9 @@ public class CodeDatabase extends CodeDatabaseAPI {
           if (initial.isPresent()) {
             st =
                 CaseType.prepQueryTiming(
-                    conn, domainStr(), courtLocationId, caseCategoryCode, initial);
+                    conn, jurisStr(), courtLocationId, caseCategoryCode, initial);
           } else {
-            st = CaseType.prepQueryBroad(conn, domainStr(), courtLocationId, caseCategoryCode);
+            st = CaseType.prepQueryBroad(conn, jurisStr(), courtLocationId, caseCategoryCode);
           }
           ResultSet rs = st.executeQuery();
           List<CaseType> types = new ArrayList<>();
@@ -448,7 +448,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     return safetyWrapOpt(
         () -> {
           try (PreparedStatement st =
-              CaseType.prepQueryWithCode(conn, domainStr(), courtLocationId, caseTypeCode)) {
+              CaseType.prepQueryWithCode(conn, jurisStr(), courtLocationId, caseTypeCode)) {
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
               return Optional.of(new CaseType(rs));
@@ -465,7 +465,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
           String query = CodeTableConstants.getCaseSubtypesFor();
           List<NameAndCode> subtypes = new ArrayList<NameAndCode>();
           try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, courtLocationId);
             st.setString(3, caseType);
             ResultSet rs = st.executeQuery();
@@ -488,7 +488,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       String query = DataFieldRow.getAllFromDataFieldConfigForLoc();
       for (String currentCourt : parentList) {
         try (PreparedStatement st = conn.prepareStatement(query)) {
-          st.setString(1, domainStr());
+          st.setString(1, jurisStr());
           st.setString(2, currentCourt);
           st.setString(3, dataName);
           ResultSet rs = st.executeQuery();
@@ -532,7 +532,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       Set<String> codesInList = new HashSet<>();
       for (String currentCourt : parentList) {
         try (PreparedStatement st = conn.prepareStatement(query)) {
-          st.setString(1, domainStr());
+          st.setString(1, jurisStr());
           st.setString(2, currentCourt);
           ResultSet rs = st.executeQuery();
           while (rs.next()) {
@@ -564,7 +564,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       List<Map<String, DataFieldRow>> allDataFields = new ArrayList<>();
       for (String currentCourt : parentList) {
         try (PreparedStatement st = conn.prepareStatement(query)) {
-          st.setString(1, domainStr());
+          st.setString(1, jurisStr());
           st.setString(2, currentCourt);
           ResultSet rs = st.executeQuery();
           var dataFieldMap = new HashMap<String, DataFieldRow>();
@@ -603,7 +603,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
 
     String query = CodeTableConstants.getProcedureOrRemedy();
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, domainStr());
+      st.setString(1, jurisStr());
       st.setString(2, courtLocationId);
       st.setString(3, caseCategory);
       ResultSet rs = st.executeQuery();
@@ -625,7 +625,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
    * @return
    */
   public List<String> searchFilingType(String searchTerm) {
-    return genericSearch(searchTerm, (term) -> FilingCode.prepSearchQuery(conn, domainStr(), term));
+    return genericSearch(searchTerm, (term) -> FilingCode.prepSearchQuery(conn, jurisStr(), term));
   }
 
   /**
@@ -636,7 +636,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
    */
   public List<String> courtCoverageFilingType(String searchTerm) {
     return genericSearch(
-        searchTerm, (term) -> FilingCode.prepCourtCoverageQuery(conn, domainStr(), term));
+        searchTerm, (term) -> FilingCode.prepCourtCoverageQuery(conn, jurisStr(), term));
   }
 
   /**
@@ -649,7 +649,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     return safetyWrap(
         () -> {
           try (PreparedStatement st =
-              FilingCode.prepRetrieveQuery(conn, domainStr(), caseTypeName)) {
+              FilingCode.prepRetrieveQuery(conn, jurisStr(), caseTypeName)) {
             List<CodeAndLocation> types = new ArrayList<>();
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
@@ -667,7 +667,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
           List<FilingCode> filingTypes = new ArrayList<>();
           try (PreparedStatement specificSt =
               FilingCode.prepQueryWithCaseInfo(
-                  conn, initial, domainStr(), courtLocationId, categoryCode, typeCode)) {
+                  conn, initial, jurisStr(), courtLocationId, categoryCode, typeCode)) {
             ResultSet rs = specificSt.executeQuery();
             while (rs.next()) {
               filingTypes.add(new FilingCode(rs));
@@ -676,7 +676,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
             // categories or types
             if (filingTypes.isEmpty()) {
               try (PreparedStatement broadSt =
-                  FilingCode.prepQueryNoCaseInfo(conn, initial, domainStr(), courtLocationId)) {
+                  FilingCode.prepQueryNoCaseInfo(conn, initial, jurisStr(), courtLocationId)) {
                 ResultSet broadRs = broadSt.executeQuery();
                 while (broadRs.next()) {
                   filingTypes.add(new FilingCode(broadRs));
@@ -692,7 +692,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     return safetyWrapOpt(
         () -> {
           try (PreparedStatement st =
-              FilingCode.prepQueryWithCode(conn, domainStr(), courtLocationId, filingCode)) {
+              FilingCode.prepQueryWithCode(conn, jurisStr(), courtLocationId, filingCode)) {
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
               return Optional.of(new FilingCode(rs));
@@ -721,7 +721,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
           String query = CodeTableConstants.getDamageAmount();
           List<NameAndCode> amounts = new ArrayList<>();
           try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, courtLocationId);
             st.setString(3, caseCategory);
             try (ResultSet rs = st.executeQuery()) {
@@ -746,7 +746,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         (term) -> {
           String query = PartyType.searchPartyType();
           PreparedStatement st = conn.prepareStatement(query);
-          st.setString(1, domainStr());
+          st.setString(1, jurisStr());
           st.setString(2, term);
           return st;
         });
@@ -758,7 +758,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         (term) -> {
           String query = PartyType.courtCoveragePartyType();
           PreparedStatement st = conn.prepareStatement(query);
-          st.setString(1, domainStr());
+          st.setString(1, jurisStr());
           st.setString(2, term);
           return st;
         });
@@ -770,7 +770,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
           String query = PartyType.retrievePartyTypeFromName();
           List<CodeAndLocation> types = new ArrayList<>();
           try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, partyTypeName);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
@@ -795,7 +795,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
           String query = PartyType.getPartyTypeFromCaseType();
           List<PartyType> partyTypes = new ArrayList<>();
           try (PreparedStatement caseSt = conn.prepareStatement(query)) {
-            caseSt.setString(1, domainStr());
+            caseSt.setString(1, jurisStr());
             caseSt.setString(2, courtLocationId);
             if (caseTypeCode != null) {
               caseSt.setString(3, caseTypeCode);
@@ -808,7 +808,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
             if (partyTypes.isEmpty()) {
               String broadQuery = PartyType.getPartyTypeNoCaseType();
               try (PreparedStatement broadSt = conn.prepareStatement(broadQuery)) {
-                broadSt.setString(1, domainStr());
+                broadSt.setString(1, jurisStr());
                 broadSt.setString(2, courtLocationId);
                 try (ResultSet broadRs = broadSt.executeQuery()) {
                   while (broadRs.next()) {
@@ -828,7 +828,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
           String query = PartyType.retrievePartyTypeFromName();
           List<PartyType> types = new ArrayList<>();
           try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, courtLocationId);
             st.setString(3, partyTypeCode);
             ResultSet rs = st.executeQuery();
@@ -844,7 +844,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     return safetyWrap(
         () -> {
           try (PreparedStatement st = conn.prepareStatement(CrossReference.query())) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, courtLocationId);
             st.setString(3, caseTypeId);
             ResultSet rs = st.executeQuery();
@@ -863,7 +863,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
           String query = ServiceCodeType.query();
           List<ServiceCodeType> types = new ArrayList<>();
           try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, courtLocationId);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
@@ -882,7 +882,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
 
     String specificQuery = DocumentTypeTableRow.getDocumentTypeWithFilingCode();
     try (PreparedStatement specificSt = conn.prepareStatement(specificQuery)) {
-      specificSt.setString(1, domainStr());
+      specificSt.setString(1, jurisStr());
       specificSt.setString(2, courtLocationId);
       specificSt.setString(3, filingCodeId);
       ResultSet spefRs = specificSt.executeQuery();
@@ -893,7 +893,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       if (docTypes.isEmpty()) {
         String broadQuery = DocumentTypeTableRow.getDocumentTypeNoFiling();
         try (PreparedStatement broadSt = conn.prepareStatement(broadQuery)) {
-          broadSt.setString(1, domainStr());
+          broadSt.setString(1, jurisStr());
           broadSt.setString(2, courtLocationId);
           ResultSet broadRs = broadSt.executeQuery();
           while (broadRs.next()) {
@@ -916,7 +916,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
 
     String query = CodeTableConstants.getMotionTypes();
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, domainStr());
+      st.setString(1, jurisStr());
       st.setString(2, courtLocationId);
       st.setString(3, filingCodeId);
       ResultSet rs = st.executeQuery();
@@ -939,7 +939,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
 
     String query = CodeTableConstants.getNameSuffixes();
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, domainStr());
+      st.setString(1, jurisStr());
       st.setString(2, courtLocationId);
       ResultSet rs = st.executeQuery();
       var motions = new ArrayList<NameAndCode>();
@@ -961,7 +961,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
 
     String query = FilingComponent.getFilingComponents();
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, domainStr());
+      st.setString(1, jurisStr());
       st.setString(2, courtLocationId);
       st.setString(3, filingCodeId);
       ResultSet rs = st.executeQuery();
@@ -985,7 +985,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     String query = CodeTableConstants.getSpecificStatesForCountryForLoc();
     try (PreparedStatement st = conn.prepareStatement(query)) {
       // TODO(brycew-later): Tyler docs say state is a system table, but there's one per court?
-      st.setString(1, domainStr());
+      st.setString(1, jurisStr());
       st.setString(2, courtId);
       st.setString(3, country);
       ResultSet rs = st.executeQuery();
@@ -1015,7 +1015,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         () -> {
           String query = FileType.fileTypeQueries();
           try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, courtId);
             ResultSet rs = st.executeQuery();
             List<FileType> types = new ArrayList<>();
@@ -1032,7 +1032,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         () -> {
           String query = FilerType.query();
           try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, courtId);
             ResultSet rs = st.executeQuery();
             List<FilerType> types = new ArrayList<>();
@@ -1052,7 +1052,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
 
     String query = CodeTableConstants.getFilingStatuses();
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, domainStr());
+      st.setString(1, jurisStr());
       st.setString(2, courtId);
       ResultSet rs = st.executeQuery();
       List<NameAndCode> names = new ArrayList<>();
@@ -1068,19 +1068,19 @@ public class CodeDatabase extends CodeDatabaseAPI {
 
   public List<String> searchOptionalServices(String searchTerm) {
     return genericSearch(
-        searchTerm, (term) -> OptionalServiceCode.prepSearch(conn, domainStr(), term));
+        searchTerm, (term) -> OptionalServiceCode.prepSearch(conn, jurisStr(), term));
   }
 
   public List<String> courtCoverageOptionalServices(String searchTerm) {
     return genericSearch(
-        searchTerm, (term) -> OptionalServiceCode.prepCourtCoverage(conn, domainStr(), term));
+        searchTerm, (term) -> OptionalServiceCode.prepCourtCoverage(conn, jurisStr(), term));
   }
 
   public List<CodeAndLocation> retrieveOptionalServices(String optServName) {
     return safetyWrap(
         () -> {
           try (PreparedStatement st =
-              OptionalServiceCode.prepRetrieve(conn, domainStr(), optServName)) {
+              OptionalServiceCode.prepRetrieve(conn, jurisStr(), optServName)) {
             List<CodeAndLocation> optServs = new ArrayList<>();
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
@@ -1095,7 +1095,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     return safetyWrap(
         () -> {
           try (PreparedStatement st =
-              OptionalServiceCode.prepQueryWithCode(conn, domainStr(), courtId, optServCode)) {
+              OptionalServiceCode.prepQueryWithCode(conn, jurisStr(), courtId, optServCode)) {
             List<OptionalServiceCode> optServs = new ArrayList<>();
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
@@ -1110,7 +1110,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     return safetyWrap(
         () -> {
           try (PreparedStatement st =
-              OptionalServiceCode.prepQuery(conn, domainStr(), courtId, filingCode)) {
+              OptionalServiceCode.prepQuery(conn, jurisStr(), courtId, filingCode)) {
             ResultSet rs = st.executeQuery();
             List<OptionalServiceCode> services = new ArrayList<>();
             while (rs.next()) {
@@ -1126,7 +1126,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         () -> {
           String query = CodeTableConstants.getLanguages();
           try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, courtLocationId);
             ResultSet rs = st.executeQuery();
             List<String> languages = new ArrayList<>();
@@ -1143,7 +1143,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         () -> {
           String query = CodeTableConstants.getLanguages();
           try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, courtLocationId);
             ResultSet rs = st.executeQuery();
             List<NameAndCode> languages = new ArrayList<>();
@@ -1163,7 +1163,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     String query = CodeTableConstants.needToUpdateVersion();
     Map<String, List<String>> courtTables = new HashMap<>();
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, this.domainStr());
+      st.setString(1, this.jurisStr());
       ResultSet rs = st.executeQuery();
       log.info("Query was {}", st);
       while (rs.next()) {
@@ -1191,12 +1191,12 @@ public class CodeDatabase extends CodeDatabaseAPI {
       throw new SQLException();
     }
     if (tableName.equals("optionalservices")) {
-      OptionalServiceCode.deleteFromOptionalServiceTable(null, domainStr(), conn);
+      OptionalServiceCode.deleteFromOptionalServiceTable(null, jurisStr(), conn);
     } else {
       final String deleteFromTable = CodeTableConstants.getDeleteAllCourtsFrom(tableName);
       // TODO(brycew): make variant that deletes everything with a specific jurisdiction
       try (PreparedStatement st = conn.prepareStatement(deleteFromTable)) {
-        st.setString(1, domainStr());
+        st.setString(1, jurisStr());
         log.debug(st.toString());
         st.executeUpdate();
       }
@@ -1213,7 +1213,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       return false;
     }
     if (tableName.equals("optionalservices")) {
-      OptionalServiceCode.deleteFromOptionalServiceTable(courtLocation, domainStr(), conn);
+      OptionalServiceCode.deleteFromOptionalServiceTable(courtLocation, jurisStr(), conn);
       return true;
     }
     // TODO(brycew): make variant that deletes everything with a specific jurisdiction
@@ -1227,7 +1227,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       return false;
     }
     try (PreparedStatement st = conn.prepareStatement(deleteFromTableStr)) {
-      st.setString(1, domainStr());
+      st.setString(1, jurisStr());
       st.setString(2, courtLocation);
       st.executeUpdate();
     }
@@ -1246,7 +1246,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       return List.of();
     }
     try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.allOrderedQuery())) {
-      st.setString(1, domainStr());
+      st.setString(1, jurisStr());
       ResultSet rs = st.executeQuery();
       var locs = new ArrayList<String>();
       while (rs.next()) {
@@ -1264,7 +1264,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     return safetyWrap(
         () -> {
           try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.allNames())) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             ResultSet rs = st.executeQuery();
             var names = new ArrayList<NameAndCode>();
             while (rs.next()) {
@@ -1279,7 +1279,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     return safetyWrap(
         () -> {
           try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fileableQuery())) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             ResultSet rs = st.executeQuery();
             var codes = new ArrayList<NameAndCode>();
             while (rs.next()) {
@@ -1295,7 +1295,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         () -> {
           try (PreparedStatement st =
               conn.prepareStatement(CourtLocationInfo.fileableInitialQuery())) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             ResultSet rs = st.executeQuery();
             var codes = new ArrayList<NameAndCode>();
             while (rs.next()) {
@@ -1311,7 +1311,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         () -> {
           try (PreparedStatement st =
               conn.prepareStatement(CourtLocationInfo.fileableSubsequentQuery())) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             ResultSet rs = st.executeQuery();
             var codes = new ArrayList<NameAndCode>();
             while (rs.next()) {
@@ -1326,7 +1326,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     return safetyWrapOpt(
         () -> {
           try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fullSingleQuery())) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, courtId);
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
@@ -1350,7 +1350,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     while (!currentCourt.isBlank()) {
       parentList.add(currentCourt);
       try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.parentQuery())) {
-        st.setString(1, domainStr());
+        st.setString(1, jurisStr());
         st.setString(2, currentCourt);
         ResultSet rs = st.executeQuery();
         if (rs.next()) {
@@ -1372,7 +1372,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         () -> {
           String query = Disclaimer.getDisclaimerRequirements();
           try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, domainStr());
+            st.setString(1, jurisStr());
             st.setString(2, courtLocation);
             ResultSet rs = st.executeQuery();
             List<Disclaimer> disclaimers = new ArrayList<>();

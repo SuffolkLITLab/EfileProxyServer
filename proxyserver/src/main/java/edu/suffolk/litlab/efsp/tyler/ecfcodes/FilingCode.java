@@ -79,49 +79,49 @@ public class FilingCode {
     );
   }
   
-  public static PreparedStatement prepSearchQuery(Connection conn, String domain, String searchTerm) throws SQLException {
+  public static PreparedStatement prepSearchQuery(Connection conn, String jurisdiction, String searchTerm) throws SQLException {
     final String search = """
         SELECT DISTINCT name
         FROM filing
-        WHERE domain=? AND name ILIKE ?
+        WHERE jurisdiction=? AND name ILIKE ?
         ORDER BY name
         """;
     PreparedStatement st = conn.prepareStatement(search);
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, searchTerm);
     return st;
   }
 
-  public static PreparedStatement prepCourtCoverageQuery(Connection conn, String domain, String searchTerm) throws SQLException {
+  public static PreparedStatement prepCourtCoverageQuery(Connection conn, String jurisdiction, String searchTerm) throws SQLException {
     final String search = """
         SELECT DISTINCT location
         FROM filing
-        WHERE domain=? AND casecategory='' AND casetypeid='' AND name ILIKE ?
+        WHERE jurisdiction=? AND casecategory='' AND casetypeid='' AND name ILIKE ?
         ORDER BY location
         """;
     PreparedStatement st = conn.prepareStatement(search);
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, searchTerm);
     return st;
   }
   
-  public static PreparedStatement prepRetrieveQuery(Connection conn, String domain, String filingName) throws SQLException {
+  public static PreparedStatement prepRetrieveQuery(Connection conn, String jurisdiction, String filingName) throws SQLException {
     String retrieve = """
         SELECT DISTINCT code, location
         FROM filing
-        WHERE domain=? AND name=?
+        WHERE jurisdiction=? AND name=?
         ORDER BY location
         """;
     PreparedStatement st = conn.prepareStatement(retrieve);
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, filingName);
     return st;
   }
   
   public static PreparedStatement prepQueryWithCaseInfo(Connection conn, 
-      boolean initial, String domain, String courtLocationId, String categoryId, String caseTypeId) throws SQLException {
+      boolean initial, String jurisdiction, String courtLocationId, String categoryId, String caseTypeId) throws SQLException {
     PreparedStatement st = conn.prepareStatement(getFilingWithCaseInfo(initial));
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, courtLocationId);
     st.setString(3, categoryId);
     st.setString(4, caseTypeId);
@@ -135,7 +135,7 @@ public class FilingCode {
                  civilclaimamount, probateestateamount, amountincontroversy, useduedate, 
                  isproposedorder, efspcode, location
           FROM filing 
-          WHERE domain=? AND location=? AND iscourtuseonly='False' AND ((casecategory=? AND casetypeid='') OR casetypeid=?) """;
+          WHERE jurisdiction=? AND location=? AND iscourtuseonly='False' AND ((casecategory=? AND casetypeid='') OR casetypeid=?) """;
     if (initial) {
       return mainQuery + "AND (filingtype='Initial' OR filingtype='Both')";
     } else {
@@ -145,9 +145,9 @@ public class FilingCode {
   
 
   public static PreparedStatement prepQueryNoCaseInfo(Connection conn, 
-      boolean initial, String domain, String courtLocationId) throws SQLException {
+      boolean initial, String jurisdiction, String courtLocationId) throws SQLException {
     PreparedStatement st = conn.prepareStatement(getFilingNoCaseInfo(initial));
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, courtLocationId);
     return st;
   }
@@ -158,7 +158,7 @@ public class FilingCode {
                  civilclaimamount, probateestateamount, amountincontroversy, useduedate, 
                  isproposedorder, efspcode, location
           FROM filing 
-          WHERE domain=? AND location=? AND iscourtuseonly='False' AND 
+          WHERE jurisdiction=? AND location=? AND iscourtuseonly='False' AND 
             ((casecategory='' OR casecategory=null) AND (casetypeid='' OR casetypeid=null)) """;
     if (initial) {
       return mainQuery + "AND (filingtype='Initial' OR filingtype='Both')";
@@ -168,9 +168,9 @@ public class FilingCode {
   }
   
   // TODO(brycew): test this one in particular, it was wrong
-  public static PreparedStatement prepQueryWithCode(Connection conn, String domain, String courtId, String typeCode) throws SQLException {
+  public static PreparedStatement prepQueryWithCode(Connection conn, String jurisdiction, String courtId, String typeCode) throws SQLException {
     PreparedStatement st = conn.prepareStatement(getFilingWithCode());
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, courtId);
     st.setString(3, typeCode);
     return st;
@@ -182,7 +182,7 @@ public class FilingCode {
                civilclaimamount, probateestateamount, amountincontroversy, useduedate,
                isproposedorder, efspcode, location
         FROM filing
-        WHERE domain=? AND location=? AND code=?
+        WHERE jurisdiction=? AND location=? AND code=?
         """;
   }
   

@@ -538,6 +538,8 @@ public class DatabaseVersion {
 
   public void update10To11() throws SQLException {
     // The codes database doesn't need to know about Tyler's environment
+    // Strips the "-stage" and "-prod" suffix off existing domain values so "illinois-stage" becomes
+    // "illinois", then renames the column to jurisdiction
     final String stripEnvSuffix =
         "UPDATE %s SET domain = regexp_replace(domain, '-(stage|prod)$', '')";
 
@@ -595,6 +597,10 @@ public class DatabaseVersion {
     try (Statement st = codeConn.createStatement()) {
       for (String tableName : tableNames) {
         st.executeUpdate(stripEnvSuffix.formatted(tableName));
+      }
+      for (String tableName : tableNames) {
+        st.executeUpdate(
+            "ALTER TABLE %s RENAME COLUMN domain TO jurisdiction".formatted(tableName));
       }
     }
     codeConn.commit();

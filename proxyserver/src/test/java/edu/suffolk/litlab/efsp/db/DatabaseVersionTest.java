@@ -138,7 +138,7 @@ public class DatabaseVersionTest {
     }
 
     Statement codeSt = codeConn.createStatement();
-    rs = codeSt.executeQuery("SELECT DISTINCT domain from location");
+    rs = codeSt.executeQuery("SELECT DISTINCT jurisdiction from location");
 
     while (rs.next()) {
       assertEquals(rs.getString(1), "illinois");

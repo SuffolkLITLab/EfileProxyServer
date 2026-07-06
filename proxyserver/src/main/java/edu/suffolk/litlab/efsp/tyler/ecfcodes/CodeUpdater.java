@@ -476,7 +476,7 @@ public class CodeUpdater {
       List<String> tables = courtAndTables.getValue();
       log.debug(
           "In {}, removing entries for court {} for tables: {}",
-          cd.getDomain(),
+          cd.getJurisdiction(),
           courtLocation,
           tables);
       for (String table : tables) {
@@ -491,7 +491,8 @@ public class CodeUpdater {
     log.info("Took {} to remove existing tables", Duration.between(startDel, Instant.now()));
     Instant startPolicy = Instant.now();
     Map<String, CourtPolicyResponseMessageType> policies =
-        streamPolicies(versionsToUpdate.keySet().stream().parallel(), cd.getDomain(), filingPort);
+        streamPolicies(
+            versionsToUpdate.keySet().stream().parallel(), cd.getJurisdiction(), filingPort);
     var soapInc = Duration.between(startPolicy, Instant.now());
     soapDuration = soapDuration.plus(soapInc);
     log.info("Soaps took: {} (total: {})", soapInc, soapDuration);
@@ -527,7 +528,7 @@ public class CodeUpdater {
       throws SQLException, IOException, JAXBException, URISyntaxException {
     cd.setAutoCommit(false);
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
-    log.info("Downloading system tables for {}", cd.getDomain());
+    log.info("Downloading system tables for {}", cd.getJurisdiction());
     boolean success = downloadSystemTables(baseUrl, cd, signer);
 
     var tablesToDeleteDomain = ecf4ElemToTableName.values();
@@ -547,7 +548,7 @@ public class CodeUpdater {
     locs.remove("0");
     Instant startPolicy = Instant.now();
     Map<String, CourtPolicyResponseMessageType> policies =
-        streamPolicies(locs.parallelStream(), cd.getDomain(), filingPort);
+        streamPolicies(locs.parallelStream(), cd.getJurisdiction(), filingPort);
     soapDuration = soapDuration.plus(Duration.between(startPolicy, Instant.now()));
     log.info("Soaps: {}", soapDuration);
     for (var policy : policies.entrySet()) {

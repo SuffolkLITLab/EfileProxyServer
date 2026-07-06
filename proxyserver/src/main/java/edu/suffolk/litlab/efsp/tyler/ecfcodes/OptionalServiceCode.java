@@ -78,77 +78,79 @@ public class OptionalServiceCode {
   }
 
   public static PreparedStatement prepQuery(
-      Connection conn, String domain, String courtId, String filingCodeId) throws SQLException {
+      Connection conn, String jurisdiction, String courtId, String filingCodeId)
+      throws SQLException {
     final String query =
         """
         SELECT os.code, os.name, os.displayorder, os.fee, os_fl.filingcodeid, os.multiplier, os.altfeedesc, os.hasfeeprompt,
           os.feeprompttext
-        FROM optionalservices as os JOIN optionalservices_filinglist as os_fl ON os.domain=os_fl.domain AND os.location=os_fl.location AND os.code=os_fl.code
-        WHERE os.domain=? AND os.location=? AND os_fl.filingcodeid=?
+        FROM optionalservices as os JOIN optionalservices_filinglist as os_fl ON os.jurisdiction=os_fl.jurisdiction AND os.location=os_fl.location AND os.code=os_fl.code
+        WHERE os.jurisdiction=? AND os.location=? AND os_fl.filingcodeid=?
         """;
     PreparedStatement st = conn.prepareStatement(query);
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, courtId);
     st.setString(3, filingCodeId);
     return st;
   }
 
-  public static PreparedStatement prepSearch(Connection conn, String domain, String searchTerm)
-      throws SQLException {
+  public static PreparedStatement prepSearch(
+      Connection conn, String jurisdiction, String searchTerm) throws SQLException {
     final String search =
         """
         SELECT DISTINCT os.name
         FROM optionalservices as os
-        WHERE os.domain=? AND os.name ILIKE ?
+        WHERE os.jurisdiction=? AND os.name ILIKE ?
         ORDER BY os.name
         """;
     PreparedStatement st = conn.prepareStatement(search);
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, searchTerm);
     return st;
   }
 
   public static PreparedStatement prepCourtCoverage(
-      Connection conn, String domain, String searchTerm) throws SQLException {
+      Connection conn, String jurisdiction, String searchTerm) throws SQLException {
     final String search =
         """
         SELECT DISTINCT location
         FROM optionalservices as os
-        WHERE os.domain=? AND os.name ILIKE ?
+        WHERE os.jurisdiction=? AND os.name ILIKE ?
         ORDER BY location
         """;
     PreparedStatement st = conn.prepareStatement(search);
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, searchTerm);
     return st;
   }
 
-  public static PreparedStatement prepRetrieve(Connection conn, String domain, String optServName)
-      throws SQLException {
+  public static PreparedStatement prepRetrieve(
+      Connection conn, String jurisdiction, String optServName) throws SQLException {
     final String retrieve =
         """
         SELECT DISTINCT os.code, os.location
         FROM optionalservices as os
-        WHERE os.domain=? AND os.name=?
+        WHERE os.jurisdiction=? AND os.name=?
         ORDER BY os.location
         """;
     PreparedStatement st = conn.prepareStatement(retrieve);
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, optServName);
     return st;
   }
 
   public static PreparedStatement prepQueryWithCode(
-      Connection conn, String domain, String courtId, String optServCode) throws SQLException {
+      Connection conn, String jurisdiction, String courtId, String optServCode)
+      throws SQLException {
     final String query =
         """
         SELECT os.code, os.name, os.displayorder, os.fee, os_fl.filingcodeid, os.multiplier, os.altfeedesc, os.hasfeeprompt,
           os.feeprompttext
-        FROM optionalservices as os JOIN optionalservices_filinglist as os_fl ON os.domain=os_fl.domain AND os.location=os_fl.location AND os.code=os_fl.code
-        WHERE os.domain=? AND os.location=? AND os.code=?
+        FROM optionalservices as os JOIN optionalservices_filinglist as os_fl ON os.jurisdiction=os_fl.jurisdiction AND os.location=os_fl.location AND os.code=os_fl.code
+        WHERE os.jurisdiction=? AND os.location=? AND os.code=?
         """;
     PreparedStatement st = conn.prepareStatement(query);
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, courtId);
     st.setString(3, optServCode);
     return st;
@@ -167,7 +169,7 @@ public class OptionalServiceCode {
             "hasfeeprompt" boolean,
             "feeprompttext" text,
             "efspcode" text,
-            "domain" varchar(80),
+            "jurisdiction" varchar(80),
             "location" varchar(80)
         )
         """;
@@ -176,7 +178,7 @@ public class OptionalServiceCode {
         CREATE TABLE optionalservices_filinglist (
             "code" varchar(40),
             "filingcodeid" varchar(40),
-            "domain" varchar(80),
+            "jurisdiction" varchar(80),
             "location" varchar(80)
         )
         """;
@@ -190,9 +192,9 @@ public class OptionalServiceCode {
     var indices =
         List.of(
             "CREATE INDEX ON optionalservices (location)",
-            "CREATE INDEX ON optionalservices (domain)",
+            "CREATE INDEX ON optionalservices (jurisdiction)",
             "CREATE INDEX ON optionalservices_filinglist (location)",
-            "CREATE INDEX ON optionalservices_filinglist (domain)");
+            "CREATE INDEX ON optionalservices_filinglist (jurisdiction)");
     try (Statement statement = conn.createStatement()) {
       for (var myStr : indices) {
         statement.executeUpdate(myStr);
@@ -201,19 +203,19 @@ public class OptionalServiceCode {
   }
 
   public static void deleteFromOptionalServiceTable(
-      String courtLocation, String tylerDomain, Connection conn) throws SQLException {
+      String courtLocation, String jurisdiction, Connection conn) throws SQLException {
     final String DELETE_FROM =
         (courtLocation == null)
-            ? "DELETE FROM optionalservices WHERE domain=?"
-            : "DELETE FROM optionalservices WHERE domain=? AND location=?";
+            ? "DELETE FROM optionalservices WHERE jurisdiction=?"
+            : "DELETE FROM optionalservices WHERE jurisdiction=? AND location=?";
     final String DELETE_FROM_FL =
         (courtLocation == null)
-            ? "DELETE FROM optionalservices_filinglist WHERE domain=?"
-            : "DELETE FROM optionalservices_filinglist WHERE domain=? AND location=?";
+            ? "DELETE FROM optionalservices_filinglist WHERE jurisdiction=?"
+            : "DELETE FROM optionalservices_filinglist WHERE jurisdiction=? AND location=?";
     try (PreparedStatement stmt = conn.prepareStatement(DELETE_FROM);
         PreparedStatement stmtFL = conn.prepareStatement(DELETE_FROM_FL)) {
-      stmt.setString(1, tylerDomain);
-      stmtFL.setString(1, tylerDomain);
+      stmt.setString(1, jurisdiction);
+      stmtFL.setString(1, jurisdiction);
       if (courtLocation != null) {
         stmt.setString(2, courtLocation);
         stmtFL.setString(2, courtLocation);
@@ -223,22 +225,22 @@ public class OptionalServiceCode {
     }
   }
 
-  private static record DistinctOptServ(String code, String domain, String location) {}
+  private static record DistinctOptServ(String code, String jurisdiction, String location) {}
 
   public static void updateOptionalServiceTable(
-      String courtName, String tylerDomain, Iterator<Map<String, String>> rows, Connection conn)
+      String courtName, String jurisdiction, Iterator<Map<String, String>> rows, Connection conn)
       throws SQLException {
     String insertMainQuery =
         """
         INSERT INTO "optionalservices" ("code", "name", "displayorder", "fee", "multiplier", "altfeedesc", "hasfeeprompt",
-          "feeprompttext", "efspcode", "domain", "location"
+          "feeprompttext", "efspcode", "jurisdiction", "location"
         ) VALUES (
           ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
         )
         """;
     String insertFLQuery =
         """
-        INSERT INTO "optionalservices_filinglist" ("code", "filingcodeid", "domain", "location"
+        INSERT INTO "optionalservices_filinglist" ("code", "filingcodeid", "jurisdiction", "location"
         ) VALUES (
           ?, ?, ?, ?
         )
@@ -277,11 +279,11 @@ public class OptionalServiceCode {
             stmt.setString(9, valString);
           }
         }
-        stmt.setString(10, tylerDomain);
-        stmtFilingList.setString(3, tylerDomain);
+        stmt.setString(10, jurisdiction);
+        stmtFilingList.setString(3, jurisdiction);
         stmt.setString(11, courtName);
         stmtFilingList.setString(4, courtName);
-        var dis = new DistinctOptServ(colCode, tylerDomain, courtName);
+        var dis = new DistinctOptServ(colCode, jurisdiction, courtName);
 
         stmtFilingList.addBatch();
         if (alreadyAdded.contains(dis)) {

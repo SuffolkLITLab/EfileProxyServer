@@ -44,7 +44,7 @@ public class DocumentTypeTableRow {
     return """
     SELECT code, name, filingcodeid, iscourtuseonly, isdefault, efspcode, location
     FROM documenttype
-    WHERE domain=? AND location=? AND iscourtuseonly='False' AND filingcodeid=?\
+    WHERE jurisdiction=? AND location=? AND iscourtuseonly='False' AND filingcodeid=?\
     """;
   }
 
@@ -52,7 +52,7 @@ public class DocumentTypeTableRow {
     return """
     SELECT code, name, filingcodeid, iscourtuseonly, isdefault, efspcode, location
     FROM documenttype
-    WHERE domain=? AND location=? AND iscourtuseonly='False' AND filingcodeid=''\
+    WHERE jurisdiction=? AND location=? AND iscourtuseonly='False' AND filingcodeid=''\
     """;
   }
 }
