@@ -11,8 +11,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @Tag("Docker")
@@ -21,8 +21,8 @@ public class LoginDatabaseTest {
   private LoginDatabase ld;
 
   @Container
-  public static PostgreSQLContainer<?> postgres =
-      new PostgreSQLContainer<>(DockerImageName.parse(DatabaseVersionTest.POSTGRES_DOCKER_NAME));
+  public static PostgreSQLContainer postgres =
+      new PostgreSQLContainer(DockerImageName.parse(DatabaseVersionTest.POSTGRES_DOCKER_NAME));
 
   @BeforeAll
   public static void dbSetup() {

@@ -30,8 +30,8 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @Tag("Docker")
@@ -41,8 +41,8 @@ public class CodeDatabaseTest {
   private CodeDatabase cd;
 
   @Container
-  public PostgreSQLContainer<?> postgres =
-      new PostgreSQLContainer<>(DockerImageName.parse(DatabaseVersionTest.POSTGRES_DOCKER_NAME));
+  public PostgreSQLContainer postgres =
+      new PostgreSQLContainer(DockerImageName.parse(DatabaseVersionTest.POSTGRES_DOCKER_NAME));
 
   @BeforeEach
   public void setUp() throws SQLException {
