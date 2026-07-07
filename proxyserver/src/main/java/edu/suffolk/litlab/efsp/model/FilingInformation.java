@@ -57,9 +57,9 @@ public class FilingInformation {
 
   private CaseCategory caseCategoryCode;
   private CaseType caseTypeCode;
-  private Optional<NameAndCode> caseSubtypeCode;
-  private Optional<NameAndCode> procedureRemedy;
-  private Optional<NameAndCode> damageAmount;
+  private Optional<NameAndCode> caseSubtypeCode = Optional.empty();
+  private Optional<NameAndCode> procedureRemedy = Optional.empty();
+  private Optional<NameAndCode> damageAmount = Optional.empty();
   private Map<String, String> crossRefs;
   private String paymentId;
   private List<FilingDoc> filingDocs = List.of();
