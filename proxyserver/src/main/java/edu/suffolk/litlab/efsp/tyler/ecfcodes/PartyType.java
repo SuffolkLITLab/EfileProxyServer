@@ -80,7 +80,7 @@ public class PartyType {
     return """
     SELECT DISTINCT name
     FROM partytype
-    WHERE domain=? AND name ILIKE ?
+    WHERE jurisdiction=? AND name ILIKE ?
     ORDER BY name
     """;
   }
@@ -89,7 +89,7 @@ public class PartyType {
     return """
     SELECT DISTINCT location
     FROM partytype
-    WHERE domain=? and name ILIKE ?
+    WHERE jurisdiction=? and name ILIKE ?
     ORDER BY location
     """;
   }
@@ -98,7 +98,7 @@ public class PartyType {
     return """
     SELECT DISTINCT code, location
     FROM partytype
-    WHERE domain=? AND name=?
+    WHERE jurisdiction=? AND name=?
     ORDER BY location
     """;
   }
@@ -109,7 +109,7 @@ public class PartyType {
            numberofpartiestoignore, sendforredaction, dateofdeath, displayorder,
            efspcode, location
     FROM partytype
-    WHERE domain=? AND location=? AND casetypeid=?
+    WHERE jurisdiction=? AND location=? AND casetypeid=?
     ORDER BY isrequired DESC, displayorder, casetypeid DESC\
     """;
   }
@@ -120,7 +120,7 @@ public class PartyType {
            numberofpartiestoignore, sendforredaction, dateofdeath, displayorder,
            efspcode, location
     FROM partytype
-    WHERE domain=? AND location=? AND casetypeid=''
+    WHERE jurisdiction=? AND location=? AND casetypeid=''
     ORDER BY isrequired DESC, displayorder, casetypeid DESC\
     """;
   }
@@ -131,7 +131,7 @@ public class PartyType {
            numberofpartiestoignore, sendforredaction, dateofdeath, displayorder,
            efspcode, location
     FROM partytype
-    WHERE domain=? AND location=? AND code=?\
+    WHERE jurisdiction=? AND location=? AND code=?\
     """;
   }
 

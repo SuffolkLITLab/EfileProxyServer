@@ -251,7 +251,7 @@ public class CourtLocationInfo {
     return """
     SELECT code, parentnodeid
     FROM location
-    WHERE domain=? AND code=?
+    WHERE jurisdiction=? AND code=?
     """;
   }
 
@@ -271,23 +271,23 @@ public class CourtLocationInfo {
         allowwaiveronredaction, disallowelectronicserviceonnewcontacts,
         allowindividualregistration, redactiontargetconfig, allowhearing
     FROM location
-    WHERE domain=? AND code=?
+    WHERE jurisdiction=? AND code=?
     """;
   }
 
   public static String allOrderedQuery() {
-    return "SELECT DISTINCT code FROM location WHERE domain=? ORDER BY code";
+    return "SELECT DISTINCT code FROM location WHERE jurisdiction=? ORDER BY code";
   }
 
   public static String allNames() {
-    return "SELECT name, code FROM location WHERE domain=? ORDER BY code";
+    return "SELECT name, code FROM location WHERE jurisdiction=? ORDER BY code";
   }
 
   public static String fileableQuery() {
     return """
     SELECT name, code
     FROM location
-    WHERE domain=? AND (initial ILIKE 'true' OR subsequent ILIKE 'true')
+    WHERE jurisdiction=? AND (initial ILIKE 'true' OR subsequent ILIKE 'true')
     """;
   }
 
@@ -295,7 +295,7 @@ public class CourtLocationInfo {
     return """
     SELECT name, code
     FROM location
-    WHERE domain=? AND (initial ILIKE 'true')
+    WHERE jurisdiction=? AND (initial ILIKE 'true')
     """;
   }
 
@@ -303,7 +303,7 @@ public class CourtLocationInfo {
     return """
     SELECT name, code
     FROM location
-    WHERE domain=? AND (subsequent ILIKE 'true')
+    WHERE jurisdiction=? AND (subsequent ILIKE 'true')
     """;
   }
 }

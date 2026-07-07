@@ -86,10 +86,10 @@ public class CaseType {
   }
 
   public static PreparedStatement prepQueryBroad(
-      Connection conn, String domain, String courtLocationId, String caseCategoryCode)
+      Connection conn, String jurisdiction, String courtLocationId, String caseCategoryCode)
       throws SQLException {
     PreparedStatement st = conn.prepareStatement(getCaseTypesForCategory());
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, courtLocationId);
     st.setString(3, caseCategoryCode);
     return st;
@@ -97,7 +97,7 @@ public class CaseType {
 
   public static PreparedStatement prepQueryTiming(
       Connection conn,
-      String domain,
+      String jurisdiction,
       String courtLocationId,
       String caseCategoryCode,
       Optional<Boolean> isInitial)
@@ -105,7 +105,7 @@ public class CaseType {
     boolean specifiedInitial = isInitial.orElse(false);
     if (specifiedInitial) {
       PreparedStatement st = conn.prepareStatement(getCaseTypesForTiming());
-      st.setString(1, domain);
+      st.setString(1, jurisdiction);
       st.setString(2, courtLocationId);
       st.setString(3, caseCategoryCode);
       st.setString(4, Boolean.toString(specifiedInitial));
@@ -113,7 +113,7 @@ public class CaseType {
     }
 
     PreparedStatement st = conn.prepareStatement(getCaseTypesForCategory());
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, courtLocationId);
     st.setString(3, caseCategoryCode);
     return st;
@@ -123,7 +123,7 @@ public class CaseType {
     return """
     SELECT code, name, casecategory, initial,
     fee, willfileddate, efspcode, location
-    FROM casetype WHERE domain=? AND location=? AND casecategory=?\
+    FROM casetype WHERE jurisdiction=? AND location=? AND casecategory=?\
     """;
   }
 
@@ -132,62 +132,62 @@ public class CaseType {
   }
 
   public static PreparedStatement prepQueryWithCode(
-      Connection conn, String domain, String courtLocationId, String caseTypeCode)
+      Connection conn, String jurisdiction, String courtLocationId, String caseTypeCode)
       throws SQLException {
     String withCode =
         """
         SELECT code, name, casecategory, initial,
           fee, willfileddate, efspcode, location
-        FROM casetype WHERE domain=? AND location=? AND code=?
+        FROM casetype WHERE jurisdiction=? AND location=? AND code=?
         """;
     PreparedStatement st = conn.prepareStatement(withCode);
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, courtLocationId);
     st.setString(3, caseTypeCode);
     return st;
   }
 
-  public static PreparedStatement prepSearchQuery(Connection conn, String domain, String searchTerm)
-      throws SQLException {
+  public static PreparedStatement prepSearchQuery(
+      Connection conn, String jurisdiction, String searchTerm) throws SQLException {
     String search =
         """
         SELECT DISTINCT name
         FROM casetype
-        WHERE domain=? AND name ILIKE ?
+        WHERE jurisdiction=? AND name ILIKE ?
         ORDER BY name
         """;
     PreparedStatement st = conn.prepareStatement(search);
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, searchTerm);
     return st;
   }
 
   public static PreparedStatement prepCourtCoverage(
-      Connection conn, String domain, String searchTerm) throws SQLException {
+      Connection conn, String jurisdiction, String searchTerm) throws SQLException {
     String search =
         """
         SELECT DISTINCT location
         FROM casetype
-        WHERE domain=? AND name ILIKE ?
+        WHERE jurisdiction=? AND name ILIKE ?
         ORDER BY location
         """;
     PreparedStatement st = conn.prepareStatement(search);
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, searchTerm);
     return st;
   }
 
   public static PreparedStatement prepRetrieveQuery(
-      Connection conn, String domain, String caseTypeName) throws SQLException {
+      Connection conn, String jurisdiction, String caseTypeName) throws SQLException {
     String retrieve =
         """
         SELECT DISTINCT code, location
         FROM casetype
-        WHERE domain=? AND name=?
+        WHERE jurisdiction=? AND name=?
         ORDER BY location
         """;
     PreparedStatement st = conn.prepareStatement(retrieve);
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, caseTypeName);
     return st;
   }

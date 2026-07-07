@@ -82,7 +82,7 @@ public class CodeTableConstants {
           new ImmutablePair<String, String>("location", "text"),
           new ImmutablePair<String, String>("codelist", "text"), 
           new ImmutablePair<String, String>("installedversion", "text")),
-          List.of("location", "codelist", "domain"))),
+          List.of("location", "codelist", "jurisdiction"))),
         //////////// Tables that are both system wide, and court specific
         Map.entry("country", makeCourtColumnInfo(List.of(
           new ImmutablePair<String, String>("code", "text"), 
@@ -321,9 +321,9 @@ public class CodeTableConstants {
     for (Map.Entry<String, TableColumns> table : tableColumns.entrySet()) {
       createQueries.put(table.getKey(), createTableQuery(table.getKey(), table.getValue()));
       insertQueries.put(table.getKey(), createInsertQuery(table.getKey(), table.getValue()));
-      deleteAllCourtsFromQueries.put(table.getKey(), "DELETE FROM " + table.getKey() + " WHERE domain=?");
+      deleteAllCourtsFromQueries.put(table.getKey(), "DELETE FROM " + table.getKey() + " WHERE jurisdiction=?");
       if (table.getValue().needsExtraLocCol) {
-        deleteFromQueries.put(table.getKey(), "DELETE FROM " + table.getKey() + " WHERE domain=? AND location=?");
+        deleteFromQueries.put(table.getKey(), "DELETE FROM " + table.getKey() + " WHERE jurisdiction=? AND location=?");
       }
     }
     
@@ -331,11 +331,11 @@ public class CodeTableConstants {
         "CREATE INDEX ON filing (location)",
         "CREATE INDEX ON filing (casecategory)",
         "CREATE INDEX ON filing (casetypeid)",
-        "CREATE INDEX ON filing (domain)"));
+        "CREATE INDEX ON filing (jurisdiction)"));
     tableIndices.put("filingcomponent", List.of(
         "CREATE INDEX ON filingcomponent (location)", 
         "CREATE INDEX ON filingcomponent (filingcodeid)",
-        "CREATE INDEX ON filingcomponent (domain)")); 
+        "CREATE INDEX ON filingcomponent (jurisdiction)")); 
   }
 
   public static String getZipNameFromTable(String tableName) {
@@ -390,51 +390,51 @@ public class CodeTableConstants {
 
   public static String updateVersion() {
     return """
-        INSERT INTO installedversion (location, codelist, installedversion, domain) VALUES(?, ?, ?, ?)
-        ON CONFLICT (domain, location, codelist) DO UPDATE SET installedversion=?""";
+        INSERT INTO installedversion (location, codelist, installedversion, jurisdiction) VALUES(?, ?, ?, ?)
+        ON CONFLICT (jurisdiction, location, codelist) DO UPDATE SET installedversion=?""";
   }
 
   public static String needToUpdateVersion() {
     return """
         SELECT v.location, v.codelist, iv.installedversion, v.version
         FROM version AS v LEFT OUTER JOIN installedversion AS iv
-        ON (v.domain=iv.domain AND v.location=iv.location AND v.codelist=iv.codelist)
-        WHERE v.domain=? AND ((iv.installedversion IS NULL) OR (v.version != iv.installedversion))""";
+        ON (v.jurisdiction=iv.jurisdiction AND v.location=iv.location AND v.codelist=iv.codelist)
+        WHERE v.jurisdiction=? AND ((iv.installedversion IS NULL) OR (v.version != iv.installedversion))""";
   }
 
   public static String getCaseSubtypesFor() {
     return """
         SELECT code, name
-        FROM casesubtype WHERE domain=? AND location=? AND casetypeid=?""";
+        FROM casesubtype WHERE jurisdiction=? AND location=? AND casetypeid=?""";
   }
 
   public static String getProcedureOrRemedy() {
-    return "SELECT name, code FROM procedureremedy WHERE domain=? AND location=? AND casecategory=?";
+    return "SELECT name, code FROM procedureremedy WHERE jurisdiction=? AND location=? AND casecategory=?";
   }
 
   public static String getMotionTypes() {
-    return "SELECT name, code FROM motiontype WHERE domain=? AND location=? AND filingcodeid=?";
+    return "SELECT name, code FROM motiontype WHERE jurisdiction=? AND location=? AND filingcodeid=?";
   }
 
   public static String getSpecificStatesForCountryForLoc() {
     return "SELECT code, name, countrycode, location "
-        + " FROM state WHERE domain=? AND location=? and countrycode=?";
+        + " FROM state WHERE jurisdiction=? AND location=? and countrycode=?";
   }
 
   public static String getFilingStatuses() {
-    return "SELECT name, code FROM filingstatus WHERE domain=? AND location=?";
+    return "SELECT name, code FROM filingstatus WHERE jurisdiction=? AND location=?";
   }
 
   public static String getLanguages() {
-    return "SELECT code, name, efspcode, location FROM language WHERE domain=? AND location=?";
+    return "SELECT code, name, efspcode, location FROM language WHERE jurisdiction=? AND location=?";
   }
 
   public static String getDamageAmount() {
-    return "SELECT code, name, efspcode, location FROM damageamount WHERE domain=? AND location=? AND casecategory=?";
+    return "SELECT code, name, efspcode, location FROM damageamount WHERE jurisdiction=? AND location=? AND casecategory=?";
   }
 
   public static String getNameSuffixes() {
-    return "SELECT name, code FROM namesuffix WHERE domain=? AND location=?";
+    return "SELECT name, code FROM namesuffix WHERE jurisdiction=? AND location=?";
   }
 
   public static String vacuumAnalyzeAll() {
@@ -504,7 +504,7 @@ public class CodeTableConstants {
     if (tc.needsExtraLocCol) {
       colNames.append(", location");
     }
-    colNames.append(", domain");
+    colNames.append(", jurisdiction");
     insertLocation.append(colNames.toString());
     insertLocation.append(") VALUES (");
     for (int i = 0; i < tc.mainList.size(); i++) {
@@ -536,7 +536,7 @@ public class CodeTableConstants {
     if (tc.needsExtraLocCol) {
       createLocation.append(", \"location\" varchar(80)");
     }
-    createLocation.append(", \"domain\" varchar(80)");
+    createLocation.append(", \"jurisdiction\" varchar(80)");
 
     if (!tc.primaryKeys.isEmpty()) {
       createLocation.append(

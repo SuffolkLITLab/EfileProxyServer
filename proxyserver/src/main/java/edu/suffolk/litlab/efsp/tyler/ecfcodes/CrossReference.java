@@ -58,7 +58,7 @@ public class CrossReference {
     return """
     SELECT code, name, casetypeid, isdefault, isrequired, validationregex,
       customvalidationfailuremessage, efspcode, location
-    FROM crossreference WHERE domain=? AND location=? AND casetypeid=?
+    FROM crossreference WHERE jurisdiction=? AND location=? AND casetypeid=?
     """;
   }
 

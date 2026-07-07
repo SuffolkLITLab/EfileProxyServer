@@ -11,8 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
 import edu.suffolk.litlab.efsp.model.PartyId;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.DataFieldRow;
@@ -41,7 +39,7 @@ public class PersonDocassembleJacksonDeserializerTest {
     var allDataFields = mock(DataFields.class);
     when(cd.getStateCodes("adams", "US")).thenReturn(List.of("MA", "TX", "IL", "VT"));
     when(cd.getDataFields("adams")).thenReturn(allDataFields);
-    when(cd.getDomain()).thenReturn(new TylerDomain(Jurisdiction.ILLINOIS, TylerEnv.STAGE));
+    when(cd.getJurisdiction()).thenReturn(Jurisdiction.ILLINOIS);
     when(allDataFields.getFieldRow("PartyFirstName"))
         .thenReturn(new DataFieldRow("PartyFirstName", "", true, true, "adams"));
     when(allDataFields.getFieldRow("PartyMiddleName"))

@@ -49,7 +49,7 @@ public class FilingComponent {
     return """
     SELECT code, name, filingcodeid, required, allowmultiple, displayorder, efspcode, location
     FROM filingcomponent
-    WHERE domain=? AND location=? AND filingcodeid=?
+    WHERE jurisdiction=? AND location=? AND filingcodeid=?
     """;
   }
 

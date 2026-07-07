@@ -15,7 +15,6 @@ import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
@@ -313,7 +312,7 @@ public class CodeUpdater {
   }
 
   private static Map<String, CourtPolicyResponseMessageType> streamPolicies(
-      Stream<String> locations, TylerDomain domain, FilingReviewMDEPort filingPort) {
+      Stream<String> locations, Jurisdiction jurisdiction, FilingReviewMDEPort filingPort) {
     var policies = new ConcurrentHashMap<String, CourtPolicyResponseMessageType>();
     locations.forEach(
         location -> {
@@ -322,7 +321,8 @@ public class CodeUpdater {
             CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
             policies.put(location, p);
           } catch (SOAPFaultException ex) {
-            log.warn("Got a SOAP excption getting policy for {} in {}: ", location, domain, ex);
+            log.warn(
+                "Got a SOAP excption getting policy for {} in {}: ", location, jurisdiction, ex);
           }
         });
     return policies;
@@ -476,7 +476,7 @@ public class CodeUpdater {
       List<String> tables = courtAndTables.getValue();
       log.debug(
           "In {}, removing entries for court {} for tables: {}",
-          cd.getDomain(),
+          cd.getJurisdiction(),
           courtLocation,
           tables);
       for (String table : tables) {
@@ -491,7 +491,8 @@ public class CodeUpdater {
     log.info("Took {} to remove existing tables", Duration.between(startDel, Instant.now()));
     Instant startPolicy = Instant.now();
     Map<String, CourtPolicyResponseMessageType> policies =
-        streamPolicies(versionsToUpdate.keySet().stream().parallel(), cd.getDomain(), filingPort);
+        streamPolicies(
+            versionsToUpdate.keySet().stream().parallel(), cd.getJurisdiction(), filingPort);
     var soapInc = Duration.between(startPolicy, Instant.now());
     soapDuration = soapDuration.plus(soapInc);
     log.info("Soaps took: {} (total: {})", soapInc, soapDuration);
@@ -527,7 +528,7 @@ public class CodeUpdater {
       throws SQLException, IOException, JAXBException, URISyntaxException {
     cd.setAutoCommit(false);
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
-    log.info("Downloading system tables for {}", cd.getDomain());
+    log.info("Downloading system tables for {}", cd.getJurisdiction());
     boolean success = downloadSystemTables(baseUrl, cd, signer);
 
     var tablesToDeleteDomain = ecf4ElemToTableName.values();
@@ -547,7 +548,7 @@ public class CodeUpdater {
     locs.remove("0");
     Instant startPolicy = Instant.now();
     Map<String, CourtPolicyResponseMessageType> policies =
-        streamPolicies(locs.parallelStream(), cd.getDomain(), filingPort);
+        streamPolicies(locs.parallelStream(), cd.getJurisdiction(), filingPort);
     soapDuration = soapDuration.plus(Duration.between(startPolicy, Instant.now()));
     log.info("Soaps: {}", soapDuration);
     for (var policy : policies.entrySet()) {
@@ -664,7 +665,6 @@ public class CodeUpdater {
 
   /** Should just be called from main. */
   private static CodeDatabaseAPI makeCodeDatabase(Jurisdiction jurisdiction) {
-    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     try {
       DataSource ds =
           DatabaseCreator.makeDataSource(
@@ -676,7 +676,7 @@ public class CodeUpdater {
               10,
               100);
 
-      return CodeDatabase.fromDS(domain, ds);
+      return CodeDatabase.fromDS(jurisdiction, ds);
     } catch (Exception ex) {
       throw new RuntimeException(ex);
     }

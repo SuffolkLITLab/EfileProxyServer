@@ -31,7 +31,7 @@ public class FilerType {
     return """
     SELECT "code", "name", "default", "efspcode", "location"
     FROM filertype
-    WHERE domain=? AND location=?\
+    WHERE jurisdiction=? AND location=?\
     """;
   }
 }

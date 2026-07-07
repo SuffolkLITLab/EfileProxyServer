@@ -14,7 +14,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.Person;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
@@ -73,7 +72,7 @@ public class DocassembleToFilingInformationConverterTest {
     when(cd.getFilingComponents("01", exampleFilingType.code))
         .thenReturn(List.of(new FilingComponent("332", null, null, false, false, 0, null, null)));
     when(cd.getStateCodes("01", "US")).thenReturn(List.of("MA", "TX", "IL", "VT"));
-    when(cd.getDomain()).thenReturn(new TylerDomain(Jurisdiction.ILLINOIS, TylerEnv.STAGE));
+    when(cd.getJurisdiction()).thenReturn(Jurisdiction.ILLINOIS);
     when(cd.getDataFields("01"))
         .thenReturn(
             new DataFields(

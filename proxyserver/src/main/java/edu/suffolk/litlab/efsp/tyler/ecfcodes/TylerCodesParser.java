@@ -241,7 +241,7 @@ public class TylerCodesParser implements CodesParser {
     if (stateCodes.isEmpty()) {
       FilingError err =
           FilingError.malformedInterview(
-              "There are no allowed states for " + countryString + " in " + cd.getDomain());
+              "There are no allowed states for " + countryString + " in " + cd.getJurisdiction());
       return Result.err(new BadCode(err));
     }
     if (!stateCodes.contains(state)) {

@@ -76,22 +76,22 @@ public class CaseCategory {
   }
 
   public static PreparedStatement prepFilableQueryTiming(
-      Connection conn, String domain, String courtLocationId, Boolean isInitial)
+      Connection conn, String jurisdiction, String courtLocationId, Boolean isInitial)
       throws SQLException {
     if (isInitial) {
       PreparedStatement st = conn.prepareStatement(getFileableCaseCategoryForTiming());
-      st.setString(1, domain);
+      st.setString(1, jurisdiction);
       st.setString(2, courtLocationId);
       st.setString(3, Boolean.toString(isInitial));
       return st;
     }
-    return prepFileableQuery(conn, domain, courtLocationId);
+    return prepFileableQuery(conn, jurisdiction, courtLocationId);
   }
 
   public static PreparedStatement prepFileableQuery(
-      Connection conn, String domain, String courtLocationId) throws SQLException {
+      Connection conn, String jurisdiction, String courtLocationId) throws SQLException {
     PreparedStatement st = conn.prepareStatement(getFileableCaseCategoryForLoc());
-    st.setString(1, domain);
+    st.setString(1, jurisdiction);
     st.setString(2, courtLocationId);
     return st;
   }
@@ -100,7 +100,7 @@ public class CaseCategory {
     return """
     SELECT DISTINCT name
     FROM casecategory
-    WHERE domain=? AND name ILIKE ?
+    WHERE jurisdiction=? AND name ILIKE ?
     ORDER BY name
     """;
   }
@@ -109,7 +109,7 @@ public class CaseCategory {
     return """
     SELECT DISTINCT location
     FROM casecategory
-    WHERE domain=? AND name ILIKE ?
+    WHERE jurisdiction=? AND name ILIKE ?
     ORDER BY location
     """;
   }
@@ -118,7 +118,7 @@ public class CaseCategory {
     return """
     SELECT DISTINCT code, location
     FROM casecategory
-    WHERE domain=? AND name=?
+    WHERE jurisdiction=? AND name=?
     ORDER BY location
     """;
   }
@@ -128,7 +128,7 @@ public class CaseCategory {
     return """
     SELECT code, name, ecfcasetype, procedureremedyinitial,
       procedureremedysubsequent, damageamountinitial, damageamountsubsequent
-    FROM casecategory WHERE domain=? AND location=? AND ecfcasetype !='CriminalCase'\
+    FROM casecategory WHERE jurisdiction=? AND location=? AND ecfcasetype !='CriminalCase'\
     """;
   }
 
@@ -144,8 +144,8 @@ public class CaseCategory {
               ROW_NUMBER() OVER(PARTITION BY cate.code ORDER BY type.code) AS RN
             FROM casecategory as cate
               INNER JOIN casetype AS type
-              ON cate.code = type.casecategory AND cate.location = type.location AND cate.domain = type.domain
-            WHERE cate.domain=? AND cate.location=? AND cate.ecfcasetype != 'CriminalCase'
+              ON cate.code = type.casecategory AND cate.location = type.location AND cate.jurisdiction = type.jurisdiction
+            WHERE cate.jurisdiction=? AND cate.location=? AND cate.ecfcasetype != 'CriminalCase'
         ) cat
     WHERE cat.RN = 1
     """;
@@ -163,8 +163,8 @@ public class CaseCategory {
               ROW_NUMBER() OVER(PARTITION BY cate.code ORDER BY type.code) AS RN
             FROM casecategory as cate
               INNER JOIN casetype AS type
-              ON cate.code = type.casecategory AND cate.location = type.location AND cate.domain = type.domain
-            WHERE cate.domain=? AND cate.location=? AND cate.ecfcasetype != 'CriminalCase' AND type.initial ILIKE ?
+              ON cate.code = type.casecategory AND cate.location = type.location AND cate.jurisdiction = type.jurisdiction
+            WHERE cate.jurisdiction=? AND cate.location=? AND cate.ecfcasetype != 'CriminalCase' AND type.initial ILIKE ?
         ) cat
     WHERE cat.RN = 1
     """;
@@ -174,7 +174,7 @@ public class CaseCategory {
     return """
     SELECT code, name, ecfcasetype, procedureremedyinitial,
       procedureremedysubsequent, damageamountinitial, damageamountsubsequent
-    FROM casecategory WHERE domain=? AND location=? AND code=?
+    FROM casecategory WHERE jurisdiction=? AND location=? AND code=?
     """;
   }
 
