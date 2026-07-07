@@ -247,242 +247,251 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                 "Court setup or apiToken wrong: can't get parser for " + info.getCourtLocation()));
       }
       var parser = maybeParser.get();
-      boolean isInitialFiling =
-          info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
-      boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty();
-      var newParties =
-          Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
-              .toList();
-      ComboCaseCodes allCodes;
-      if (!isFirstIndexedFiling) {
-        CaseQueryMessageType query = new CaseQueryMessageType();
-        Ecf4Helper.prep(query, info.getCourtLocation());
-        query.setCaseTrackingID(Ecf4Helper.convertString(info.getPreviousCaseId().get()));
-        query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
-        CaseResponseMessageType resp = recordPort.getCase(query);
-        if (resp.getCase() != null && resp.getCase().getValue() != null) {
-          if (resp.getCase().getValue().getCaseTitleText() != null) {
-            existingCaseTitle = resp.getCase().getValue().getCaseTitleText().getValue();
+      try {
+
+        boolean isInitialFiling =
+            info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
+        boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty();
+        var newParties =
+            Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
+                .toList();
+        ComboCaseCodes allCodes;
+        if (!isFirstIndexedFiling) {
+          CaseQueryMessageType query = new CaseQueryMessageType();
+          Ecf4Helper.prep(query, info.getCourtLocation());
+          query.setCaseTrackingID(Ecf4Helper.convertString(info.getPreviousCaseId().get()));
+          query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
+          CaseResponseMessageType resp = recordPort.getCase(query);
+          if (resp.getCase() != null && resp.getCase().getValue() != null) {
+            if (resp.getCase().getValue().getCaseTitleText() != null) {
+              existingCaseTitle = resp.getCase().getValue().getCaseTitleText().getValue();
+            }
+          } else {
+            var filingVar =
+                collector.requestVar(
+                    "previous_case_id",
+                    "Could not find the given case id (" + info.getPreviousCaseId().get() + ")",
+                    "text",
+                    List.of(),
+                    info.getPreviousCaseId());
+            collector.addWrong(filingVar);
           }
+
+          String catStr = resp.getCase().getValue().getCaseCategoryText().getValue();
+          var catRes = parser.vetCaseCat(catStr);
+          if (catRes.isErr()) {
+            var variable =
+                collector.addCodeError(
+                    catRes.expectErr(""),
+                    collector
+                        .varBuilder()
+                        .name("case category (fom the court)")
+                        .description("(shouldn't be wrong)"));
+            // Foundational error: Category is sorely needed
+            throw FilingError.wrongValue(variable);
+          }
+          CaseCategory catCode = catRes.expect("");
+          String typeStr =
+              EcfCaseTypeFactory.getCaseAugmentation(resp.getCase().getValue())
+                  .get()
+                  .getCaseTypeText()
+                  .getValue();
+          var typeRes = parser.vetCaseType(typeStr, catCode, isInitialFiling);
+          if (typeRes.isErr()) {
+            var variable =
+                collector.addCodeError(
+                    typeRes.expectErr(""),
+                    collector
+                        .varBuilder()
+                        .name("case type (fom tyler)")
+                        .description("(shouldn't be wrong)"));
+            throw FilingError.wrongValue(variable);
+          }
+          CaseType typeCode = typeRes.expect("");
+          Map<PartyId, Person> exisitingPartips =
+              EcfCaseTypeFactory.getCaseParticipants(resp.getCase().getValue()).get();
+          List<FilingCode> filingCodes =
+              info.getFilings().stream().map(f -> f.getFilingCode()).toList();
+          var existingParties = exisitingPartips.values();
+          log.info("Existing cat, type, and filings: {}, {}, {}", catCode, typeCode, filingCodes);
+          var partyTypesRes =
+              parser.vetPartyTypes(newParties, existingParties, typeCode, isFirstIndexedFiling);
+          if (partyTypesRes.isErr()) {
+            var interviewVar =
+                collector.addCodeError(
+                    partyTypesRes.expectErr(""),
+                    collector.varBuilder().name("(new and exisiting parties)"));
+            throw FilingError.wrongValue(interviewVar);
+          }
+          var partyTypes = partyTypesRes.expect("");
+          allCodes = new ComboCaseCodes(catCode, typeCode, filingCodes, partyTypes);
         } else {
-          var filingVar =
-              collector.requestVar(
-                  "previous_case_id",
-                  "Could not find the given case id (" + info.getPreviousCaseId().get() + ")",
-                  "text",
-                  List.of(),
-                  info.getPreviousCaseId());
-          collector.addWrong(filingVar);
+          var partyTypesRes =
+              parser.vetPartyTypes(
+                  newParties, List.of(), info.getCaseTypeCode(), isFirstIndexedFiling);
+          if (partyTypesRes.isErr()) {
+            var interviewVar =
+                collector.addCodeError(
+                    partyTypesRes.expectErr(""), collector.varBuilder().name("(new parties)"));
+            throw FilingError.wrongValue(interviewVar);
+          }
+          var partyTypes = partyTypesRes.expect("");
+          allCodes = serializer.serializeCaseCodes(info, partyTypes, collector, isInitialFiling);
+        }
+        String caseCategoryName = allCodes.cat().name;
+        log.info("have all codes");
+
+        var coreObjFac =
+            new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4
+                .ObjectFactory();
+        CoreFilingMessageType cfm = coreObjFac.createCoreFilingMessageType();
+
+        int i = 0;
+        Map<String, Object> serviceContactXmlObjs = new HashMap<>();
+        for (CaseServiceContact servContact : info.getServiceContacts()) {
+          ElectronicServiceInformationType servInfo =
+              commonObjFac.createElectronicServiceInformationType();
+          List<ServiceCodeType> types = cd.getServiceTypes(info.getCourtLocation());
+          Optional<ServiceCodeType> serviceCode =
+              types.stream()
+                  .filter(t -> t.code.equalsIgnoreCase(servContact.serviceType))
+                  .findFirst();
+          if (serviceCode.isEmpty()) {
+            InterviewVariable var =
+                collector.requestVar(
+                    "service_contact[" + i + "].service_type",
+                    "service type should be",
+                    "choices",
+                    types.stream().map(t -> t.code).collect(Collectors.toList()),
+                    Optional.of(servContact.serviceType));
+            collector.addWrong(var);
+          }
+          /*
+          if (serviceCode.get().code.equals("-580") && isInitialFiling && locationInfo.get().disallowelectronicserviceonnewcontacts) { // Eservice
+            collector.addWrong(var.appendDesc(", but can't be e-service for an initial contact"));
+          }
+          */
+          IdentificationType id = Ecf4Helper.convertId(servContact.guid, "SERVICECONTACTID");
+          id.setIdentificationSourceText(Ecf4Helper.convertText(serviceCode.get().code));
+          servInfo.setServiceRecipientID(id);
+          servInfo.setId(servContact.refId);
+          servInfo.setReceivingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+          servInfo.setReceivingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.ASSEMBLY_PORT));
+          serviceContactXmlObjs.put(servContact.refId, servInfo);
+          cfm.getElectronicServiceInformation().add(servInfo);
         }
 
-        String catStr = resp.getCase().getValue().getCaseCategoryText().getValue();
-        var catRes = parser.vetCaseCat(catStr);
-        if (catRes.isErr()) {
-          var variable =
-              collector.addCodeError(
-                  catRes.expectErr(""),
-                  collector
-                      .varBuilder()
-                      .name("case category (fom the court)")
-                      .description("(shouldn't be wrong)"));
-          // Foundational error: Category is sorely needed
-          throw FilingError.wrongValue(variable);
+        log.info("Assembling case");
+        var pair =
+            ecfCaseFactory.makeCaseTypeFromTylerCategory(
+                locationInfo,
+                allCodes,
+                info,
+                isInitialFiling,
+                isFirstIndexedFiling,
+                queryType,
+                serializer,
+                collector,
+                serviceContactXmlObjs);
+        JAXBElement<? extends ecf4.latest.gov.niem.niem.niem_core._2.CaseType> assembledCase =
+            pair.getLeft();
+        log.info("Assembled case");
+
+        Map<String, String> crossReferences = info.getCrossRefs();
+        for (Map.Entry<String, String> ref : crossReferences.entrySet()) {
+          IdentificationType id = niemObjFac.createIdentificationType();
+          id.setIdentificationID(Ecf4Helper.convertString(ref.getValue()));
+          id.setIdentificationCategory(
+              niemObjFac.createIdentificationCategoryText(
+                  Ecf4Helper.convertText("CaseCrossReferenceNumber")));
+          id.setIdentificationSourceText(Ecf4Helper.convertText(ref.getKey()));
+          cfm.getDocumentIdentification().add(id);
         }
-        CaseCategory catCode = catRes.expect("");
-        String typeStr =
-            EcfCaseTypeFactory.getCaseAugmentation(resp.getCase().getValue())
-                .get()
-                .getCaseTypeText()
-                .getValue();
-        var typeRes = parser.vetCaseType(typeStr, catCode, isInitialFiling);
-        if (typeRes.isErr()) {
-          var variable =
-              collector.addCodeError(
-                  typeRes.expectErr(""),
-                  collector
-                      .varBuilder()
-                      .name("case type (fom tyler)")
-                      .description("(shouldn't be wrong)"));
-          throw FilingError.wrongValue(variable);
+
+        cfm.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
+        cfm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+        cfm.setCase(assembledCase);
+
+        MeasureType maxIndivDocSize =
+            policy.getDevelopmentPolicyParameters().getValue().getMaximumAllowedAttachmentSize();
+        long maxSize = Ecf4Helper.sizeMeasureAsBytes(maxIndivDocSize);
+        long cumulativeBytes = 0;
+
+        Map<String, Object> filingIdToObj = new HashMap<>();
+        int seqNum = 0;
+        for (FilingDoc filingDoc : info.getFilings()) {
+          long bytes = filingDoc.allAttachmentsLength();
+          if (bytes > maxSize) {
+            FilingError err =
+                FilingError.malformedInterview(
+                    "Document "
+                        + filingDoc
+                            .getDescription()
+                            .map(d -> d.get())
+                            .orElse(filingDoc.getFilingComments().orElse(""))
+                        + " is too big! Must be max "
+                        + maxSize
+                        + ", is "
+                        + bytes);
+            collector.error(err);
+          }
+          cumulativeBytes += bytes;
+
+          FilingCode fc = allCodes.filings().get(seqNum);
+
+          collector.pushAttributeStack("al_court_bundle[" + seqNum + "]");
+          JAXBElement<DocumentType> result =
+              serializer.filingDocToXml(
+                  filingDoc, isInitialFiling, allCodes.cat(), allCodes.type(), fc);
+          collector.popAttributeStack();
+          filingIdToObj.put(filingDoc.getIdString(), result.getValue());
+          if (filingDoc.sequenceNum() == 0) {
+            cfm.getFilingLeadDocument().add(result);
+          } else {
+            cfm.getFilingConnectedDocument().add(result);
+          }
+          seqNum += 1;
+          log.info("Added a document to the XML");
         }
-        CaseType typeCode = typeRes.expect("");
-        Map<PartyId, Person> exisitingPartips =
-            EcfCaseTypeFactory.getCaseParticipants(resp.getCase().getValue()).get();
-        List<FilingCode> filingCodes =
-            info.getFilings().stream().map(f -> f.getFilingCode()).toList();
-        var existingParties = exisitingPartips.values();
-        log.info("Existing cat, type, and filings: {}, {}, {}", catCode, typeCode, filingCodes);
-        var partyTypesRes =
-            parser.vetPartyTypes(newParties, existingParties, typeCode, isFirstIndexedFiling);
-        if (partyTypesRes.isErr()) {
-          var interviewVar =
-              collector.addCodeError(
-                  partyTypesRes.expectErr(""),
-                  collector.varBuilder().name("(new and exisiting parties)"));
-          throw FilingError.wrongValue(interviewVar);
-        }
-        var partyTypes = partyTypesRes.expect("");
-        allCodes = new ComboCaseCodes(catCode, typeCode, filingCodes, partyTypes);
-      } else {
-        var partyTypesRes =
-            parser.vetPartyTypes(
-                newParties, List.of(), info.getCaseTypeCode(), isFirstIndexedFiling);
-        if (partyTypesRes.isErr()) {
-          var interviewVar =
-              collector.addCodeError(
-                  partyTypesRes.expectErr(""), collector.varBuilder().name("(new parties)"));
-          throw FilingError.wrongValue(interviewVar);
-        }
-        var partyTypes = partyTypesRes.expect("");
-        allCodes = serializer.serializeCaseCodes(info, partyTypes, collector, isInitialFiling);
-      }
-      String caseCategoryName = allCodes.cat().name;
-      log.info("have all codes");
-
-      var coreObjFac =
-          new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4
-              .ObjectFactory();
-      CoreFilingMessageType cfm = coreObjFac.createCoreFilingMessageType();
-
-      int i = 0;
-      Map<String, Object> serviceContactXmlObjs = new HashMap<>();
-      for (CaseServiceContact servContact : info.getServiceContacts()) {
-        ElectronicServiceInformationType servInfo =
-            commonObjFac.createElectronicServiceInformationType();
-        List<ServiceCodeType> types = cd.getServiceTypes(info.getCourtLocation());
-        Optional<ServiceCodeType> serviceCode =
-            types.stream()
-                .filter(t -> t.code.equalsIgnoreCase(servContact.serviceType))
-                .findFirst();
-        if (serviceCode.isEmpty()) {
-          InterviewVariable var =
-              collector.requestVar(
-                  "service_contact[" + i + "].service_type",
-                  "service type should be",
-                  "choices",
-                  types.stream().map(t -> t.code).collect(Collectors.toList()),
-                  Optional.of(servContact.serviceType));
-          collector.addWrong(var);
-        }
-        /*
-        if (serviceCode.get().code.equals("-580") && isInitialFiling && locationInfo.get().disallowelectronicserviceonnewcontacts) { // Eservice
-          collector.addWrong(var.appendDesc(", but can't be e-service for an initial contact"));
-        }
-        */
-        IdentificationType id = Ecf4Helper.convertId(servContact.guid, "SERVICECONTACTID");
-        id.setIdentificationSourceText(Ecf4Helper.convertText(serviceCode.get().code));
-        servInfo.setServiceRecipientID(id);
-        servInfo.setId(servContact.refId);
-        servInfo.setReceivingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
-        servInfo.setReceivingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.ASSEMBLY_PORT));
-        serviceContactXmlObjs.put(servContact.refId, servInfo);
-        cfm.getElectronicServiceInformation().add(servInfo);
-      }
-
-      log.info("Assembling case");
-      var pair =
-          ecfCaseFactory.makeCaseTypeFromTylerCategory(
-              locationInfo,
-              allCodes,
-              info,
-              isInitialFiling,
-              isFirstIndexedFiling,
-              queryType,
-              serializer,
-              collector,
-              serviceContactXmlObjs);
-      JAXBElement<? extends ecf4.latest.gov.niem.niem.niem_core._2.CaseType> assembledCase =
-          pair.getLeft();
-      log.info("Assembled case");
-
-      Map<String, String> crossReferences = info.getCrossRefs();
-      for (Map.Entry<String, String> ref : crossReferences.entrySet()) {
-        IdentificationType id = niemObjFac.createIdentificationType();
-        id.setIdentificationID(Ecf4Helper.convertString(ref.getValue()));
-        id.setIdentificationCategory(
-            niemObjFac.createIdentificationCategoryText(
-                Ecf4Helper.convertText("CaseCrossReferenceNumber")));
-        id.setIdentificationSourceText(Ecf4Helper.convertText(ref.getKey()));
-        cfm.getDocumentIdentification().add(id);
-      }
-
-      cfm.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
-      cfm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
-      cfm.setCase(assembledCase);
-
-      MeasureType maxIndivDocSize =
-          policy.getDevelopmentPolicyParameters().getValue().getMaximumAllowedAttachmentSize();
-      long maxSize = Ecf4Helper.sizeMeasureAsBytes(maxIndivDocSize);
-      long cumulativeBytes = 0;
-
-      Map<String, Object> filingIdToObj = new HashMap<>();
-      int seqNum = 0;
-      for (FilingDoc filingDoc : info.getFilings()) {
-        long bytes = filingDoc.allAttachmentsLength();
-        if (bytes > maxSize) {
+        MeasureType maxTotalDocSize =
+            policy.getDevelopmentPolicyParameters().getValue().getMaximumAllowedMessageSize();
+        long maxTotal = Ecf4Helper.sizeMeasureAsBytes(maxTotalDocSize);
+        if (cumulativeBytes > maxTotal) {
           FilingError err =
               FilingError.malformedInterview(
-                  "Document "
-                      + filingDoc
-                          .getDescription()
-                          .map(d -> d.get())
-                          .orElse(filingDoc.getFilingComments().orElse(""))
-                      + " is too big! Must be max "
+                  "All Documents combined are too big! Must be max"
                       + maxSize
-                      + ", is "
-                      + bytes);
+                      + ", are "
+                      + cumulativeBytes);
           collector.error(err);
         }
-        cumulativeBytes += bytes;
-
-        FilingCode fc = allCodes.filings().get(seqNum);
-
-        collector.pushAttributeStack("al_court_bundle[" + seqNum + "]");
-        JAXBElement<DocumentType> result =
-            serializer.filingDocToXml(
-                filingDoc, isInitialFiling, allCodes.cat(), allCodes.type(), fc);
-        collector.popAttributeStack();
-        filingIdToObj.put(filingDoc.getIdString(), result.getValue());
-        if (filingDoc.sequenceNum() == 0) {
-          cfm.getFilingLeadDocument().add(result);
-        } else {
-          cfm.getFilingConnectedDocument().add(result);
-        }
-        seqNum += 1;
-        log.info("Added a document to the XML");
-      }
-      MeasureType maxTotalDocSize =
-          policy.getDevelopmentPolicyParameters().getValue().getMaximumAllowedMessageSize();
-      long maxTotal = Ecf4Helper.sizeMeasureAsBytes(maxTotalDocSize);
-      if (cumulativeBytes > maxTotal) {
-        FilingError err =
-            FilingError.malformedInterview(
-                "All Documents combined are too big! Must be max"
-                    + maxSize
-                    + ", are "
-                    + cumulativeBytes);
-        collector.error(err);
-      }
-      EcfCaseTypeFactory.getCaseAugmentation(assembledCase.getValue())
-          .ifPresent(
-              aug -> {
-                Map<String, List<PartyId>> filingAssociations =
-                    info.getFilings().stream()
-                        .collect(
-                            Collectors.toMap(f -> f.getIdString(), f -> f.getFilingPartyIds()));
-                if (parser.useFilingAssociations()) {
-                  for (var association :
-                      ecfCaseFactory.lateStageFilingAssociationAdd(
-                          filingIdToObj, filingAssociations, pair.getRight())) {
-                    aug.getFilingAssociation().add(association);
+        EcfCaseTypeFactory.getCaseAugmentation(assembledCase.getValue())
+            .ifPresent(
+                aug -> {
+                  Map<String, List<PartyId>> filingAssociations =
+                      info.getFilings().stream()
+                          .collect(
+                              Collectors.toMap(f -> f.getIdString(), f -> f.getFilingPartyIds()));
+                  if (parser.useFilingAssociations()) {
+                    for (var association :
+                        ecfCaseFactory.lateStageFilingAssociationAdd(
+                            filingIdToObj, filingAssociations, pair.getRight())) {
+                      aug.getFilingAssociation().add(association);
+                    }
                   }
-                }
-              });
-      log.info(
-          "Full cfm: {}",
-          Ecf4Helper.objectToXmlStrOrError(cfm, CoreFilingMessageType.class)
-              .replaceAll("<ns2:BinaryBase64Object>[^<]+<\\/ns2:BinaryBase64Object>", ""));
-      return new CoreMessageAndNames(cfm, existingCaseTitle, caseCategoryName, courtName);
+                });
+        log.info(
+            "Full cfm: {}",
+            Ecf4Helper.objectToXmlStrOrError(cfm, CoreFilingMessageType.class)
+                .replaceAll("<ns2:BinaryBase64Object>[^<]+<\\/ns2:BinaryBase64Object>", ""));
+        return new CoreMessageAndNames(cfm, existingCaseTitle, caseCategoryName, courtName);
+      } finally {
+        try {
+          parser.close();
+        } catch (Exception ex) {
+          log.error("Couldn't close parser: ", ex);
+        }
+      }
     } catch (IOException | SQLException ex) {
       log.error("IO Error when making filing!", ex);
       throw FilingError.serverError("Got Exception assembling the filing: " + ex);
