@@ -3,15 +3,11 @@ package edu.suffolk.litlab.efsp.server.utils;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
-import edu.suffolk.litlab.efsp.server.logging.Monitor;
-import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeUpdater;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -22,17 +18,6 @@ import org.slf4j.MDC;
 
 public class UpdateCodeVersions implements Job {
   private static Logger log = LoggerFactory.getLogger(UpdateCodeVersions.class);
-
-  private static final String badUpdateEmailTemplate =
-      """
-      Something's wrong with the EfileProxy. On the {{external_server}} server, `UpdateCodeVersions`
-      has failed to refresh the downloaded genericodes for the jurisdiction {{jurisdiction}} (env: {{env}}).
-      Unfortunately We can't send the potential problems in this message yet, but check the logs around
-      {{error_timestamp}}.
-
-      Good luck, lol.
-      - The EfileProxyServer
-      """;
 
   /**
    * A very light wrapper around the CLI CodeUpdater tool. A separate Job is started for each
@@ -62,18 +47,7 @@ public class UpdateCodeVersions implements Job {
     }
     log.info("Finished code updates with status: {}", success);
     if (!success) {
-      Monitor.sendImmediateErrorNotification(
-          "UpdateCodeVersions error on " + Monitor.EXTERNAL_DOMAIN,
-          badUpdateEmailTemplate,
-          Map.of(
-              "external_server",
-              ServiceHelpers.EXTERNAL_URL,
-              "jurisdiction",
-              jurisdiction,
-              "env",
-              TylerClients.getTylerEnv(),
-              "error_timestamp",
-              LocalDate.now().toString()));
+      log.error("UpdateCodeVersions error, failed to refresh the downloaded genericodes");
     }
     MDCWrappers.removeAllMDCs();
   }
