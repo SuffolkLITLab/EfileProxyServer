@@ -295,6 +295,8 @@ public class FilingInformationDocassembleJacksonDeserializer
           collector.requestVar("efile_case_subtype", "subtype (not always present)", "text");
       collector.addOptional(var);
       entities.setCaseSubtypeCode(Optional.empty());
+    } else {
+      entities.setCaseSubtypeCode(Optional.empty());
     }
 
     // Get the interview metadablock TODO(brycew-later): just one for now

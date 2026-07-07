@@ -203,25 +203,27 @@ public class FilingReviewService {
       return maybeParser.unwrapErrOrElseThrow();
     }
     var parser = maybeParser.unwrapOrElseThrow();
-    InfoCollector collector = new NeverSubmitCollector();
-    Result<FilingInformation, FilingError> res =
-        converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
-    if (res.isErr()) {
-      log.error("Error on traverseInterview: {}", res.toString());
-      parser.close();
-      return Response.status(400).entity(collector.jsonSummary()).build();
-    }
-    FilingInformation info = res.unwrapOrElseThrow();
-    info.setCourtLocation(courtId);
-    Result<NullValue, FilingError> resEfm =
-        filer.checkFiling(info, tylerUser.get().creds(), collector);
-    if (resEfm.isErr()) {
-      log.error("Error on checkFiling: {}", resEfm.toString());
-      parser.close();
+    try {
+      InfoCollector collector = new NeverSubmitCollector();
+      Result<FilingInformation, FilingError> res =
+          converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
+      if (res.isErr()) {
+        log.error("Error on traverseInterview: {}", res.toString());
+        parser.close();
+        return Response.status(400).entity(collector.jsonSummary()).build();
+      }
+      FilingInformation info = res.unwrapOrElseThrow();
+      info.setCourtLocation(courtId);
+      Result<NullValue, FilingError> resEfm =
+          filer.checkFiling(info, tylerUser.get().creds(), collector);
+      if (resEfm.isErr()) {
+        log.error("Error on checkFiling: {}", resEfm.toString());
+        return Response.ok(collector.jsonSummary()).build();
+      }
       return Response.ok(collector.jsonSummary()).build();
+    } finally {
+      parser.close();
     }
-    parser.close();
-    return Response.ok(collector.jsonSummary()).build();
   }
 
   @POST
@@ -255,20 +257,22 @@ public class FilingReviewService {
       return maybeParser.unwrapErrOrElseThrow();
     }
     var parser = maybeParser.unwrapOrElseThrow();
-    log.trace("Court id: {}", courtId);
-    InfoCollector collector = new FailFastCollector();
-    Result<FilingInformation, FilingError> res =
-        converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
-    if (res.isErr()) {
-      log.error("Error when calculating filing fees: {}", res.toString());
+    try {
+      log.trace("Court id: {}", courtId);
+      InfoCollector collector = new FailFastCollector();
+      Result<FilingInformation, FilingError> res =
+          converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
+      if (res.isErr()) {
+        log.error("Error when calculating filing fees: {}", res.toString());
+        return Response.status(400).entity(collector.jsonSummary()).build();
+      }
+      FilingInformation info = res.unwrapOrElseThrow();
+      info.setCourtLocation(courtId);
+      Result<Response, FilingError> fees = filer.getFilingFees(info, tylerUser.get().creds());
+      return fees.match(err -> Response.status(400).entity(err.toJson()).build(), respon -> respon);
+    } finally {
       parser.close();
-      return Response.status(400).entity(collector.jsonSummary()).build();
     }
-    FilingInformation info = res.unwrapOrElseThrow();
-    info.setCourtLocation(courtId);
-    Result<Response, FilingError> fees = filer.getFilingFees(info, tylerUser.get().creds());
-    parser.close();
-    return fees.match(err -> Response.status(400).entity(err.toJson()).build(), respon -> respon);
   }
 
   @GET
@@ -303,18 +307,20 @@ public class FilingReviewService {
       return maybeParser.unwrapErrOrElseThrow();
     }
     var parser = maybeParser.unwrapOrElseThrow();
-    InfoCollector collector = new FailFastCollector();
-    Result<FilingInformation, FilingError> res =
-        converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
-    if (res.isErr()) {
+    try {
+      InfoCollector collector = new FailFastCollector();
+      Result<FilingInformation, FilingError> res =
+          converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
+      if (res.isErr()) {
+        return Response.status(400).entity(collector.jsonSummary()).build();
+      }
+      FilingInformation info = res.unwrapOrElseThrow();
+      info.setCourtLocation(courtId);
+      Result<Response, FilingError> fees = filer.getServiceTypes(info, tylerUser.get().creds());
+      return fees.match(err -> Response.status(400).entity(err.toJson()).build(), respon -> respon);
+    } finally {
       parser.close();
-      return Response.status(400).entity(collector.jsonSummary()).build();
     }
-    FilingInformation info = res.unwrapOrElseThrow();
-    info.setCourtLocation(courtId);
-    Result<Response, FilingError> fees = filer.getServiceTypes(info, tylerUser.get().creds());
-    parser.close();
-    return fees.match(err -> Response.status(400).entity(err.toJson()).build(), respon -> respon);
   }
 
   @GET
@@ -491,25 +497,23 @@ public class FilingReviewService {
       return maybeParser.propagateErr();
     }
     var parser = maybeParser.unwrapOrElseThrow();
-    Result<FilingInformation, FilingError> maybeInfo =
-        converterMap.get(mediaType.toString()).extractInformation(allVars, parser);
-    if (maybeInfo.isErr()) {
+    try {
+      Result<FilingInformation, FilingError> maybeInfo =
+          converterMap.get(mediaType.toString()).extractInformation(allVars, parser);
+      if (maybeInfo.isErr()) {
+        return Result.err(
+            Response.status(400).entity(maybeInfo.unwrapErrOrElseThrow().toJson()).build());
+      }
+      FilingInformation info = maybeInfo.unwrapOrElseThrow();
+      info.setCourtLocation(courtId);
+      return Result.ok(info);
+    } finally {
       try {
         parser.close();
       } catch (Exception ex) {
         log.warn("Couldn't close parser", ex);
       }
-      return Result.err(
-          Response.status(400).entity(maybeInfo.unwrapErrOrElseThrow().toJson()).build());
     }
-    FilingInformation info = maybeInfo.unwrapOrElseThrow();
-    info.setCourtLocation(courtId);
-    try {
-      parser.close();
-    } catch (Exception ex) {
-      log.warn("Couldn't close parser", ex);
-    }
-    return Result.ok(info);
   }
 
   @GET
