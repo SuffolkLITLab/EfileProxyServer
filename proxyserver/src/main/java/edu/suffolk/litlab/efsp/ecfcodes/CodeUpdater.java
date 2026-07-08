@@ -4,22 +4,18 @@ import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseUtils.UnsupportedTableException;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
-import edu.suffolk.litlab.efsp.server.utils.HeaderSigner;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import jakarta.xml.bind.JAXBException;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,10 +25,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.zip.ZipInputStream;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +35,9 @@ import org.slf4j.MDC;
 /**
  * Updates the Tyler "Codes" for each court in a jurisdiction.
  *
- * <p>There are 3 main steps to download a code for a Tyler court: 1. calling `FilingReview::getPolicy` for a court to get the URLs that the codes are available at. - this
- * URL can change, but tbh doesn't change often. It takes approximately 1 for a call to getPolicy to
+ * <p>There are 3 main steps to download a code for a Tyler court: 1. calling
+ * `FilingReview::getPolicy` for a court to get the URLs that the codes are available at. - this URL
+ * can change, but tbh doesn't change often. It takes approximately 1 for a call to getPolicy to
  * complete. 2. downloading the codes, which are zip files available at the above URL. - You need
  * the court itself, the table that you are downloading. Currently, we take the input stream and
  * divert it directly to the XMLStream reader, so we don't need to write out to a file. 3. updating
@@ -58,38 +53,7 @@ import org.slf4j.MDC;
 public class CodeUpdater {
   private static final Logger log = LoggerFactory.getLogger(CodeUpdater.class);
 
-  /**
-   * The path to the keystore file, containing the x509 cert used to sign headers to download zips.
-   */
-  private final String pathToKeystore;
-
-  private final String x509Password;
-
-  public CodeUpdater(String pathToKeystore, String x509Password) {
-    this.pathToKeystore = pathToKeystore;
-    this.x509Password = x509Password;
-  }
-
-  /**
-   * Either downloads the codes file from Tyler, or opens an already downloaded local zip file.
-   *
-   * <p>Code for HttpConnection: https://stackoverflow.com/a/1485730/11416267
-   *
-   * @return InputStream
-   * @throws IOException
-   */
-  public static InputStream getCodesZip(String toRead, String authHeader)
-      throws IOException, URISyntaxException {
-    if (toRead.startsWith("http://") || toRead.startsWith("https://")) {
-      URL url = (new URI(toRead)).toURL();
-      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-      conn.setRequestMethod("GET");
-      conn.setRequestProperty("tyl-efm-api", authHeader);
-      return conn.getInputStream();
-    } else {
-      return new FileInputStream(toRead);
-    }
-  }
+  public CodeUpdater() {}
 
   private Duration downloadDuration = Duration.ZERO;
   private Duration updateDuration = Duration.ZERO;
@@ -103,21 +67,16 @@ public class CodeUpdater {
    * @throws URISyntaxException
    */
   private boolean downloadAndProcessZip(
-      Supplier<InputStream> urlStreamMaker, Function<InputStream, Boolean> process)
+      CodeUrlGetter urlGetter, String url, Function<InputStream, Boolean> process)
       throws URISyntaxException {
-      //String toRead, String signedTime, 
     Instant startTable = Instant.now();
-    try (InputStream urlStream = urlStreamMaker.get()) { //getCodesZip(toRead, signedTime)) {
+    try (InputStream urlStream = urlGetter.get(url)) {
       // Write out the zip file
       downloadDuration = downloadDuration.plus(Duration.between(startTable, Instant.now()));
 
-      ZipInputStream zip = new ZipInputStream(urlStream);
-      zip.getNextEntry();
-
       Instant updateTableLoc = Instant.now();
-      boolean success = process.apply(zip);
+      boolean success = process.apply(urlStream);
       updateDuration = updateDuration.plus(Duration.between(updateTableLoc, Instant.now()));
-      zip.close();
       return success;
     } catch (IOException ex) {
       // Some system codes (everything but "country", "state", "filingstatus", "datafieldconfig",
@@ -127,11 +86,12 @@ public class CodeUpdater {
     }
   }
 
-  private boolean downloadSystemTables(Map<String, Supplier<InputStream>> codelistUrls, CodeDatabaseAPI cd, HeaderSigner signer)
+  private boolean downloadSystemTables(
+      Map<String, String> codelistUrls, CodeDatabaseAPI cd, CodeUrlGetter urlGetter)
       throws SQLException, IOException, JAXBException, URISyntaxException {
     MDC.put(MDCWrappers.SESSION_ID, "system");
 
-    for (String tableName: codelistUrls.keySet()) {
+    for (String tableName : codelistUrls.keySet()) {
       MDC.put(MDCWrappers.REQUEST_ID, tableName);
       cd.createTableIfAbsent(tableName);
     }
@@ -145,8 +105,8 @@ public class CodeUpdater {
 
     Savepoint sp = cd.setSavepoint("systemTables");
 
-    Optional<String> signedTime = signer.signedCurrentTime();
-    if (signedTime.isEmpty()) {
+    boolean refreshed = urlGetter.refresh("");
+    if (!refreshed) {
       log.error("Couldn't sign the current time: rolling back");
       cd.rollback(sp);
       return false;
@@ -156,7 +116,6 @@ public class CodeUpdater {
       // Let SQL exceptions through here; table names are hard coded, so if they break
       // we need to know.
       var tableName = tableAndUrl.getKey();
-      var urlGetter = tableAndUrl.getValue();
       cd.deleteFromTable(tableName);
       final Function<InputStream, Boolean> process =
           (is) -> {
@@ -170,10 +129,9 @@ public class CodeUpdater {
               return false;
             }
           };
-      boolean updateSuccess =
-          downloadAndProcessZip(urlGetter, signedTime.get(), process);
+      boolean success = downloadAndProcessZip(urlGetter, tableAndUrl.getValue(), process);
       MDC.remove(MDCWrappers.REQUEST_ID);
-      if (!updateSuccess) {
+      if (!success) {
         cd.rollback(sp);
         return false;
       }
@@ -203,7 +161,7 @@ public class CodeUpdater {
    * @return a map of the actually downloaded codes
    */
   private static Map<String, DownloadedCodes> streamDownload(
-      String authHeader,
+      CodeUrlGetter urlGetter,
       String location,
       Stream<CodeToDownload> courtCodeList,
       Optional<List<String>> tables) {
@@ -212,11 +170,11 @@ public class CodeUpdater {
         toDownload -> {
           if (tables.isEmpty() || tables.get().contains(toDownload.tableName)) {
             try {
-              InputStream urlStream = getCodesZip(toDownload.url, authHeader);
-              ZipInputStream zip = new ZipInputStream(urlStream);
-              zip.getNextEntry();
+              log.info("Getting URL for: {}", toDownload);
+              InputStream urlStream = urlGetter.get(toDownload.url);
               codeLists.put(
-                  toDownload.tableName, new DownloadedCodes(toDownload.tableName, location, zip));
+                  toDownload.tableName,
+                  new DownloadedCodes(toDownload.tableName, location, urlStream));
             } catch (IOException | URISyntaxException e) {
               log.error("Error when downloading XMLs", e);
             }
@@ -226,19 +184,19 @@ public class CodeUpdater {
   }
 
   private static Map<String, List<CourtCodelistInfo>> streamPolicies(
-      Stream<String> locations, Jurisdiction jurisdiction, Function<String, List<CourtCodelistInfo>> courtCodeGetter) {
+      Stream<String> locations,
+      Jurisdiction jurisdiction,
+      Function<String, List<CourtCodelistInfo>> courtCodeGetter) {
     var policies = new ConcurrentHashMap<String, List<CourtCodelistInfo>>();
     locations.forEach(
-        location -> { 
+        location -> {
           policies.put(location, courtCodeGetter.apply(location));
         });
     return policies;
   }
 
-
   // An agnostic type for CourtCodelistType
   public record CourtCodelistInfo(String ecfElement, String uri, LocalDate effectiveDate) {}
-  
 
   /**
    * @param tables If empty, all versions will be downloaded
@@ -247,7 +205,7 @@ public class CodeUpdater {
       String location,
       Optional<List<String>> tables,
       CodeDatabaseAPI cd,
-      HeaderSigner signer,
+      CodeUrlGetter urlGetter,
       List<CourtCodelistInfo> policyResp)
       throws JAXBException, IOException, SQLException {
     MDC.put(MDCWrappers.SESSION_ID, location);
@@ -272,14 +230,14 @@ public class CodeUpdater {
               .filter(tableName -> urlMap.containsKey(tableName))
               .map(tableName -> new CodeToDownload(tableName, urlMap.get(tableName)));
     }
-    Optional<String> signedTime = signer.signedCurrentTime();
-    if (signedTime.isEmpty()) {
+    boolean refreshed = urlGetter.refresh(location);
+    if (!refreshed) {
       log.error("Couldn't get signed time to download codes, skipping all");
       MDC.remove(MDCWrappers.SESSION_ID);
       return false;
     }
     Map<String, DownloadedCodes> downloaded =
-        streamDownload(signedTime.get(), location, toDownload.parallel(), tables);
+        streamDownload(urlGetter, location, toDownload.parallel(), tables);
     var downloadInc = Duration.between(downloadStart, Instant.now());
     downloadDuration = downloadDuration.plus(downloadInc);
     log.info(
@@ -350,11 +308,14 @@ public class CodeUpdater {
    *
    * @throws URISyntaxException
    */
-  public boolean updateAll(Map<String, String> systemUrls, Function<String, List<CourtCodelistInfo>> codeInfoGetter, CodeUrlGetter urlGetter, CodeDatabaseAPI cd)
+  public boolean updateAll(
+      Map<String, String> systemUrls,
+      Function<String, List<CourtCodelistInfo>> codeInfoGetter,
+      CodeUrlGetter urlGetter,
+      CodeDatabaseAPI cd)
       throws SQLException, IOException, JAXBException, URISyntaxException {
     cd.setAutoCommit(false);
-    HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
-    if (!downloadSystemTables(systemUrls, cd, signer)) {
+    if (!downloadSystemTables(systemUrls, cd, urlGetter)) {
       log.warn(
           "System tables didn't update, but we needed them "
               + " to actually figure out new versions");
@@ -401,7 +362,7 @@ public class CodeUpdater {
       final String courtLocation = policy.getKey();
       final List<String> tables = versionsToUpdate.get(courtLocation);
       if (!downloadCourtTables(
-          courtLocation, Optional.of(tables), cd, signer, policy.getValue())) {
+          courtLocation, Optional.of(tables), cd, urlGetter, policy.getValue())) {
         log.warn("Failed updating court {}'s tables {}", courtLocation, tables);
         cd.rollback(sp);
         return false;
@@ -418,18 +379,25 @@ public class CodeUpdater {
    *
    * @throws URISyntaxException
    */
-  public boolean replaceAll(Map<String, String> systemUrls, Function<String, List<CourtCodelistInfo>> codeInfoGetter, CodeDatabaseAPI cd)
+  public boolean replaceAll(
+      Map<String, String> systemUrls,
+      Function<String, List<CourtCodelistInfo>> codeInfoGetter,
+      CodeUrlGetter urlGetter,
+      CodeDatabaseAPI cd)
       throws SQLException, IOException, JAXBException, URISyntaxException {
-    return replaceSome(systemUrls, codeInfoGetter, cd, List.of());
+    return replaceSome(systemUrls, codeInfoGetter, urlGetter, cd, List.of());
   }
 
   public boolean replaceSome(
-      Map<String, String> systemUrls, Function<String, List<CourtCodelistInfo>> codeInfoGetter, CodeDatabaseAPI cd, List<String> locs)
+      Map<String, String> systemUrls,
+      Function<String, List<CourtCodelistInfo>> codeInfoGetter,
+      CodeUrlGetter urlGetter,
+      CodeDatabaseAPI cd,
+      List<String> locs)
       throws SQLException, IOException, JAXBException, URISyntaxException {
     cd.setAutoCommit(false);
-    HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
     log.info("Downloading system tables for {}", cd.getJurisdiction());
-    boolean success = downloadSystemTables(systemUrls, cd, signer);
+    boolean success = downloadSystemTables(systemUrls, cd, urlGetter);
 
     var tablesToDeleteDomain = cd.xmlElemToTableName().values();
     for (String table : tablesToDeleteDomain) {
@@ -444,8 +412,11 @@ public class CodeUpdater {
     if (locs.isEmpty()) {
       locs = cd.getAllLocations();
     }
-    // Remove the "0" or top level court, which doesn't usually have individual court tables
-    locs.remove("0");
+    if (locs.contains("0")) {
+      // Remove the "0" or top level court, which doesn't usually have individual court tables
+      locs = new ArrayList<>(locs);
+      locs.remove("0");
+    }
     Instant startPolicy = Instant.now();
     var policies = streamPolicies(locs.parallelStream(), cd.getJurisdiction(), codeInfoGetter);
     soapDuration = soapDuration.plus(Duration.between(startPolicy, Instant.now()));
@@ -453,8 +424,7 @@ public class CodeUpdater {
     for (var policy : policies.entrySet()) {
       final String location = policy.getKey();
       log.info("Downloading tables for {}", location);
-      success &=
-          downloadCourtTables(location, Optional.empty(), cd, signer, policy.getValue());
+      success &= downloadCourtTables(location, Optional.empty(), cd, urlGetter, policy.getValue());
     }
     log.info(
         "Downloads took: {}, updates took: {}, soaps took: {}",
@@ -472,7 +442,9 @@ public class CodeUpdater {
    *
    * @throws URISyntaxException
    */
-  public boolean downloadIndiv(List<String> args, BiFunction<String, String, String> makeUrl) throws URISyntaxException {
+  public boolean downloadIndiv(
+      List<String> args, BiFunction<String, String, String> makeUrl, CodeUrlGetter urlGetter)
+      throws URISyntaxException {
     if (args.size() < 3) {
       log.error(
           "Need to pass in args: downloadIndiv <jurisdiction> <table> <location or blank for"
@@ -482,10 +454,9 @@ public class CodeUpdater {
 
     String table = args.get(2);
     String location = (args.size() == 4) ? args.get(3) : "";
-    HeaderSigner hs = new HeaderSigner(this.pathToKeystore, this.x509Password);
     return downloadAndProcessZip(
+        urlGetter,
         makeUrl.apply(table, location),
-        hs.signedCurrentTime().get(),
         (in) -> {
           String newFile = location.replace(':', '_') + "_" + table + "_test.xml";
           try (FileOutputStream fw = new FileOutputStream(newFile)) {

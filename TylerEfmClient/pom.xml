@@ -13,8 +13,8 @@
 
     <properties>
         <cxf.version>4.1.6</cxf.version>
-  <!-- automatically run annotation processors within the incremental compilation -->
-  <m2e.apt.activation>jdt_apt</m2e.apt.activation>
+        <!-- automatically run annotation processors within the incremental compilation -->
+        <m2e.apt.activation>jdt_apt</m2e.apt.activation>
     </properties>
 
     <dependencies>

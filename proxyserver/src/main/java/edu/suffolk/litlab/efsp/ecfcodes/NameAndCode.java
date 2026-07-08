@@ -1,15 +1,6 @@
 package edu.suffolk.litlab.efsp.ecfcodes;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-public class NameAndCode implements Comparable<NameAndCode> {
-  String name;
-  String code;
-
-  public NameAndCode(String name, String code) {
-    this.name = name;
-    this.code = code;
-  }
+public record NameAndCode(String name, String code) implements Comparable<NameAndCode> {
 
   public String getName() {
     return name;
@@ -17,23 +8,6 @@ public class NameAndCode implements Comparable<NameAndCode> {
 
   public String getCode() {
     return code;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (obj instanceof NameAndCode otherCode) {
-      return name.equals(otherCode.name) && code.equals(otherCode.code);
-    } else {
-      return false;
-    }
-  }
-
-  @Override
-  public int hashCode() {
-    return (new HashCodeBuilder()).append(name).append(code).build();
   }
 
   @Override

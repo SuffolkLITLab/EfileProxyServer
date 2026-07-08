@@ -23,7 +23,7 @@ public class PolicyCacher {
       return policyInMemoryCache.get(courtId);
     } else {
       CourtPolicyQueryMessageType policyQuery =
-          Ecf4Helper.prep(new CourtPolicyQueryMessageType(), courtId);
+          TylerEcf4Helper.prep(new CourtPolicyQueryMessageType(), courtId);
       CourtPolicyResponseMessageType p = filingPort.getPolicy(policyQuery);
       policyInMemoryCache.put(courtId, p);
       return p;

@@ -21,19 +21,13 @@ public class SoapClientChooser {
 
   private static final Logger log = LoggerFactory.getLogger(SoapClientChooser.class);
 
-  private static final String REVIEW_SUFFIX = "-ECF-4.0-FilingReviewMDEService.wsdl";
-  private static final String RECORD_SUFFIX = "-ECF-4.0-CourtRecordMDEService.wsdl";
+  private static final String REVIEW_SUFFIX = "ECF-4.0-FilingReviewMDEService.wsdl";
+  private static final String RECORD_SUFFIX = "ECF-4.0-CourtRecordMDEService.wsdl";
 
-  private static Optional<Boolean> shouldLogRequests;
+  private static Optional<Boolean> shouldLogRequests = Optional.empty();
 
   private static URL getRes(TrueFilingDomain domain, String suffix) {
-    String wsdlPath =
-        "wsdl/WebServices"
-            + "/"
-            + domain.env().getName()
-            + "/"
-            + domain.jurisdiction().getName()
-            + suffix;
+    String wsdlPath = "wsdl/WebServices" + "/" + domain.env().getName() + "/" + suffix;
     URL url = SoapClientChooser.class.getClassLoader().getResource(wsdlPath);
     if (url == null) {
       log.error("Can not initialize the default wsdl from pclass path: {}", wsdlPath);
@@ -80,7 +74,7 @@ public class SoapClientChooser {
     Map<String, Object> ctx = bp.getRequestContext();
     var integratorId = StdLib.GetEnv("TRUEFILING_INTEGRATOR_ID");
     if (integratorId.isPresent()) {
-      ctx.put(Message.PROTOCOL_HEADERS, Map.of("IntegratorId", integratorId.get()));
+      ctx.put(Message.PROTOCOL_HEADERS, Map.of("IntegratorId", List.of(integratorId.get())));
     } else {
       log.error("True filing integrator id not an environment var, calls will fail");
       ctx.put(Message.PROTOCOL_HEADERS, Map.of("IntegratorId", List.of()));

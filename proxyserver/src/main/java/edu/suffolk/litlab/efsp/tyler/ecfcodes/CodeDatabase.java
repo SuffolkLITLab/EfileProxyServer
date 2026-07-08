@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,10 +109,9 @@ public class CodeDatabase extends CodeDatabaseAPI {
 
   @Override
   public Set<String> systemTables() {
-	  return systemwideTables;
+    return systemwideTables;
   }
 
-  
   public static CodeDatabase fromDS(Jurisdiction jurisdiction, DataSource ds) {
     try {
       CodeDatabase cd = new CodeDatabase(jurisdiction, ds.getConnection());

@@ -20,11 +20,12 @@ import ecf4.latest.tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMe
 import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.db.model.Transaction;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
-import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
+import edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.services.api.UpdateMessageStatus;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
+import edu.suffolk.litlab.efsp.tyler.Ecf4Helper;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CourtLocationInfo;
 import java.sql.SQLException;
@@ -250,7 +251,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     MDC.put(MDCWrappers.OPERATION, "notifyFilingReviewComplete");
 
     MessageReceiptMessageType reply = receiptFac.createMessageReceiptMessageType();
-    Ecf4Helper.setupReplys(reply);
+    TylerEcf4Helper.setupReplys(reply);
     if (msg == null) {
       log.error("Tyler sent a null message! Why??");
       return error(reply, "705", "NotifyFilingReviewComplete message not found");
@@ -382,7 +383,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     log.info("Full NotifyEvent msg {}", eventCallbackMessage);
     // TODO(brycew): not going to do anything with for now
     MessageReceiptMessageType reply = receiptFac.createMessageReceiptMessageType();
-    Ecf4Helper.setupReplys(reply);
+    TylerEcf4Helper.setupReplys(reply);
     return ok(reply);
   }
 
@@ -395,7 +396,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
                 serviceCallbackMessage, ServiceCallbackMessageType.class));
     // TODO(brycew): not going to do anything with for now
     MessageReceiptMessageType reply = receiptFac.createMessageReceiptMessageType();
-    Ecf4Helper.setupReplys(reply);
+    TylerEcf4Helper.setupReplys(reply);
     return ok(reply);
   }
 

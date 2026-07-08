@@ -114,6 +114,7 @@
                             <goals>
                                 <goal>docs</goal>
                             </goals>
+                            <phase>site</phase>
                             <configuration>
                                 <configFile>enunciate.xml</configFile>
                                 <docsDir>${project.build.directory}/enunciate-docs</docsDir>

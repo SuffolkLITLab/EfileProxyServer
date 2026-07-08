@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<gc:CodeList xmlns:ct="http://release.niem.gov/niem/conformanceTargets/3.0/" xmlns:gc="http://docs.oasis-open.org/codelist/ns/genericode/1.0/" xmlns:gca="http://example.org/namespace/genericode-appinfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docs.oasis-open.org/codelist/ns/genericode/1.0/ https://docs.oasis-open.org/codelist/cs-genericode-1.0/xsd/genericode.xsd">
+	<Identification>
+		<ShortName>CaseCategoryCode</ShortName>
+		<LongName>CaseCategoryCode</LongName>
+		<Version>1.0</Version>
+		<CanonicalUri/>
+		<CanonicalVersionUri/>
+		<Agency>
+			<LongName>ImageSoft TrueFiling EFM</LongName>
+			<Identifier/>
+		</Agency>
+	</Identification>
+	<ColumnSet>
+		<Column Id="code" Use="optional">
+			<ShortName>Code</ShortName>
+			<Data Type="normalizedString" Lang="en"/>
+		</Column>
+		<Column Id="description" Use="optional">
+			<ShortName>Description</ShortName>
+			<Data Type="normalizedString" Lang="en"/>
+		</Column>
+		<Column Id="ecfcasetype" Use="optional">
+			<ShortName>ECFCaseType</ShortName>
+			<Data Type="normalizedString" Lang="en"/>
+		</Column>
+		<Key Id="codeKey">
+			<ShortName>CodeKey</ShortName>
+			<ColumnRef Ref="code"/>
+		</Key>
+	</ColumnSet>
+	<SimpleCodeList>
+		<Row>
+			<Value ColumnRef="code">
+				<SimpleValue>appellate</SimpleValue>
+			</Value>
+			<Value ColumnRef="description">
+				<SimpleValue>Appellate</SimpleValue>
+			</Value>
+			<Value ColumnRef="ecfcasetype">
+				<SimpleValue>AppellateCase</SimpleValue>
+			</Value>
+		</Row>
+		<Row>
+			<Value ColumnRef="code">
+				<SimpleValue>bankruptcy</SimpleValue>
+			</Value>
+			<Value ColumnRef="description">
+				<SimpleValue>Bankruptcy</SimpleValue>
+			</Value>
+			<Value ColumnRef="ecfcasetype">
+				<SimpleValue>BankruptcyCase</SimpleValue>
+			</Value>
+		</Row>
+		<Row>
+			<Value ColumnRef="code">
+				<SimpleValue>citation</SimpleValue>
+			</Value>
+			<Value ColumnRef="description">
+				<SimpleValue>Citation</SimpleValue>
+			</Value>
+			<Value ColumnRef="ecfcasetype">
+				<SimpleValue>CitationCase</SimpleValue>
+			</Value>
+		</Row>
+		<Row>
+			<Value ColumnRef="code">
+				<SimpleValue>civil</SimpleValue>
+			</Value>
+			<Value ColumnRef="description">
+				<SimpleValue>Civil</SimpleValue>
+			</Value>
+			<Value ColumnRef="ecfcasetype">
+				<SimpleValue>CivilCase</SimpleValue>
+			</Value>
+		</Row>
+		<Row>
+			<Value ColumnRef="code">
+				<SimpleValue>criminal</SimpleValue>
+			</Value>
+			<Value ColumnRef="description">
+				<SimpleValue>Criminal</SimpleValue>
+			</Value>
+			<Value ColumnRef="ecfcasetype">
+				<SimpleValue>CriminalCase</SimpleValue>
+			</Value>
+		</Row>
+		<Row>
+			<Value ColumnRef="code">
+				<SimpleValue>domestic</SimpleValue>
+			</Value>
+			<Value ColumnRef="description">
+				<SimpleValue>Domestic</SimpleValue>
+			</Value>
+			<Value ColumnRef="ecfcasetype">
+				<SimpleValue>DomesticCase</SimpleValue>
+			</Value>
+		</Row>
+		<Row>
+			<Value ColumnRef="code">
+				<SimpleValue>juvenile</SimpleValue>
+			</Value>
+			<Value ColumnRef="description">
+				<SimpleValue>Juvenile</SimpleValue>
+			</Value>
+			<Value ColumnRef="ecfcasetype">
+				<SimpleValue>JuvenileCase</SimpleValue>
+			</Value>
+		</Row>
+	</SimpleCodeList>
+</gc:CodeList>

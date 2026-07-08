@@ -7,7 +7,10 @@
      Source: http://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata01/csprd01/xsd/
      -->
 
-<!DOCTYPE schema
+<!-- 
+     Commenting out DOCTYPE schema because it needs to download shit from HTTP
+     
+!DOCTYPE schema
   PUBLIC "-//W3C//DTD XMLSchema 200102//EN" "http://www.w3.org/2001/XMLSchema.dtd"
  [
    <!ATTLIST schema 
@@ -15,7 +18,7 @@
    <!ENTITY dsig 'http://www.w3.org/2000/09/xmldsig#'>
    <!ENTITY % p ''>
    <!ENTITY % s ''>
-  ]>
+  ]-->
 
 <!-- Schema for XML Signatures
     http://www.w3.org/2000/09/xmldsig#

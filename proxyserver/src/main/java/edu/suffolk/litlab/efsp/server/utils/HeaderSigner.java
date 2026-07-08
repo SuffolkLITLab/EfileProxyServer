@@ -139,9 +139,10 @@ public class HeaderSigner {
 
   public boolean refresh() {
     var maybeTime = signTime();
-    maybeTime.ifPresent(time -> {
-      this.signedTime = time;
-    });
+    maybeTime.ifPresent(
+        time -> {
+          this.signedTime = time;
+        });
     return maybeTime.isPresent();
   }
 

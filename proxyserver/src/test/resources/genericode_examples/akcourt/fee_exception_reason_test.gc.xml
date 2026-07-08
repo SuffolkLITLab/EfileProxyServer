@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gc:CodeList xmlns:ct="http://release.niem.gov/niem/conformanceTargets/3.0/" xmlns:gc="http://docs.oasis-open.org/codelist/ns/genericode/1.0/" xmlns:gca="http://example.org/namespace/genericode-appinfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docs.oasis-open.org/codelist/ns/genericode/1.0/ https://docs.oasis-open.org/codelist/cs-genericode-1.0/xsd/genericode.xsd">
+	<Identification xmlns="">
+		<ShortName>FeeExceptionReasonCode</ShortName>
+		<LongName>FeeExceptionReasonCode</LongName>
+		<Version>1.0</Version>
+		<CanonicalUri/>
+		<CanonicalVersionUri/>
+		<Agency>
+			<LongName>ImageSoft TrueFiling EFM</LongName>
+			<Identifier />
+		</Agency>
+	</Identification>
+	<ColumnSet xmlns="">
+		<Column Id="id" Use="required">
+			<ShortName>Id</ShortName>
+			<Data Type="normalizedString" Lang="en" />
+		</Column>
+		<Column Id="description" Use="optional">
+			<ShortName>Description</ShortName>
+			<Data Type="normalizedString" Lang="en" />
+		</Column>
+		<Column Id="formlink" Use="optional">
+			<ShortName>Form Link</ShortName>
+			<Data Type="normalizedString" Lang="en" />
+		</Column>
+		<Key Id="codeKey">
+			<ShortName>CodeKey</ShortName>
+			<ColumnRef Ref="description" />
+		</Key>
+	</ColumnSet>
+	<SimpleCodeList xmlns="">
+	</SimpleCodeList>
+</gc:CodeList>
