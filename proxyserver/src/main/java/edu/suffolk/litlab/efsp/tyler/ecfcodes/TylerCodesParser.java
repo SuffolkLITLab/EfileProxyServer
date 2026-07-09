@@ -754,12 +754,17 @@ public class TylerCodesParser implements CodesParser {
                       return number;
                     }
                     // HACK(brycew): Massachusetts doesn't like dashes in the number, just wants
-                    // numbers
+                    // numbers, but also requires a space between the country code and the rest of it?
                     if (number.contains("+")) {
                       // there should be a space between the country code and the rest of the
                       // number, but no where else??
                       // TODO(brycew): really just needs to be checked in docassemble itself
-                      return number.replace("-", "").replace("(", "").replace(")", "").strip();
+                      var tmp_number = number.replace("-", "").replace("(", "").replace(")", "").strip();
+                      if (tmp_number.startsWith("+1") || tmp_number.startsWith("+0")) {
+                        tmp_number = tmp_number.replace("+1", "+1 ");
+                        tmp_number = tmp_number.replace("+0", "+0 ");
+                      }
+                      return tmp_number;
                     } else {
                       return number
                           .replace("-", "")
