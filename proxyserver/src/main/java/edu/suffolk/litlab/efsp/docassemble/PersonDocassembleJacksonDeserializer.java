@@ -74,7 +74,7 @@ public class PersonDocassembleJacksonDeserializer {
         }
       }
     }
-    var emailRes = parser.vetEmail(getStringMember(node, "email"));
+    var emailRes = parser.vetEmail(getNonEmptyStringMember(node, "email"));
     Optional<String> email;
     if (emailRes.isErr()) {
       collector.addTextError(emailRes.expectErr(""), collector.varBuilder().name("email"));

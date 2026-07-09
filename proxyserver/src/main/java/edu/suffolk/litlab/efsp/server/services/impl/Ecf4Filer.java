@@ -248,7 +248,6 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       }
       var parser = maybeParser.get();
       try {
-
         boolean isInitialFiling =
             info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
         boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty();
