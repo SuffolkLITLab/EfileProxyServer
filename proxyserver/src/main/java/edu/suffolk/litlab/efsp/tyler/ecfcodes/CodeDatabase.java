@@ -46,6 +46,66 @@ public class CodeDatabase extends CodeDatabaseAPI {
     this.jurisdiction = jurisdiction;
   }
 
+  // TODO(brycew-later): there's little more info on these mappings and how they combine.
+  // Is this actually an XPath? Should figure it out
+  private static final Map<String, String> ecf4Map =
+      Map.ofEntries(
+          Map.entry("cext:BondTypeText", "bond"),
+          Map.entry("cext:Charge/cext:ChargeStatute/j:StatuteLevelText", "degree"),
+          Map.entry("cext:Charge\\cext:ChargePhaseText", "chargephase"),
+          Map.entry("cext:GeneralOffenseText", "generaloffense"),
+          Map.entry("cext:StatuteTypeText", "statutetype"),
+          Map.entry(
+              "cext:Charge/cext:ChargeStatute/j:StatuteCodeIdentification/nc:IdentificationID",
+              "statute"),
+          Map.entry("ecf:CaseParticipantRoleCode", "partytype"),
+          Map.entry("ecf:FilingStatusCode", "filingstatus"),
+          Map.entry("ecf:ServiceRecipientID/nc:IdentificationSourceText", "servicetype"),
+          Map.entry(
+              "ecf:PersonDriverLicense/nc:DriverLicenseIdentification/nc:IdentificationCategoryText",
+              "driverlicensetype"),
+          Map.entry("j:/ArrestCharge/j:ArrestLocation/nc:LocationName", "arrestlocation"),
+          Map.entry("j:RegisterActionDescriptionText", "filing"),
+          Map.entry(
+              "j:ArrestOfficial/j:EnforcementOfficialUnit/nc:OrganizationIdentification/nc:IdentificationID",
+              "lawenforcementunit"),
+          Map.entry(
+              "j:Citation\\nc:ActivityIdentification\\tyler:JurisdictionCode",
+              "citationjurisdiction"),
+          Map.entry("nc:CaseCategoryText", "casecategory"),
+          Map.entry("nc:LocationCountryName", "country"),
+          Map.entry("nc:BinaryFormatStandardName", "documenttype"),
+          Map.entry("nc:BinaryCategoryText", "filingcomponent"),
+          Map.entry("nc:LocationStateName", "state"),
+          Map.entry("nc:PersonNameSuffixText", "namesuffix"),
+          Map.entry("nc:BinaryLocationURI", "filetype"),
+          Map.entry("nc:DocumentIdentification/nc:IdentificationSourceText", "crossreference"),
+          Map.entry("nc:PrimaryLanguage\\nc:LanguageCode", "language"),
+          Map.entry("nc:PersonPhysicalFeature\\nc:PhysicalFeatureCategoryCode", "physicalfeature"),
+          Map.entry("nc:PersonHairColorCode", "haircolor"),
+          Map.entry("nc:PersonEyeColorCode", "eyecolor"),
+          Map.entry("nc:PersonEthnicityText", "ethnicity"),
+          Map.entry("nc:PersonRaceText", "race"),
+          Map.entry("nc:VehicleMakeCode", "vehiclemake"),
+          Map.entry("nc:VehicleColorPrimaryCode", "vehiclecolor"),
+          Map.entry("tyler:CaseTypeText", "casetype"),
+          Map.entry("tyler:DamageAmountCode", "damageamount"),
+          Map.entry("tyler:DisclaimerRequirementCode", "disclaimerrequirement"),
+          Map.entry("tyler:FilerTypeText", "filertype"),
+          Map.entry("tyler:CaseSubTypeText", "casesubtype"),
+          Map.entry("tyler:VehicleTypeCode", "vehicletype"),
+          Map.entry("tyler:MotionTypeCode", "motiontype"),
+          Map.entry("tyler:AnswerCode", "answer"),
+          Map.entry("tyler:QuestionCode", "question"),
+          Map.entry("tyler:RemedyCode", "procedureremedy"),
+          Map.entry("tyler:DataFieldConfigCode", "datafieldconfig"),
+          Map.entry("tyler:DocumentOptionalService", "optionalservices"));
+
+  @Override
+  public Map<String, String> xmlElemToTableName() {
+    return ecf4Map;
+  }
+
   public static CodeDatabase fromDS(Jurisdiction jurisdiction, DataSource ds) {
     try {
       CodeDatabase cd = new CodeDatabase(jurisdiction, ds.getConnection());

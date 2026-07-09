@@ -37,6 +37,11 @@ public abstract class CodeDatabaseAPI extends Database {
   public abstract Jurisdiction getJurisdiction();
 
   /**
+   * Maps the name of an ECF element to be substituted by a court-specific code list or extension.
+   */
+  public abstract Map<String, String> xmlElemToTableName();
+
+  /**
    * Gets all court location identifiers (CLI) stored in the database.
    *
    * @return a list of all valid CLIs for this jurisdiction

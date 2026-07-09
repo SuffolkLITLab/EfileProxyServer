@@ -13,7 +13,6 @@ import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeTableConstants;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeUpdater;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.ServiceCodeType;
@@ -62,7 +61,7 @@ public class CodeDatabaseTest {
 
   @Test
   public void allNamespacesMapToTables() {
-    for (String table : CodeUpdater.ecf4ElemToTableName.values()) {
+    for (String table : cd.xmlElemToTableName().values()) {
       if (!table.equalsIgnoreCase("optionalservices")) {
         assertNotEquals(
             CodeTableConstants.getTableColumns(table).size(), 0, "Expected " + table + " to exist");
