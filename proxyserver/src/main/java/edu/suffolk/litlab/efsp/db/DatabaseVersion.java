@@ -596,9 +596,11 @@ public class DatabaseVersion {
 
     try (Statement st = codeConn.createStatement()) {
       for (String tableName : tableNames) {
+        st.setQueryTimeout(300);
         st.executeUpdate(stripEnvSuffix.formatted(tableName));
       }
       for (String tableName : tableNames) {
+        st.setQueryTimeout(300);
         st.executeUpdate(
             "ALTER TABLE %s RENAME COLUMN domain TO jurisdiction".formatted(tableName));
       }
