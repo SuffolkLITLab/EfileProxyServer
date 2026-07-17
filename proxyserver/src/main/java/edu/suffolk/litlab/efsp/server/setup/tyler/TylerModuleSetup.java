@@ -241,6 +241,19 @@ public class TylerModuleSetup implements EfmModuleSetup {
         log.info("Scheduling immediate Tyler EFM code update job.");
         scheduler.scheduleJob(
             buildJob("job-immediate-" + jurisdiction.getName()), immediateTrigger);
+
+        // Runs after the refresh job's immediate trigger above, so there's
+        // something in the codes db for it to check by the time it fires.
+        Trigger immediateCheckTrigger =
+            TriggerBuilder.newTrigger()
+                .withIdentity(
+                    "check-trigger-immediate-" + jurisdiction.getName(), "codes-check-group")
+                .startNow()
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(40))
+                .build();
+        log.info("Scheduling immediate codes sanity check job.");
+        scheduler.scheduleJob(
+            buildCheckJob("check-job-immediate-" + jurisdiction.getName()), immediateCheckTrigger);
       }
     } catch (SchedulerException se) {
       log.error("Scheduler Exception: ", se);

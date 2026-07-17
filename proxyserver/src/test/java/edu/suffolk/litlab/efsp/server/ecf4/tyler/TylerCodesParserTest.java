@@ -470,6 +470,29 @@ public class TylerCodesParserTest {
     assertThat(resAgain).containsErr(new NoMatchingCode("333", List.of()));
   }
 
+  @Test
+  public void testCheckNeverRequiredFieldsNoneRequired() {
+    when(dataFields.getFieldRow("PartyNameSuffix"))
+        .thenReturn(
+            new DataFieldRow("1", "Suffix", true, false, "", "", "", "", "", "", false, "01"));
+    when(dataFields.getFieldRow("PartyMiddleName"))
+        .thenReturn(
+            new DataFieldRow("2", "Middle Name", true, false, "", "", "", "", "", "", false, "01"));
+    assertThat(((TylerCodesParser) parser).checkNeverRequiredFields()).isEmpty();
+  }
+
+  @Test
+  public void testCheckNeverRequiredFieldsSuffixRequired() {
+    when(dataFields.getFieldRow("PartyNameSuffix"))
+        .thenReturn(
+            new DataFieldRow("1", "Suffix", true, true, "", "", "", "", "", "", false, "01"));
+    when(dataFields.getFieldRow("PartyMiddleName"))
+        .thenReturn(
+            new DataFieldRow("2", "Middle Name", true, false, "", "", "", "", "", "", false, "01"));
+    assertThat(((TylerCodesParser) parser).checkNeverRequiredFields())
+        .containsExactly("PartyNameSuffix");
+  }
+
   DocumentTypeTableRow docType =
       new DocumentTypeTableRow("4444", null, filingCode.code, "false", null, null, null);
 
