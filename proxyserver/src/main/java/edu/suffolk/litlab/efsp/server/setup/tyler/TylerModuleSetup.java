@@ -10,6 +10,7 @@ import edu.suffolk.litlab.efsp.server.ecf4.PolicyCacher;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.services.AdminUserService;
 import edu.suffolk.litlab.efsp.server.services.CasesService;
+import edu.suffolk.litlab.efsp.server.utils.CodesSanityCheckJob;
 import edu.suffolk.litlab.efsp.server.services.CourtSchedulingService;
 import edu.suffolk.litlab.efsp.server.services.EcfCodesService;
 import edu.suffolk.litlab.efsp.server.services.FilingReviewService;
@@ -420,6 +421,17 @@ public class TylerModuleSetup implements EfmModuleSetup {
         .withIdentity(jobName, "codesdb-group")
         .usingJobData("TYLER_JURISDICTION", this.jurisdiction.getName())
         .usingJobData("X509_PASSWORD", this.x509Password)
+        .usingJobData("POSTGRES_URL", this.pgUrl)
+        .usingJobData("POSTGRES_DB", this.pgDb)
+        .usingJobData("POSTGRES_USERNAME", this.pgUser)
+        .usingJobData("POSTGRES_PASSWORD", this.pgPassword)
+        .build();
+  }
+
+  private JobDetail buildCheckJob(final String jobName) {
+    return JobBuilder.newJob(CodesSanityCheckJob.class)
+        .withIdentity(jobName, "codes-check-group")
+        .usingJobData("TYLER_JURISDICTION", this.jurisdiction.getName())
         .usingJobData("POSTGRES_URL", this.pgUrl)
         .usingJobData("POSTGRES_DB", this.pgDb)
         .usingJobData("POSTGRES_USERNAME", this.pgUser)
