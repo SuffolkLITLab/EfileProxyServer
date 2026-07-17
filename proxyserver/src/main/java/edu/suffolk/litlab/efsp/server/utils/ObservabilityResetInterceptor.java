@@ -19,10 +19,19 @@ public class ObservabilityResetInterceptor implements ContainerResponseFilter {
   @Override
   public void filter(ContainerRequestContext request, ContainerResponseContext response)
       throws IOException {
-    log.info(
-        "Sending back status of {} in response to {}",
-        response.getStatus(),
-        request.getUriInfo().getPath());
+    var path = "";
+    // Had issues where decoding a path would crash the whole response call.
+    try {
+      path = request.getUriInfo().getPath();
+    } catch (IllegalArgumentException | IllegalStateException ex) {
+      log.warn("No valid path to log?", ex);
+      try {
+        path = request.getUriInfo().getPath(false);
+      } catch (IllegalArgumentException | IllegalStateException ex2) {
+        path = "<dev note: could not get URI info>";
+      }
+    }
+    log.info("Sending back status of {} in response to {}", response.getStatus(), path);
     MDCWrappers.removeAllMDCs();
   }
 }
