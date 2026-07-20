@@ -3,13 +3,11 @@ package edu.suffolk.litlab.efsp.server.ecf4;
 import ecf4.latest.gov.niem.niem.fbi._2.SEXCodeSimpleType;
 import ecf4.latest.gov.niem.niem.fbi._2.SEXCodeType;
 import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeType;
-import ecf4.latest.gov.niem.niem.iso_639_3._2.LanguageCodeType;
 import ecf4.latest.gov.niem.niem.niem_core._2.AddressType;
 import ecf4.latest.gov.niem.niem.niem_core._2.ContactInformationType;
 import ecf4.latest.gov.niem.niem.niem_core._2.DateType;
 import ecf4.latest.gov.niem.niem.niem_core._2.FullTelephoneNumberType;
 import ecf4.latest.gov.niem.niem.niem_core._2.NonNegativeDecimalType;
-import ecf4.latest.gov.niem.niem.niem_core._2.PersonLanguageType;
 import ecf4.latest.gov.niem.niem.niem_core._2.PersonNameTextType;
 import ecf4.latest.gov.niem.niem.niem_core._2.PersonNameType;
 import ecf4.latest.gov.niem.niem.niem_core._2.ProperNameTextType;
@@ -157,6 +155,7 @@ public class EcfCourtSpecificSerializer {
                 pt.setPersonSex(niemObjFac.createPersonSexCode(sct));
               });
 
+      /*
       per.getLanguage()
           .ifPresent(
               lang -> {
@@ -168,6 +167,7 @@ public class EcfCourtSpecificSerializer {
                 plt.getLanguage().add(niemObjFac.createLanguageCode(lct));
                 pt.setPersonPrimaryLanguage(plt);
               });
+      */
 
       per.getBirthdate()
           .ifPresent(
