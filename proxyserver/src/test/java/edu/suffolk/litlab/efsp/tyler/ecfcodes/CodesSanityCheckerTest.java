@@ -63,7 +63,7 @@ public class CodesSanityCheckerTest {
     }
   }
 
-  // Illinois/adams doesn't have any KnownCodeLookups entries seeded (those are
+  // Illinois/adams doesn't have any code lookups entries seeded (those are
   // all MA's so far), so this mainly proves the whole pipeline runs
   // cleanly against a real Postgres schema without throwing.
   @Test

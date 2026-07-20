@@ -186,28 +186,15 @@ public class TylerCodesParser implements CodesParser {
             });
   }
 
-  private static final List<String> neverRequiredFields =
-      List.of("PartyNameSuffix", "PartyMiddleName");
-
-  public List<String> checkNeverRequiredFields() {
-    List<String> offendingFields = new ArrayList<>();
-    for (String fieldCode : neverRequiredFields) {
-      DataFieldRow row = allDataFields.getFieldRow(fieldCode);
-      if (row.isrequired) {
-        log.error(
-            "DEV WARNING: Court {}: {} shouldn't ever be required, but this court has it set that way",
-            this.court.code,
-            fieldCode);
-        offendingFields.add(fieldCode);
-      }
-    }
-    return offendingFields;
-  }
-
   public Result<String, CodeError> vetSuffix(Optional<String> maybeSuffix) {
     DataFieldRow suffixRow = allDataFields.getFieldRow("PartyNameSuffix");
     if (suffixRow.isvisible) {
       List<NameAndCode> suffixes = cd.getNameSuffixes(this.court.code);
+      if ((maybeSuffix.isEmpty() || maybeSuffix.get().isBlank()) && suffixRow.isrequired) {
+        log.error(
+            "DEV WARNING: Court {}: WHY would you ever require a suffix? There aren't empty suffix codes at all.",
+            this.court.code);
+      }
       String suffix = maybeSuffix.orElse("");
       Optional<NameAndCode> suffixMatch =
           suffixes.stream().filter(s -> s.getName().equalsIgnoreCase(suffix)).findFirst();

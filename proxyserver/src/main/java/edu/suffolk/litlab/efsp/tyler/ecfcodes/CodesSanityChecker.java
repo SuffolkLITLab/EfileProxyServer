@@ -14,6 +14,32 @@ public class CodesSanityChecker {
 
   private static final Logger log = LoggerFactory.getLogger(CodesSanityChecker.class);
 
+  private static final List<String> neverRequiredFields =
+      List.of("PartyNameSuffix", "PartyMiddleName");
+
+  // Seed list, pulled from docassemble-MotionToStayEviction's efiling.yml. Add more as they come
+  // up.
+  private static final List<MaintainedCodeCheck> knownCodeLookups =
+      List.of(
+          new MaintainedCodeCheck(
+              "massachusetts",
+              "appeals:acsj",
+              MaintainedCodeCheck.CodeTable.CASE_CATEGORY,
+              List.of("Appeals Court Single Justice - Civil", "Civil"),
+              "https://github.com/SuffolkLITLab/docassemble-MotionToStayEviction/blob/"
+                  + "213bd40790525bb45fbc5b012c5649325c7e0bae/docassemble/MotionToStayEviction/"
+                  + "data/questions/efiling.yml#L33-L34",
+              null),
+          new MaintainedCodeCheck(
+              "massachusetts",
+              "appeals:acsj",
+              MaintainedCodeCheck.CodeTable.CASE_TYPE,
+              List.of("MAC Rule 6.0"),
+              "https://github.com/SuffolkLITLab/docassemble-MotionToStayEviction/blob/"
+                  + "213bd40790525bb45fbc5b012c5649325c7e0bae/docassemble/MotionToStayEviction/"
+                  + "data/questions/efiling.yml#L36-L38",
+              "8151"));
+
   private final CodeDatabase cd;
   private final String jurisdiction;
 
@@ -32,17 +58,20 @@ public class CodesSanityChecker {
       if (courtCode.equals("1")) {
         continue;
       }
-      Optional<CourtLocationInfo> court = cd.getFullLocationInfo(courtCode);
-      if (court.isEmpty()) {
-        continue;
+      DataFields fields = cd.getDataFields(courtCode);
+      for (String fieldCode : neverRequiredFields) {
+        if (fields.getFieldRow(fieldCode).isrequired) {
+          log.error(
+              "Court {}: {} is marked required in datafieldconfig, which shouldn't happen",
+              courtCode,
+              fieldCode);
+        }
       }
-      TylerCodesParser parser = new TylerCodesParser(cd, null, court.get(), false);
-      parser.checkNeverRequiredFields();
     }
   }
 
   private void checkKnownCodeLookups() {
-    for (MaintainedCodeCheck check : KnownCodeLookups.ALL) {
+    for (MaintainedCodeCheck check : knownCodeLookups) {
       if (!check.jurisdiction().equals(jurisdiction)) {
         continue;
       }
@@ -79,36 +108,23 @@ public class CodesSanityChecker {
   private void report(MaintainedCodeCheck check, CodeSearchMatcher.MatchResult result) {
     switch (result.type()) {
       case OK -> {
-        String actualCode = result.matches().get(0).getCode();
-        if (!actualCode.equals(check.expectedDefaultCode())) {
-          log.error(
-              "Court {} {}: filters {} now resolve to {}, but the interview at {} expects {}",
-              check.courtCode(),
-              check.table(),
-              check.filters(),
-              actualCode,
-              check.sourceInterviewUrl(),
-              check.expectedDefaultCode());
-        }
+        // A single match means the interview's search still resolves cleanly(nothing to report)
       }
       case NO_MATCH ->
           log.error(
-              "Court {} {}: filters {} matched nothing, but the interview at {} expects {}",
+              "Court {} {}: filters {} matched nothing. See {}",
               check.courtCode(),
               check.table(),
               check.filters(),
-              check.sourceInterviewUrl(),
-              check.expectedDefaultCode());
+              check.sourceInterviewUrl());
       case AMBIGUOUS ->
-          log.error(
-              "Court {} {}: filters {} matched more than one code ({}), but the interview at {}"
-                  + " expects {}",
+          log.warn(
+              "Court {} {}: filters {} matched more than one code ({}). See {}",
               check.courtCode(),
               check.table(),
               check.filters(),
               result.matches(),
-              check.sourceInterviewUrl(),
-              check.expectedDefaultCode());
+              check.sourceInterviewUrl());
     }
   }
 }

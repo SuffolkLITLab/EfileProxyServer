@@ -228,6 +228,22 @@ public class TylerModuleSetup implements EfmModuleSetup {
       log.info("Scheduling daily Tyler EFM code update job around {}", codesDbUpdateTime);
       scheduler.scheduleJob(buildJob("job-" + jurisdiction.getName()), trigger);
 
+      // Runs a few minutes after the refresh job, in its own group, so it checks
+      // against that day's freshly-updated codes without racing the refresh itself
+      String checkTriggerName = "check-trigger-" + jurisdiction.getName();
+      LocalTime checkTime = codesDbUpdateTime.plusMinutes(7);
+      Trigger checkTrigger =
+          TriggerBuilder.newTrigger()
+              .withIdentity(checkTriggerName, "codes-check-group")
+              .startNow()
+              .withSchedule(
+                  CronScheduleBuilder.dailyAtHourAndMinute(
+                      checkTime.getHour(), checkTime.getMinute() + r.nextInt(4)))
+              .build();
+
+      log.info("Scheduling daily codes sanity check job around {}", checkTime);
+      scheduler.scheduleJob(buildCheckJob("check-job-" + jurisdiction.getName()), checkTrigger);
+
       if (scheduleImmediately) {
         // Schedule immediate codes update.
         // Testable version - updates the codes 20 seconds after launch
