@@ -66,7 +66,13 @@ public class ApiUserSettingsService {
       if (atRest.isEmpty()) {
         return Response.status(401).entity("\"Not logged in to efile\"").build();
       }
-      ld.updateServerName(atRest.get(), apiKey, newName);
+      if (newName.matches("^[a-zA-Z0-9\\-\\_]+$")) {
+        ld.updateServerName(atRest.get(), apiKey, newName);
+      } else {
+        return Response.status(400)
+            .entity("Server name can only have letters, numbers, dashes, and underscores")
+            .build();
+      }
       return Response.ok("\"" + newName + "\"").build();
     } catch (SQLException ex) {
       return Response.status(500).build();

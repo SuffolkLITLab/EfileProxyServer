@@ -1,9 +1,10 @@
 <configuration scan="true" scanPeriod="30 seconds">
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <!-- JSON output so Vector/Loki can parse real fields out of it, see #422 -->
+<!-- JSON output so Vector/Loki can parse real fields out of it, see #422 -->
     <encoder class="net.logstash.logback.encoder.LogstashEncoder">
       <includeMdcKeyName>serverId</includeMdcKeyName>
+      <includeMdcKeyName>serverName</includeMdcKeyName>
       <includeMdcKeyName>userId</includeMdcKeyName>
       <includeMdcKeyName>sessionId</includeMdcKeyName>
       <includeMdcKeyName>correlationId</includeMdcKeyName>
@@ -44,7 +45,7 @@
     <then>
       <appender name="SYSLOG-TLS" class="com.papertrailapp.logback.Syslog4jAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
-          <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [server=%X{serverId}] [user=%X{userId}] [session=%X{sessionId}] [corr=%X{correlationId}] [req=%X{requestId}] [op=%X{operation}] %-5level %logger{35}: %m%n%rEx</pattern>
+          <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [server=%X{serverId}] [serverName=%X{serverName}] [user=%X{userId}] [session=%X{sessionId}] [corr=%X{correlationId}] [req=%X{requestId}] [op=%X{operation}] %-5level %logger{35}: %m%n%rEx</pattern>
         </layout>
 
         <syslogConfig class="org.productivity.java.syslog4j.impl.net.tcp.ssl.SSLTCPNetSyslogConfig">

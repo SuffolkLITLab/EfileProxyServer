@@ -8,6 +8,7 @@ import org.slf4j.MDC;
  */
 public class MDCWrappers {
   public static final String SERVER_ID = "serverId";
+  public static final String SERVER_NAME = "serverName";
   public static final String USER_ID = "userId";
   public static final String SESSION_ID = "sessionId";
   public static final String CORRELATION_ID = "correlationId";
@@ -16,6 +17,7 @@ public class MDCWrappers {
 
   public static void removeAllMDCs() {
     MDC.remove(SERVER_ID);
+    MDC.remove(SERVER_NAME);
     MDC.remove(USER_ID);
     MDC.remove(SESSION_ID);
     MDC.remove(CORRELATION_ID);

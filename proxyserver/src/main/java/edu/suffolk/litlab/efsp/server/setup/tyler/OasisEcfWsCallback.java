@@ -326,6 +326,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     Transaction trans = maybeTrans.get();
 
     MDC.put(MDCWrappers.SERVER_ID, trans.serverId.toString());
+    // TODO(brycew): consider setting server name here as well
     log.info(
         "Full NotifyFilingReviewComplete msg: {}",
         Ecf4Helper.objectToXmlStrOrError(msg, NotifyFilingReviewCompleteRequestMessageType.class));

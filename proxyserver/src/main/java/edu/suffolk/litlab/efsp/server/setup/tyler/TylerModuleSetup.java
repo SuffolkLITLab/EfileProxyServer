@@ -20,6 +20,7 @@ import edu.suffolk.litlab.efsp.server.services.api.EfmFilingInterface;
 import edu.suffolk.litlab.efsp.server.services.impl.Ecf4Filer;
 import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
+import edu.suffolk.litlab.efsp.server.utils.CodesSanityCheckJob;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
@@ -227,6 +228,22 @@ public class TylerModuleSetup implements EfmModuleSetup {
       log.info("Scheduling daily Tyler EFM code update job around {}", codesDbUpdateTime);
       scheduler.scheduleJob(buildJob("job-" + jurisdiction.getName()), trigger);
 
+      // Runs a few minutes after the refresh job, in its own group, so it checks
+      // against that day's freshly-updated codes without racing the refresh itself
+      String checkTriggerName = "check-trigger-" + jurisdiction.getName();
+      LocalTime checkTime = codesDbUpdateTime.plusMinutes(7);
+      Trigger checkTrigger =
+          TriggerBuilder.newTrigger()
+              .withIdentity(checkTriggerName, "codes-check-group")
+              .startNow()
+              .withSchedule(
+                  CronScheduleBuilder.dailyAtHourAndMinute(
+                      checkTime.getHour(), checkTime.getMinute() + r.nextInt(4)))
+              .build();
+
+      log.info("Scheduling daily codes sanity check job around {}", checkTime);
+      scheduler.scheduleJob(buildCheckJob("check-job-" + jurisdiction.getName()), checkTrigger);
+
       if (scheduleImmediately) {
         // Schedule immediate codes update.
         // Testable version - updates the codes 20 seconds after launch
@@ -241,6 +258,19 @@ public class TylerModuleSetup implements EfmModuleSetup {
         log.info("Scheduling immediate Tyler EFM code update job.");
         scheduler.scheduleJob(
             buildJob("job-immediate-" + jurisdiction.getName()), immediateTrigger);
+
+        // Runs after the refresh job's immediate trigger above, so there's
+        // something in the codes db for it to check by the time it fires.
+        Trigger immediateCheckTrigger =
+            TriggerBuilder.newTrigger()
+                .withIdentity(
+                    "check-trigger-immediate-" + jurisdiction.getName(), "codes-check-group")
+                .startNow()
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(40))
+                .build();
+        log.info("Scheduling immediate codes sanity check job.");
+        scheduler.scheduleJob(
+            buildCheckJob("check-job-immediate-" + jurisdiction.getName()), immediateCheckTrigger);
       }
     } catch (SchedulerException se) {
       log.error("Scheduler Exception: ", se);
@@ -407,6 +437,17 @@ public class TylerModuleSetup implements EfmModuleSetup {
         .withIdentity(jobName, "codesdb-group")
         .usingJobData("TYLER_JURISDICTION", this.jurisdiction.getName())
         .usingJobData("X509_PASSWORD", this.x509Password)
+        .usingJobData("POSTGRES_URL", this.pgUrl)
+        .usingJobData("POSTGRES_DB", this.pgDb)
+        .usingJobData("POSTGRES_USERNAME", this.pgUser)
+        .usingJobData("POSTGRES_PASSWORD", this.pgPassword)
+        .build();
+  }
+
+  private JobDetail buildCheckJob(final String jobName) {
+    return JobBuilder.newJob(CodesSanityCheckJob.class)
+        .withIdentity(jobName, "codes-check-group")
+        .usingJobData("TYLER_JURISDICTION", this.jurisdiction.getName())
         .usingJobData("POSTGRES_URL", this.pgUrl)
         .usingJobData("POSTGRES_DB", this.pgDb)
         .usingJobData("POSTGRES_USERNAME", this.pgUser)
