@@ -23,6 +23,7 @@ public class ObservabilityHeadersInterceptor implements ContainerRequestFilter {
 
   private static final String SESSION_ID = "efsp-session-id";
   private static final String CORRELATION_ID = "efsp-correlation-id";
+  private static final String INTERVIEW_ID = "efsp-interview-id";
   private static final String REQUEST_ID = "efsp-request-id";
 
   @Override
@@ -36,6 +37,10 @@ public class ObservabilityHeadersInterceptor implements ContainerRequestFilter {
       String correlationId = handleHeaderString(headers, CORRELATION_ID);
       if (correlationId != null) {
         MDC.put(MDCWrappers.CORRELATION_ID, correlationId);
+      }
+      String interviewId = handleHeaderString(headers, INTERVIEW_ID);
+      if (interviewId != null) {
+        MDC.put(MDCWrappers.INTERVIEW_ID, interviewId);
       }
       String requestId = handleHeaderString(headers, REQUEST_ID);
       if (requestId == null) {
