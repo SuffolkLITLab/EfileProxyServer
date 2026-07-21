@@ -12,6 +12,7 @@ public class MDCWrappers {
   public static final String USER_ID = "userId";
   public static final String SESSION_ID = "sessionId";
   public static final String CORRELATION_ID = "correlationId";
+  public static final String INTERVIEW_ID = "interviewId";
   public static final String REQUEST_ID = "requestId";
   public static final String OPERATION = "operation";
 
@@ -21,6 +22,7 @@ public class MDCWrappers {
     MDC.remove(USER_ID);
     MDC.remove(SESSION_ID);
     MDC.remove(CORRELATION_ID);
+    MDC.remove(INTERVIEW_ID);
     MDC.remove(REQUEST_ID);
     MDC.remove(OPERATION);
   }

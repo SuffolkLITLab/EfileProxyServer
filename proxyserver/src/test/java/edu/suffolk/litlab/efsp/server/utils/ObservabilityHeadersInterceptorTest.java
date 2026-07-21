@@ -17,12 +17,17 @@ public class ObservabilityHeadersInterceptorTest {
 
   @Property
   boolean interceptorHandlesAllHeaders(
-      @ForAll String sessionId, @ForAll String corrId, @ForAll String reqId) throws IOException {
+      @ForAll String sessionId,
+      @ForAll String corrId,
+      @ForAll String reqId,
+      @ForAll String interviewId)
+      throws IOException {
     ContainerRequestContext ctx = mock(ContainerRequestContext.class);
     var headers = new MultivaluedHashMap<String, String>();
     headers.add("efsp-session-id", sessionId);
     headers.add("efsp-correlation-id", corrId);
     headers.add("efsp-request-id", reqId);
+    headers.add("efsp-interview-id", interviewId);
     when(ctx.getHeaders()).thenReturn(headers);
 
     interceptor.filter(ctx);
