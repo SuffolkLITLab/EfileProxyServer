@@ -191,6 +191,13 @@
             <version>1.5.27</version>
 
         </dependency>
+        <!-- JSON log output for Vector/Loki parsing -->
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>8.0</version>
+        </dependency>
+
         <dependency>
             <groupId>jakarta.mail</groupId>
             <artifactId>jakarta.mail-api</artifactId>
