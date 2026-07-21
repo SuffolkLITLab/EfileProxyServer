@@ -66,7 +66,13 @@ public class ApiUserSettingsService {
       if (atRest.isEmpty()) {
         return Response.status(401).entity("\"Not logged in to efile\"").build();
       }
-      ld.updateServerName(atRest.get(), apiKey, newName);
+      if (newName.matches("^[a-zA-Z0-9\\-\\_]+$")) {
+        ld.updateServerName(atRest.get(), apiKey, newName);
+      } else {
+        return Response.status(400)
+            .entity("Server name can only have letters, numbers, dashes, and underscores")
+            .build();
+      }
       return Response.ok("\"" + newName + "\"").build();
     } catch (SQLException ex) {
       return Response.status(500).build();
@@ -79,7 +85,7 @@ public class ApiUserSettingsService {
   @NeedsAuthorization
   public Response getLogs(@Context SecurityContext security) {
     EfspSecurityContext efspSecurity = (EfspSecurityContext) security;
-    File f = new File(efspSecurity.getServerId().toString() + ".log");
+    File f = new File(efspSecurity.getServerName().toString() + ".log");
     if (!f.exists()) {
       return Response.status(204).build();
     }
