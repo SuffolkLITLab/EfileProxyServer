@@ -416,6 +416,7 @@ public class PaymentsService {
       @FormParam("error_url") String errorUrl) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.redirectToToga");
     MDC.put(MDCWrappers.SERVER_ID, "jurisdiction-" + this.jurisdiction);
+    MDC.put(MDCWrappers.SERVER_NAME, "jurisdiction-" + this.jurisdiction);
     MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerInfo));
     String errorHtml =
         """
@@ -559,6 +560,7 @@ public class PaymentsService {
       @Context HttpHeaders httpHeaders, @FormParam("ResponseXML") String body) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.makeNewPaymentAccount");
     MDC.put(MDCWrappers.SERVER_ID, "jurisdiction-" + this.jurisdiction);
+    MDC.put(MDCWrappers.SERVER_NAME, "jurisdiction-" + this.jurisdiction);
     log.info("Making new payment account with Tyler's response: {}", body);
     try {
       JAXBContext jaxContext = JAXBContext.newInstance(TogaResponseXml.class);

@@ -142,7 +142,8 @@ public class LoginDatabase extends Database {
       atRest.created = rs.getTimestamp(6);
       // Assuming that we will only have the API key hash when directly given it, i.e.
       // when this server is calling the proxy server. So set the log param
-      MDC.put(MDCWrappers.SERVER_ID, atRest.serverName);
+      MDC.put(MDCWrappers.SERVER_ID, atRest.serverId.toString());
+      MDC.put(MDCWrappers.SERVER_NAME, atRest.serverName);
       return Optional.of(atRest);
     } catch (SQLException ex) {
       log.error("SQL error when logging in", ex);
