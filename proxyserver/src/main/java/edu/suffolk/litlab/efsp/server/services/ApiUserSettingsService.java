@@ -85,7 +85,7 @@ public class ApiUserSettingsService {
   @NeedsAuthorization
   public Response getLogs(@Context SecurityContext security) {
     EfspSecurityContext efspSecurity = (EfspSecurityContext) security;
-    File f = new File(efspSecurity.getServerName().toString() + ".log");
+    File f = new File(efspSecurity.getServerId().toString() + ".log");
     if (!f.exists()) {
       return Response.status(204).build();
     }
