@@ -21,21 +21,8 @@
     </encoder>
   </appender>
   <appender name="PerServer" class="edu.suffolk.litlab.efsp.server.logging.ServerSpecificAppender">
-    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-      <includeMdcKeyName>serverId</includeMdcKeyName>
-      <includeMdcKeyName>userId</includeMdcKeyName>
-      <includeMdcKeyName>sessionId</includeMdcKeyName>
-      <includeMdcKeyName>correlationId</includeMdcKeyName>
-      <includeMdcKeyName>requestId</includeMdcKeyName>
-      <includeMdcKeyName>operation</includeMdcKeyName>
-      <fieldNames>
-        <timestamp>timestamp</timestamp>
-        <message>message</message>
-        <logger>logger</logger>
-        <thread>thread</thread>
-        <level>level</level>
-        <stackTrace>stack_trace</stackTrace>
-      </fieldNames>
+<encoder>
+      <Pattern>| %d{yyyy-MM-dd HH:mm:ss.SSS} | %X{serverId} | %X{userId} | %X{sessionId} | %X{correlationId} | %X{requestId} | %X{operation} | %thread | %-5level | %logger{40} |- %msg | %rEx |%n</Pattern>
     </encoder>
   </appender>
   <condition class="ch.qos.logback.core.boolex.ExpressionPropertyCondition">
