@@ -20,14 +20,14 @@ public class ObservabilityHeadersInterceptorTest {
       @ForAll String sessionId,
       @ForAll String corrId,
       @ForAll String reqId,
-      @ForAll String interviewId)
+      @ForAll String interviewName)
       throws IOException {
     ContainerRequestContext ctx = mock(ContainerRequestContext.class);
     var headers = new MultivaluedHashMap<String, String>();
     headers.add("efsp-session-id", sessionId);
     headers.add("efsp-correlation-id", corrId);
     headers.add("efsp-request-id", reqId);
-    headers.add("efsp-interview-id", interviewId);
+    headers.add("efsp-interview-name", interviewName);
     when(ctx.getHeaders()).thenReturn(headers);
 
     interceptor.filter(ctx);
