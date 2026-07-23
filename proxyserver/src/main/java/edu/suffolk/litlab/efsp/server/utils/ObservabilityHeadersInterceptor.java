@@ -53,7 +53,7 @@ public class ObservabilityHeadersInterceptor implements ContainerRequestFilter {
     }
   }
 
-  private static final Pattern safeRegex = Pattern.compile("^[A-Za-z0-9\\-]{0,36}$");
+  private static final Pattern safeRegex = Pattern.compile("^[A-Za-z0-9\\-]{0,72}$");
 
   private String handleHeaderString(Map<String, List<String>> headers, String headerKey) {
     var headerList = headers.get(headerKey);
