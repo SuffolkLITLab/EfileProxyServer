@@ -29,10 +29,13 @@ public interface EfmFilingInterface {
    *     the callbacks. If it's > 1, should be the same number as the FilingDocs in info
    */
   public Result<FilingResult, FilingError> sendFiling(
-      FilingInformation info, TylerUserNamePassword creds, ApiChoice choice);
+      FilingInformation info, TylerUserNamePassword creds, String userUuid, ApiChoice choice);
 
   public Result<NullValue, FilingError> checkFiling(
-      FilingInformation info, TylerUserNamePassword creds, InfoCollector collector);
+      FilingInformation info,
+      TylerUserNamePassword creds,
+      String userUuid,
+      InfoCollector collector);
 
   public Result<Response, FilingError> getFilingFees(
       FilingInformation info, TylerUserNamePassword creds);

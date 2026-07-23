@@ -15,7 +15,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.headers.Header;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +84,15 @@ public class ServiceHelpers {
     Map<String, Object> ctx = bp.getRequestContext();
     ctx.put(Header.HEADER_LIST, headerList);
     setupServicePort(bp);
+  }
+
+  public static void changeTimeout(BindingProvider bp, int timeoutMs) {
+    Client client = ClientProxy.getClient(bp);
+    HTTPConduit http = (HTTPConduit) client.getConduit();
+    HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
+    httpClientPolicy.setConnectionTimeout(timeoutMs);
+    httpClientPolicy.setReceiveTimeout(timeoutMs);
+    http.setClient(httpClientPolicy);
   }
 
   public enum FileableCourtType {

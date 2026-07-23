@@ -344,41 +344,27 @@ public class FilingInformationDocassembleJacksonDeserializer
       log.info(
           "Using users[0] as lead_contact because `is_form_filler` is true (this is what the EFM will do as well)");
       entities.setLeadContact(users.get(0));
+    } else if (users.size() >= 1
+        && users.get(0).isFormFiller()
+        && users.get(0).getContactInfo().getEmail().isEmpty()) {
+      log.warn(
+          "I want to use users[0] as lead_contact, but they don't have an email! Should set it, but will use the account email instead");
+      entities.setLeadContact(users.get(0));
     } else {
-      if (users.size() >= 1
-          && users.get(0).isFormFiller()
-          && users.get(0).getContactInfo().getEmail().isEmpty()) {
-        log.warn(
-            "I want to use users[0] as lead_contact, but they don't have an email! Using lead_contact instead");
-      }
       JsonNode leadJson = node.get("lead_contact");
-      if (leadJson == null) {
-        InterviewVariable var =
-            collector.requestVar(
-                "lead_contact", "Someone to contact about this case", "ALIndividual");
-        collector.addRequired(var);
-      } else {
+      if (leadJson != null && !leadJson.isNull()) {
         collector.pushAttributeStack("lead_contact");
         Result<Person, FilingError> per =
-            PersonDocassembleJacksonDeserializer.fromNode(
-                node.get("lead_contact"), parser, collector);
+            PersonDocassembleJacksonDeserializer.fromNode(leadJson, parser, collector);
         collector.popAttributeStack();
         if (per.isErr()) {
           FilingError ex = per.unwrapErrOrElseThrow();
           log.warn("Person exception: ", ex);
           collector.error(ex);
-          entities.setLeadContact(null);
         } else {
           Person person = per.unwrapOrElseThrow();
-          if (person.getContactInfo().getEmail().isEmpty()) {
-            InterviewVariable var =
-                collector.requestVar(
-                    "lead_contact.email",
-                    "We need an email to contact someone about this case.",
-                    "text");
-            collector.addRequired(var);
-          }
           entities.setLeadContact(person);
+          // Email might be empty, but that will be fixed later
         }
       }
     }

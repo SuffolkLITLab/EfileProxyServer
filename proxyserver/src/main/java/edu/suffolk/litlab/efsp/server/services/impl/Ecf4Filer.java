@@ -49,6 +49,7 @@ import edu.suffolk.litlab.efsp.model.CaseServiceContact;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.FilingResult;
+import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
@@ -60,8 +61,11 @@ import edu.suffolk.litlab.efsp.server.ecf4.PolicyCacher;
 import edu.suffolk.litlab.efsp.server.ecf4.QueryType;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
+import edu.suffolk.litlab.efsp.tyler.TylerAdminUserUtils;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
+import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
+import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
@@ -89,6 +93,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -124,6 +129,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   private final FilingReviewMDEService filingFactory;
   private final TylerFirmFactory firmFactory;
   private final ServiceMDEService serviceFactory;
+  private final TylerUserFactory userFactory;
   private final PolicyCacher policyCacher;
   private final Jurisdiction jurisdiction;
 
@@ -168,6 +174,12 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       throw new RuntimeException("Cannot find " + jurisdiction + " for firm mde factory");
     }
     this.firmFactory = maybeFirmFactory.get();
+    Optional<TylerUserFactory> maybeUserFactory = TylerClients.getEfmUserFactory(jurisdiction);
+    if (maybeUserFactory.isEmpty()) {
+      throw new RuntimeException(
+          "Can't find " + jurisdiction + " in the SoapClientChooser for EfmUser");
+    }
+    this.userFactory = maybeUserFactory.get();
     if (policyCacher != null) {
       this.policyCacher = policyCacher;
     } else {
@@ -501,7 +513,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       CoreFilingMessageType cfm,
       FilingInformation info,
       InfoCollector collector,
-      TylerUserNamePassword creds) {
+      TylerUserNamePassword creds,
+      String userUuid) {
     ServiceMDEPort port = setupServicePort(creds);
     ServiceReceiptMessageType receipt = port.serveFiling(cfm);
     StringBuilder sb = new StringBuilder();
@@ -529,7 +542,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                   return UUID.fromString(id);
                 })
             .collect(Collectors.toList());
-    return Result.ok(new FilingResult(ids, info.getLeadContact()));
+    Person leadContact = repairLeadContact(info.getLeadContact(), creds, userUuid);
+    return Result.ok(new FilingResult(ids, leadContact));
   }
 
   @Override
@@ -537,6 +551,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       FilingInformation info,
       InfoCollector collector,
       TylerUserNamePassword creds,
+      String userUuid,
       ApiChoice choice) {
     FilingReviewMDEPort filingPort;
     CoreFilingMessageType cfm;
@@ -569,7 +584,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     }
 
     if (choice.equals(ApiChoice.ServiceApi)) {
-      return serveFilingIfReady(cfm, info, collector, creds);
+      return serveFilingIfReady(cfm, info, collector, creds, userUuid);
     }
 
     var wsOf =
@@ -634,10 +649,28 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
             caseId.get(),
             envelopeId.get(),
             filingIdStrs.stream().map(str -> UUID.fromString(str)).collect(Collectors.toList()),
-            info.getLeadContact(),
+            repairLeadContact(info.getLeadContact(), creds, userUuid),
             caseTitle,
             caseCategoryName,
             courtName));
+  }
+
+  public Person repairLeadContact(
+      Optional<Person> maybeLeadContact, TylerUserNamePassword creds, String userUuid) {
+    Supplier<Person> userInfo =
+        () -> {
+          TylerUserClient userPort = setupUserPort(creds);
+          if (userUuid == null || userUuid.isBlank()) {
+            return Person.TestPerson(new Name(""), "", false);
+          }
+          return TylerAdminUserUtils.getUser(userPort, userUuid);
+        };
+    Person leadContact = maybeLeadContact.orElseGet(userInfo);
+    if (leadContact.getContactInfo().getEmail().isEmpty()
+        || leadContact.getContactInfo().getEmail().get().isBlank()) {
+      leadContact = leadContact.replaceEmail(creds.getUserName());
+    }
+    return leadContact;
   }
 
   @Override
@@ -971,6 +1004,18 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     List<Header> headersList = List.of(creds.toHeader());
     ctx.put(Header.HEADER_LIST, headersList);
     return port;
+  }
+
+  private TylerUserClient setupUserPort(TylerUserNamePassword creds) {
+    Consumer<BindingProvider> setup =
+        (BindingProvider bp) -> {
+          ServiceHelpers.setupServicePort(bp);
+          ServiceHelpers.changeTimeout(bp, 180_000);
+          Map<String, Object> ctx = bp.getRequestContext();
+          List<Header> headersList = List.of(creds.toHeader());
+          ctx.put(Header.HEADER_LIST, headersList);
+        };
+    return userFactory.makeUserClient(setup);
   }
 
   private FilingReviewMDEPort makeFilingPort() {

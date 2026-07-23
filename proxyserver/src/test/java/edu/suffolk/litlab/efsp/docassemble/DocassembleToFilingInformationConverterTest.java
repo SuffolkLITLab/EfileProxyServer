@@ -208,7 +208,7 @@ public class DocassembleToFilingInformationConverterTest {
         converter.extractInformation(contents, parser);
     assertThat(maybeInfo).isOk();
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
-    assertEquals(info.getPartyAttorneyMap().size(), 1);
+    assertThat(info.getPartyAttorneyMap()).hasSize(1);
     info.getPartyAttorneyMap()
         .entrySet()
         .forEach(
@@ -220,8 +220,11 @@ public class DocassembleToFilingInformationConverterTest {
                   x.getValue().isEmpty(),
                   "User " + x.getKey().getIdentificationString() + " shouldn't have any attorneys");
             });
-    assertEquals(info.getNewPlaintiffs().size(), 1);
-    assertTrue(info.getNewPlaintiffs().get(0).isFormFiller());
+    assertThat(info.getNewPlaintiffs()).hasSize(1);
+    assertThat(info.getNewPlaintiffs().get(0).isFormFiller()).isTrue();
+    assertThat(info.getLeadContact()).isPresent();
+    assertThat(info.getLeadContact().get().getContactInfo().getEmail())
+        .contains("bw+faketylerprose@gmail.com");
   }
 
   @Test
@@ -236,5 +239,19 @@ public class DocassembleToFilingInformationConverterTest {
         info.getNewPlaintiffs().size(),
         "Should have only been 2 plaintiffs, but were " + info.getNewPlaintiffs().size());
     assertTrue(info.getNewPlaintiffs().get(0).isFormFiller());
+  }
+
+  @Test
+  public void testAllowNoLeadContact() throws IOException {
+    String contents = getFileContents("/allow_no_lead_contact.json");
+    Result<FilingInformation, FilingError> maybeInfo =
+        converter.extractInformation(contents, parser);
+    assertThat(maybeInfo).isOk();
+    FilingInformation info = maybeInfo.unwrapOrElseThrow();
+    assertEquals(
+        2,
+        info.getNewPlaintiffs().size(),
+        "Should have only been 2 plaintiffs, but were " + info.getNewPlaintiffs().size());
+    assertTrue(info.getLeadContact().isEmpty());
   }
 }

@@ -68,7 +68,7 @@ public class FilingInformation {
   /** Information about the original case if this is an appeals court case. */
   private Optional<LowerCourtInfo> lowerCourtInfo = Optional.empty();
 
-  private Person leadContact;
+  private Optional<Person> leadContact = Optional.empty();
 
   private Optional<FilerType> filerType;
 
@@ -96,7 +96,7 @@ public class FilingInformation {
    *
    * @return
    */
-  public Person getLeadContact() {
+  public Optional<Person> getLeadContact() {
     return leadContact;
   }
 
@@ -115,7 +115,7 @@ public class FilingInformation {
               + " (filing "
               + getFilings().get(0).getFilingComments()
               + ")\nUsing backup of lead contact");
-      return "On Behalf of " + getLeadContact().getName().getFullName();
+      return "On Behalf of " + leadContact.map(u -> u.getName().getFullName()).orElse("the Filer");
     }
   }
 
@@ -286,7 +286,7 @@ public class FilingInformation {
   }
 
   public void setLeadContact(Person leadContact) {
-    this.leadContact = leadContact;
+    this.leadContact = Optional.of(leadContact);
   }
 
   public void setFilings(List<FilingDoc> filingDocs) {

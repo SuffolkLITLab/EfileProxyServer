@@ -41,16 +41,16 @@ public class Name {
   public String getFullName() {
     return Stream.of(prefix, firstName, middleName, lastName, suffix)
         .reduce(
-            (wd, n) -> {
-              if (n.isBlank()) {
+            (wd, namePart) -> {
+              if (namePart == null || namePart.isBlank()) {
                 return wd;
-              } else if (wd.isBlank()) {
-                return n;
+              } else if (wd == null || wd.isBlank()) {
+                return namePart;
               } else {
-                return wd + " " + n;
+                return wd + " " + namePart;
               }
             })
-        .get();
+        .orElse("");
   }
 
   public String getFirstName() {
