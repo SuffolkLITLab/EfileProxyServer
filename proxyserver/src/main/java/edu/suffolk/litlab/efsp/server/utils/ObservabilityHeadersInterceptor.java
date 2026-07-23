@@ -23,26 +23,26 @@ public class ObservabilityHeadersInterceptor implements ContainerRequestFilter {
 
   private static final String SESSION_ID = "efsp-session-id";
   private static final String CORRELATION_ID = "efsp-correlation-id";
-  private static final String INTERVIEW_ID = "efsp-interview-id";
+  private static final String INTERVIEW_NAME = "efsp-interview-name";
   private static final String REQUEST_ID = "efsp-request-id";
 
   @Override
   public void filter(ContainerRequestContext requestContext) throws IOException {
     var headers = requestContext.getHeaders();
     try {
-      String sessionId = handleHeaderString(headers, SESSION_ID);
+      String sessionId = handleHeaderString(headers, SESSION_ID, safeIdRegex);
       if (sessionId != null) {
         MDC.put(MDCWrappers.SESSION_ID, sessionId);
       }
-      String correlationId = handleHeaderString(headers, CORRELATION_ID);
+      String correlationId = handleHeaderString(headers, CORRELATION_ID, safeIdRegex);
       if (correlationId != null) {
         MDC.put(MDCWrappers.CORRELATION_ID, correlationId);
       }
-      String interviewId = handleHeaderString(headers, INTERVIEW_ID);
-      if (interviewId != null) {
-        MDC.put(MDCWrappers.INTERVIEW_ID, interviewId);
+      String interviewName = handleHeaderString(headers, INTERVIEW_NAME, safeNameRegex);
+      if (interviewName != null) {
+        MDC.put(MDCWrappers.INTERVIEW_NAME, interviewName);
       }
-      String requestId = handleHeaderString(headers, REQUEST_ID);
+      String requestId = handleHeaderString(headers, REQUEST_ID, safeIdRegex);
       if (requestId == null) {
         requestId = UUID.randomUUID().toString();
         log.trace("Using generated string `{}` as requestId", requestId);
@@ -53,9 +53,11 @@ public class ObservabilityHeadersInterceptor implements ContainerRequestFilter {
     }
   }
 
-  private static final Pattern safeRegex = Pattern.compile("^[A-Za-z0-9\\-]{0,72}$");
+  private static final Pattern safeIdRegex = Pattern.compile("^[A-Za-z0-9\\-]{0,36}$");
+  private static final Pattern safeNameRegex = Pattern.compile("^[A-Za-z0-9\\-]{0,72}$");
 
-  private String handleHeaderString(Map<String, List<String>> headers, String headerKey) {
+  private String handleHeaderString(
+      Map<String, List<String>> headers, String headerKey, Pattern safeRegex) {
     var headerList = headers.get(headerKey);
     if (headerList == null || headerList.isEmpty()) {
       return null;

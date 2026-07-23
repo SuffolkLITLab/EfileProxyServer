@@ -6,7 +6,7 @@
       <includeMdcKeyName>serverId</includeMdcKeyName>
       <includeMdcKeyName>serverName</includeMdcKeyName>
       <includeMdcKeyName>userId</includeMdcKeyName>
-      <includeMdcKeyName>interviewId</includeMdcKeyName>
+      <includeMdcKeyName>interviewName</includeMdcKeyName>
       <includeMdcKeyName>sessionId</includeMdcKeyName>
       <includeMdcKeyName>correlationId</includeMdcKeyName>
       <includeMdcKeyName>requestId</includeMdcKeyName>
