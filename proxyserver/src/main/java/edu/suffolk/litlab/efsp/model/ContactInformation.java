@@ -18,7 +18,7 @@ public class ContactInformation {
 
   /** Minimal constructor, empty lists and empty optionals. */
   public ContactInformation(String email) {
-    this(List.of(), Optional.empty(), Optional.of(email));
+    this(List.of(), Optional.empty(), Optional.ofNullable(email));
   }
 
   public List<String> getPhoneNumbers() {

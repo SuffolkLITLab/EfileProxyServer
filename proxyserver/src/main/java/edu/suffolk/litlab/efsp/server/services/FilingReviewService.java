@@ -11,6 +11,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.FilingResult;
 import edu.suffolk.litlab.efsp.model.Person;
+import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.services.api.EfmFilingInterface;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
@@ -68,6 +69,7 @@ public class FilingReviewService {
   private final OrgMessageSender msgSender;
   private final Supplier<UserDatabase> udSupplier;
   private final EndpointReflection ef;
+  private final Jurisdiction jurisdiction;
 
   public FilingReviewService(
       Jurisdiction jurisdiction,
@@ -81,6 +83,7 @@ public class FilingReviewService {
     this.callbackInterfaces = callbackInterfaces;
     this.udSupplier = udSupplier;
     this.msgSender = msgSender;
+    this.jurisdiction = jurisdiction;
     this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction.getName() + "/filingreview");
   }
 
@@ -186,6 +189,7 @@ public class FilingReviewService {
     if (mediaType == null) {
       mediaType = MediaType.valueOf("application/json");
     }
+    String userUuid = httpHeaders.getHeaderString(TylerLogin.getHeaderId(jurisdiction));
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
@@ -215,7 +219,7 @@ public class FilingReviewService {
       FilingInformation info = res.unwrapOrElseThrow();
       info.setCourtLocation(courtId);
       Result<NullValue, FilingError> resEfm =
-          filer.checkFiling(info, tylerUser.get().creds(), collector);
+          filer.checkFiling(info, tylerUser.get().creds(), userUuid, collector);
       if (resEfm.isErr()) {
         log.error("Error on checkFiling: {}", resEfm.toString());
         return Response.ok(collector.jsonSummary()).build();
@@ -398,6 +402,7 @@ public class FilingReviewService {
     if (mediaType == null) {
       mediaType = MediaType.valueOf("application/json");
     }
+    String userUuid = httpHeaders.getHeaderString(TylerLogin.getHeaderId(jurisdiction));
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
@@ -415,7 +420,8 @@ public class FilingReviewService {
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
     Result<FilingResult, FilingError> result =
-        filer.sendFiling(info, tylerUser.get().creds(), EfmFilingInterface.ApiChoice.FileApi);
+        filer.sendFiling(
+            info, tylerUser.get().creds(), userUuid, EfmFilingInterface.ApiChoice.FileApi);
     if (result.isErr()) {
       return Response.status(500).entity(result.unwrapErrOrElseThrow().toJson()).build();
     }

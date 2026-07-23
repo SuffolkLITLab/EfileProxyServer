@@ -14,15 +14,19 @@ public abstract class EfmCheckableFilingInterface implements EfmFilingInterface 
 
   @Override
   public Result<FilingResult, FilingError> sendFiling(
-      FilingInformation info, TylerUserNamePassword creds, ApiChoice choice) {
+      FilingInformation info, TylerUserNamePassword creds, String userUuid, ApiChoice choice) {
     FailFastCollector collector = new FailFastCollector();
-    return submitFilingIfReady(info, collector, creds, choice);
+    return submitFilingIfReady(info, collector, creds, userUuid, choice);
   }
 
   @Override
   public Result<NullValue, FilingError> checkFiling(
-      FilingInformation info, TylerUserNamePassword creds, InfoCollector collector) {
-    return submitFilingIfReady(info, collector, creds, ApiChoice.FileApi).mapOk(n -> null);
+      FilingInformation info,
+      TylerUserNamePassword creds,
+      String userUuid,
+      InfoCollector collector) {
+    return submitFilingIfReady(info, collector, creds, userUuid, ApiChoice.FileApi)
+        .mapOk(n -> null);
   }
 
   /**
@@ -36,5 +40,6 @@ public abstract class EfmCheckableFilingInterface implements EfmFilingInterface 
       FilingInformation info,
       InfoCollector collector,
       TylerUserNamePassword creds,
+      String userUuid,
       ApiChoice choice);
 }

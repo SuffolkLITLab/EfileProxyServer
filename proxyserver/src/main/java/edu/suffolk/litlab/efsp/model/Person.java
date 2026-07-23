@@ -130,6 +130,23 @@ public class Person {
     this.role = role;
   }
 
+  public Person replaceEmail(String newEmail) {
+    return new Person(
+        getName(),
+        new ContactInformation(
+            getContactInfo().getPhoneNumbers(),
+            getContactInfo().getAddress(),
+            Optional.of(newEmail)),
+        getGender(),
+        getLanguage(),
+        getBirthdate(),
+        isOrg(),
+        isFormFiller(),
+        getRole(),
+        getPartyId(),
+        getId());
+  }
+
   public Name getName() {
     return name;
   }
