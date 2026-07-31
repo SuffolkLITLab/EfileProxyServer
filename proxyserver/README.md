@@ -13,7 +13,7 @@ This server can also be run directly with java, for remote debugging or speed of
     * Edit your `.env` file, particularly `POSTGRES_URL` and `POSTGRES_PORT`, to match how you will be running the db
       (`POSTGRES_URL` can be `localhost` if just running it locally / through a docker container).
     * If you still want to use docker for this, run
-      `docker run -p 5432:5432 --env-file .env --volume efileproxyserver_data-volume:/var/lib/postgresql/data postgres:14`.
+      `docker run -p 5432:5432 --env-file .env --volume efileproxyserver_data-volume:/var/lib/postgresql/data postgres:15`.
 * `mvn package` to build the output JAR artifact.
 * `cd proxyserver` (if not already there), and then `./run_server.sh`
 

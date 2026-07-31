@@ -17,7 +17,7 @@ services:
         limits:
           memory: 4G
   db:
-    image: "postgres:14"
+    image: "postgres:15"
     shm_size: 256m
     env_file: .env
     volumes:

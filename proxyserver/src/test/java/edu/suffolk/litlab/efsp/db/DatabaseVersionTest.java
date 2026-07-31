@@ -48,7 +48,7 @@ import org.testcontainers.utility.MountableFile;
 @Tag("Docker")
 public class DatabaseVersionTest {
 
-  public static final String POSTGRES_DOCKER_NAME = "postgres:14";
+  public static final String POSTGRES_DOCKER_NAME = "postgres:15";
 
   private static final Logger log = LoggerFactory.getLogger(DatabaseVersionTest.class);
 
