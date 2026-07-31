@@ -14,7 +14,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,7 +23,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.sql.DataSource;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,20 +115,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
   }
 
   public boolean tablesExist() throws SQLException {
-    String tableExistsQuery = CodeDatabaseUtils.getTableExists();
-    boolean locationExists = false;
-    boolean installedExists = false;
-    try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
-      existsSt.setString(1, "location");
-      ResultSet rs = existsSt.executeQuery();
-      locationExists = rs.next() && rs.getInt(1) > 0;
-    }
-    try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
-      existsSt.setString(1, "installedversion");
-      ResultSet rs = existsSt.executeQuery();
-      installedExists = rs.next() && rs.getInt(1) > 0;
-    }
-    return locationExists && installedExists;
+    return tableExists("location") && tableExists("installedversion");
   }
 
   @Override
@@ -149,63 +134,35 @@ public class CodeDatabase extends CodeDatabaseAPI {
   }
 
   public void createTableIfAbsent(String tableName) throws SQLException {
-    if (conn == null) {
-      throw new SQLException();
-    }
-    if (tableName.contains("(") || tableName.contains(")") || tableName.contains(" ")) {
-      log.warn("Must be valid table name: {} is not", tableName);
-      return;
-    }
+    boolean exists = tableExists(tableName);
 
     // TODO(brycew-later): eventually make the create tables have foreign keys and
     // required from the Id / columnRefs
-    String tableExistsQuery = CodeDatabaseUtils.getTableExists();
-    try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
-      existsSt.setString(1, tableName);
-      ResultSet rs = existsSt.executeQuery();
-      boolean next = rs.next();
-      int firstVal = rs.getInt(1);
-      if (!next || firstVal <= 0) { // There's no table! Make one
-        if (tableName.equals("optionalservices")) {
-          log.info("Creating optionalservices");
-          OptionalServiceCode.createFromOptionalServiceTable(conn);
-        } else {
-          String createQuery = CodeTableConstants.getCreateTable(tableName);
-          try (Statement createSt = conn.createStatement()) {
-            log.info("Full statement: {}", createQuery);
-            createSt.executeUpdate(createQuery);
-          }
+    if (!exists) { // There's no table! Make one
+      if (tableName.equals("optionalservices")) {
+        log.info("Creating optionalservices");
+        OptionalServiceCode.createFromOptionalServiceTable(conn);
+      } else {
+        String createQuery = CodeTableConstants.getCreateTable(tableName);
+        try (Statement createSt = conn.createStatement()) {
+          log.info("Full statement: {}", createQuery);
+          createSt.executeUpdate(createQuery);
         }
       }
-      rs.close();
     }
   }
 
   public void createIndicesIfAbsent(String tableName) throws SQLException {
-    if (conn == null) {
-      throw new SQLException();
-    }
-    if (tableName.contains("(") || tableName.contains(")") || tableName.contains(" ")) {
-      log.warn("Must be a valid table name: {} is not", tableName);
-      return;
-    }
-
-    String indicesExist = CodeDatabaseUtils.getIndicesExist();
-    try (PreparedStatement existsSt = conn.prepareStatement(indicesExist)) {
-      existsSt.setString(1, tableName);
-      ResultSet rs = existsSt.executeQuery();
-      boolean next = rs.next();
-      int firstVal = rs.getInt(1);
-      if (!next || firstVal <= 0) {
-        if (tableName.equals("optionalservices")) {
-          OptionalServiceCode.createIndices(conn);
-        } else {
-          // Create the indices: might take a while
-          List<String> createIndices = CodeTableConstants.getCreateIndex(tableName);
-          for (String createIndex : createIndices) {
-            try (PreparedStatement createSt = conn.prepareStatement(createIndex)) {
-              createSt.executeUpdate();
-            }
+    boolean exists = indiciesExists(tableName);
+    if (!exists) {
+      if (tableName.equals("optionalservices")) {
+        OptionalServiceCode.createIndices(conn);
+      } else {
+        // Create the indices: might take a while
+        List<String> createIndices = CodeTableConstants.getCreateIndex(tableName);
+        for (String createIndex : createIndices) {
+          try (PreparedStatement createSt = conn.prepareStatement(createIndex)) {
+            createSt.executeUpdate();
           }
         }
       }
@@ -217,10 +174,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     if (conn == null) {
       throw new SQLException("Null connection!");
     }
-    if (tableName.contains("(") || tableName.contains(")") || tableName.contains(" ")) {
-      log.warn("Must be valid table name: {} is not", tableName);
-      return;
-    }
+    validTable(tableName);
 
     createTableIfAbsent(tableName);
     createIndicesIfAbsent(tableName);
@@ -266,49 +220,12 @@ public class CodeDatabase extends CodeDatabaseAPI {
       // ColumnSet cs = rows.getColumnSet();
       while (rows.hasNext()) {
         Map<String, String> rowsVals = rows.next();
-        singleInsert(stmt, tableName, courtName, rowsVals);
+        CodeDatabaseUtils.singleInsert(
+            stmt, CodeTableConstants.getTableColumns(tableName), rowsVals, courtName, jurisStr());
         stmt.addBatch();
       }
       stmt.executeBatch();
     }
-  }
-
-  private PreparedStatement singleInsert(
-      PreparedStatement stmt, String tableName, String courtName, Map<String, String> rowsVals)
-      throws SQLException {
-    int idx = 1;
-    List<Pair<String, String>> tc = CodeTableConstants.getTableColumnsWithType(tableName);
-    for (Pair<String, String> col : tc) {
-      String colName = col.getLeft();
-      String colType = col.getRight();
-      if (colType.equalsIgnoreCase("boolean")) {
-        if (rowsVals.containsKey(colName)) {
-          stmt.setBoolean(idx, Boolean.parseBoolean(rowsVals.get(colName)));
-        } else {
-          stmt.setNull(idx, Types.BOOLEAN);
-        }
-      } else if (colType.equalsIgnoreCase("integer")) {
-        if (rowsVals.containsKey(colName)) {
-          stmt.setInt(idx, Integer.parseInt(rowsVals.get(colName)));
-        } else {
-          stmt.setNull(idx, Types.INTEGER);
-        }
-      } else {
-        // colType.equalsIgnoreCase("text") || colType.startsWith("varchar")
-        if (rowsVals.containsKey(colName)) {
-          stmt.setString(idx, rowsVals.get(colName));
-        } else {
-          stmt.setString(idx, null);
-        }
-      }
-      idx += 1;
-    }
-    if (CodeTableConstants.isCourtTable(tableName)) {
-      stmt.setString(idx, courtName);
-      idx += 1;
-    }
-    stmt.setString(idx, jurisStr());
-    return stmt;
   }
 
   @Override
