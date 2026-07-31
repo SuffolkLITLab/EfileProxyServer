@@ -117,6 +117,49 @@ public abstract class CodeDatabaseAPI extends Database {
   public abstract List<NameAndCode> getCaseTypeNamesFor(
       String courtLocationId, String caseCategoryCode, Optional<Boolean> initial);
 
+  protected void validTable(String tableName) throws SQLException {
+    if (tableName.contains("(")
+        || tableName.contains(")")
+        || tableName.contains(" ")
+        || tableName.contains(";")) {
+      log.warn("Must be a valid table name: {} is not", tableName);
+      throw new CodeDatabaseUtils.UnsupportedTableException(
+          "Must be a valid table name: " + tableName + " is not");
+    }
+  }
+
+  protected boolean tableExists(String tableName) throws SQLException {
+    if (conn == null) {
+      throw new SQLException();
+    }
+    validTable(tableName);
+    String tableExistsQuery = CodeDatabaseUtils.getTableExists();
+    try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
+      existsSt.setString(1, tableName);
+      ResultSet rs = existsSt.executeQuery();
+      boolean next = rs.next();
+      int firstVal = rs.getInt(1);
+      rs.close();
+      return (next && firstVal > 0);
+    }
+  }
+
+  protected boolean indiciesExists(String tableName) throws SQLException {
+    if (conn == null) {
+      throw new SQLException();
+    }
+    validTable(tableName);
+
+    String indicesExist = CodeDatabaseUtils.getIndicesExist();
+    try (PreparedStatement existsSt = conn.prepareStatement(indicesExist)) {
+      existsSt.setString(1, tableName);
+      ResultSet rs = existsSt.executeQuery();
+      boolean next = rs.next();
+      int firstVal = rs.getInt(1);
+      return (next && firstVal > 0);
+    }
+  }
+
   /** Runs all of the logic for search queries (both name searches and court coverage searches). */
   protected List<String> genericSearch(
       String searchTerm, SQLFunction<String, PreparedStatement> queryMaker) {

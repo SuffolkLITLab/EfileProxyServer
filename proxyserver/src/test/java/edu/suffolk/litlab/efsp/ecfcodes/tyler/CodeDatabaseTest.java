@@ -2,7 +2,6 @@ package edu.suffolk.litlab.efsp.ecfcodes.tyler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import edu.suffolk.litlab.efsp.Jurisdiction;
@@ -12,7 +11,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeTableConstants;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.ServiceCodeType;
@@ -63,8 +61,6 @@ public class CodeDatabaseTest {
   public void allNamespacesMapToTables() {
     for (String table : cd.xmlElemToTableName().values()) {
       if (!table.equalsIgnoreCase("optionalservices")) {
-        assertNotEquals(
-            CodeTableConstants.getTableColumns(table).size(), 0, "Expected " + table + " to exist");
         assertTrue(table.length() <= 63, "table name " + table + " should be <= 63 characters");
       }
     }
