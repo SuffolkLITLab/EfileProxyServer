@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +42,8 @@ public abstract class CodeDatabaseAPI extends Database {
    * Maps the name of an ECF element to be substituted by a court-specific code list or extension.
    */
   public abstract Map<String, String> xmlElemToTableName();
+  
+  public abstract Set<String> systemTables();
 
   /**
    * Gets all court location identifiers (CLI) stored in the database.

@@ -83,6 +83,11 @@ public class Ecf4Helper {
     dt.setDateRepresentation(niemCoreObjFac.createDate(d));
     return dt;
   }
+  
+  public static LocalDate parseDate(DateType dt) {
+	  var d = ((ecf4.latest.gov.niem.niem.proxy.xsd._2.Date) dt.getDateRepresentation().getValue()).getValue();
+	  return LocalDate.of(d.getYear(), d.getMonth(), d.getDay());
+  }
 
   /** Niem's Boolean type: either true or false. */
   public static ecf4.latest.gov.niem.niem.proxy.xsd._2.Boolean convertBool(boolean bool) {

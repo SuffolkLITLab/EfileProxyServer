@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,11 +100,20 @@ public class CodeDatabase extends CodeDatabaseAPI {
           Map.entry("tyler:DataFieldConfigCode", "datafieldconfig"),
           Map.entry("tyler:DocumentOptionalService", "optionalservices"));
 
+  // NOTE: the Tyler docs say "error" is available from `GetPolicy'. That is wrong.
+  private static final Set<String> systemwideTables = Set.of("version", "location", "error");
+
   @Override
   public Map<String, String> xmlElemToTableName() {
     return ecf4Map;
   }
 
+  @Override
+  public Set<String> systemTables() {
+	  return systemwideTables;
+  }
+
+  
   public static CodeDatabase fromDS(Jurisdiction jurisdiction, DataSource ds) {
     try {
       CodeDatabase cd = new CodeDatabase(jurisdiction, ds.getConnection());
