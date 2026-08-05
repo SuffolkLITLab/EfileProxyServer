@@ -15,7 +15,8 @@ public enum Jurisdiction {
   ILLINOIS("illinois", Api.ECF_4_Schedule, Vendor.TYLER),
   MASSACHUSETTS("massachusetts", Api.ECF_4, Vendor.TYLER),
   TEXAS("texas", Api.ECF_4, Vendor.TYLER),
-  VERMONT("vermont", Api.ECF_4, Vendor.TYLER);
+  VERMONT("vermont", Api.ECF_4, Vendor.TYLER),
+  ALASKA("alaska", Api.ECF_4, Vendor.TRUE_FILING);
 
   public enum Api {
     ECF_4,
@@ -25,7 +26,8 @@ public enum Jurisdiction {
   }
 
   public enum Vendor {
-    TYLER;
+    TYLER,
+    TRUE_FILING;
   }
 
   private String name;

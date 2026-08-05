@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  LegalXML Electronic Court Filing 4.0 Specification
+
+  Copyright (C) OASIS Open (2008). All Rights Reserved.
+
+  This document and translations of it may be copied and furnished to others, and
+  derivative works that comment on or otherwise explain it or assist in its
+  implementation may be prepared, copied, published and distributed, in whole or
+  in part, without restriction of any kind, provided that the above copyright
+  notice and this paragraph are included on all such copies and derivative works.
+  However, this document itself may not be modified in any way, such as by
+  removing the copyright notice or references to OASIS, except as needed for the
+  purpose of developing OASIS specifications, in which case the procedures for
+  copyrights defined in the OASIS Intellectual Property Rights document must be
+  followed, or as required to translate it into languages other than English.
+
+  The limited permissions granted above are perpetual and will not be revoked by
+  OASIS or its successors or assigns.
+
+  This document and the information contained herein is provided on an "AS IS"
+  basis and OASIS DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+  LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT
+  INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR
+  A PARTICULAR PURPOSE.
+
+  ===============================================================================
+
+  LegalXML Electronic Court Filing 4.0 Specification
+      (http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=legalxml-courtfiling)
+  OASIS Open (http://www.oasis-open.org/)
+
+
+  Document Type:     Web Services Profile Definitions
+  Generated On:       25 August 2008
+
+    This WSDL document defines the interface to all Major Design Elements (MDEs) in the OASIS Electronic Court Filing 4.0 specification.
+    
+
+    This WSDL has been modified from the original published document by modifying the Message elements to 
+    adhere to an RPC-Literal style where the first element of the message body contains the Operation Name. By using RPC-Literal,
+	The WSDl then conforms to the specification documentation where in section 2.5 Request and Operation Invocation where
+	it is stated:
+
+		Each message transmission MUST identify the operation being invoked within the SOAP Body only; the 
+		(qualified) operation name MUST be the qualified name of the first child element of the SOAP body 
+		element, as called for in section 7.1 of the [SOAP 1.1] specification. 
+		An MDE implementation MAY allow message transmissions that include a SOAPAction HTTP header. 
+		In compliance with the [WSI-I BP 1.1] specification, a receiving MDE MAY NOT rely on the value of the 283 SOAPAction HTTP header in processing the message. 
+
+	<soap:envelope>
+		<soap:body>
+			<operationName>
+				<requestType>5</requestType>
+			</operationName>
+		</soap:body>
+	</soap:envelope>
+
+	This WSDL has also been modified to reference specific Case type implementations to assist proxy generation tools.
+	The NotifyDocketingCompleteRequest message has been fixed to contain a RecordDocketingCallbackMessage as was defined in the original 4.0 WS-SIP Spec
+
+    -->
+
+<definitions
+    targetNamespace="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0"
+    xmlns:wsmp="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:nc="http://niem.gov/niem/niem-core/2.0"
+	xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
+	xmlns:wsrmp="http://docs.oasis-open.org/ws-rx/wsrmp/200702"
+	xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+	xmlns:i="http://niem.gov/niem/appinfo/2.0"
+
+	xmlns:caselistquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListQueryMessage-4.0"
+	xmlns:caselistresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListResponseMessage-4.0"
+	xmlns:casequery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseQueryMessage-4.0"
+	xmlns:caseresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseResponseMessage-4.0"
+	xmlns:casetype="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseTypeSpecificMessage-4.0"
+	xmlns:core="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0"
+	xmlns:policyquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyQueryMessage-4.0"
+	xmlns:policyresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0"
+	xmlns:court="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtSpecificMessage-4.0"
+	xmlns:docquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentQueryMessage-4.0"
+	xmlns:docresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentResponseMessage-4.0"
+	xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0"
+	xmlns:feesquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FeesCalculationQueryMessage-4.0"
+	xmlns:feesresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FeesCalculationResponseMessage-4.0"
+	xmlns:listquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListQueryMessage-4.0"
+	xmlns:listresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListResponseMessage-4.0"
+	xmlns:statusquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingStatusQueryMessage-4.0"
+	xmlns:statusresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingStatusResponseMessage-4.0"
+	xmlns:message="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:MessageReceiptMessage-4.0"
+	xmlns:payment="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentMessage-4.0"
+	xmlns:receipt="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentReceiptMessage-4.0"
+	xmlns:docketcb="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingCallbackMessage-4.0"
+	xmlns:docket="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingMessage-4.0"
+	xmlns:reviewcb="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ReviewFilingCallbackMessage-4.0"
+	xmlns:servicequery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceInformationQueryMessage-4.0"
+	xmlns:serviceresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceInformationResponseMessage-4.0"
+	xmlns:servicereceipt="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceReceiptMessage-4.0" >
+    
+    <wsp:UsingPolicy wsdl:required="true" />
+ 	<wsp:Policy wsu:Id="MyPolicy" >
+ 		<wsrmp:RMAssertion>
+ 			<wsp:Policy/>
+ 		</wsrmp:RMAssertion>
+ 	</wsp:Policy>
+    
+    <types>
+        <xsd:schema xmlns="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0" targetNamespace="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0">
+        	<xsd:annotation>
+				<xsd:documentation>ECF 4.0 Web services SIP WSDL Schema</xsd:documentation>
+				<xsd:appinfo>
+					<i:ConformantIndicator>true</i:ConformantIndicator>
+				</xsd:appinfo>
+			</xsd:annotation>
+         	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0" schemaLocation="../xsd/casetype/ECF-4.0-CivilCase.xsd"/>
+            <xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="../xsd/constraint/niem/niem-core/2.0/niem-core.xsd"/>
+            <xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="../xsd/constraint/niem/appinfo/2.0/appinfo.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-CaseListQueryMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-CaseListResponseMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-CaseQueryMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-CaseResponseMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-CoreFilingMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-CourtPolicyQueryMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-CourtPolicyResponseMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-DocumentQueryMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-DocumentResponseMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FeesCalculationQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-FeesCalculationQueryMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FeesCalculationResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-FeesCalculationResponseMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-FilingListQueryMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-FilingListResponseMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingStatusQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-FilingStatusQueryMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingStatusResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-FilingStatusResponseMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:MessageReceiptMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-MessageReceiptMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-PaymentMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentReceiptMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-PaymentReceiptMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingCallbackMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-RecordDocketingCallbackMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-RecordDocketingMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ReviewFilingCallbackMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-ReviewFilingCallbackMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceInformationQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-ServiceInformationQueryMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceInformationResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-ServiceInformationResponseMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceReceiptMessage-4.0"  schemaLocation="../xsd/message/ECF-4.0-ServiceReceiptMessage.xsd"/>
+            <xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="../xsd/common/ECF-4.0-CommonTypes.xsd"/>
+            <xsd:complexType name="NotifyFilingReviewCompleteRequestMessageType">
+					<xsd:annotation>
+						<xsd:documentation>Multi-part message type (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexContent>
+						<xsd:extension base="ecf:ElectronicFilingMessageType">
+							<xsd:sequence>
+								<xsd:element ref="reviewcb:ReviewFilingCallbackMessage"/>
+								<xsd:element ref="receipt:PaymentReceiptMessage"/>
+							</xsd:sequence>
+						</xsd:extension>
+					</xsd:complexContent>
+				</xsd:complexType>
+				<xsd:element name="NotifyFilingReviewCompleteRequestMessage" type="NotifyFilingReviewCompleteRequestMessageType">
+					<xsd:annotation>
+						<xsd:documentation>Multi-part message (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>            
+            	<xsd:complexType name="RecordFilingRequestMessageType">
+					<xsd:annotation>
+						<xsd:documentation>Multi-part message type (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexContent>
+						<xsd:extension base="ecf:ElectronicFilingMessageType">
+							<xsd:sequence>
+								<xsd:element ref="docket:RecordDocketingMessage"/>
+								<xsd:element ref="core:CoreFilingMessage"/>
+							</xsd:sequence>
+						</xsd:extension>
+					</xsd:complexContent>
+				</xsd:complexType>
+				<xsd:element name="RecordFilingRequestMessage" type="RecordFilingRequestMessageType">
+					<xsd:annotation>
+						<xsd:documentation>Multi-part message (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:complexType name="ReviewFilingRequestMessageType">
+					<xsd:annotation>
+						<xsd:documentation>Multi-part message type (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexContent>
+						<xsd:extension base="ecf:ElectronicFilingMessageType">
+							<xsd:sequence>
+								<xsd:element ref="core:CoreFilingMessage"/>
+								<xsd:element ref="payment:PaymentMessage"/>
+							</xsd:sequence>
+						</xsd:extension>
+					</xsd:complexContent>
+				</xsd:complexType>
+				<xsd:element name="ReviewFilingRequestMessage" type="ReviewFilingRequestMessageType">
+					<xsd:annotation>
+						<xsd:documentation>Multi-part message (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+        </xsd:schema>
+    </types>
+
+    <!-- request messages -->
+    
+    <message name="GetPolicyRequest">
+        <part name="CourtPolicyQueryMessage" element="policyquery:CourtPolicyQueryMessage"/>
+    </message>
+
+    <message name="GetCaseListRequest">
+        <part name="CaseListQueryMessage" element="caselistquery:CaseListQueryMessage"/>
+    </message>
+
+    <message name="GetCaseRequest">
+        <part name="CaseQueryMessage" element="casequery:CaseQueryMessage"/>
+    </message>
+
+    <message name="GetDocumentRequest">
+        <part name="DocumentQueryMessage" element="docquery:DocumentQueryMessage"/>
+    </message>
+
+    <message name="GetFeesCalculationRequest">
+        <part name="FeesCalculationQueryMessage" element="feesquery:FeesCalculationQueryMessage"/>
+    </message>
+    
+    <message name="GetFilingListRequest">
+        <part name="FilingListQueryMessage" element="listquery:FilingListQueryMessage"/>
+    </message>
+
+    <message name="GetFilingStatusRequest">
+        <part name="FilingStatusQueryMessage" element="statusquery:FilingStatusQueryMessage"/>
+    </message>
+
+    <message name="GetServiceInformationRequest">
+        <part name="ServiceInformationQueryMessage" element="servicequery:ServiceInformationQueryMessage"/>
+    </message>
+
+    <message name="ServeFilingRequest">
+        <part name="CoreFilingMessage" element="core:CoreFilingMessage"/>
+    </message>
+
+    <message name="NotifyFilingReviewCompleteRequest">
+        <part name="NotifyFilingReviewCompleteRequestMessage" element="wsmp:NotifyFilingReviewCompleteRequestMessage"/>
+    </message>
+
+    <message name="RecordFilingRequest">
+        <part name="RecordFilingRequestMessage" element="wsmp:RecordFilingRequestMessage"/>
+    </message>
+
+    <message name="ReviewFilingRequest">
+        <part name="ReviewFilingRequestMessage" element="wsmp:ReviewFilingRequestMessage"/>
+    </message>
+
+    <message name="NotifyDocketingCompleteRequest">
+        <part name="RecordDocketingCallbackMessage" element="docketcb:RecordDocketingCallbackMessage"/>
+    </message>
+
+    <!-- response messages -->
+    
+    <message name="GetPolicyResponse">
+        <part name="CourtPolicyResponseMessage" element="policyresponse:CourtPolicyResponseMessage"/>
+    </message>
+    
+    <message name="GetFeesCalculationResponse">
+        <part name="FeesCalculationResponseMessage" element="feesresponse:FeesCalculationResponseMessage"/>
+    </message>
+    
+    <message name="GetCaseListResponse">
+        <part name="CaseListResponseMessage" element="caselistresponse:CaseListResponseMessage"/>
+    </message>
+    
+    <message name="GetCaseResponse">
+        <part name="CaseResponseMessage" element="caseresponse:CaseResponseMessage"/>
+    </message>
+    
+    <message name="GetDocumentResponse">
+        <part name="DocumentResponseMessage" element="docresponse:DocumentResponseMessage"/>
+    </message>
+    
+    <message name="GetFilingListResponse">
+        <part name="FilingListResponseMessage" element="listresponse:FilingListResponseMessage"/>
+    </message>
+    
+    <message name="GetFilingStatusResponse">
+        <part name="FilingStatusReponseMessage" element="statusresponse:FilingStatusResponseMessage"/>
+    </message>
+    
+    <message name="GetServiceInformationResponse">
+        <part name="ServiceInformationResponseMessage" element="serviceresponse:ServiceInformationResponseMessage"/>
+    </message>
+    
+    <message name="ServeFilingResponse">
+        <part name="ServiceReceiptMessage" element="servicereceipt:ServiceReceiptMessage"/>
+    </message>
+    
+    <message name="NotifyFilingReviewCompleteResponse">
+        <part name="MessageReceiptMessage" element="message:MessageReceiptMessage"/>
+    </message>
+    
+    <message name="RecordFilingResponse">
+        <part name="MessageReceiptMessage" element="message:MessageReceiptMessage"/>
+    </message>
+    
+    <message name="ReviewFilingResponse">
+        <part name="MessageReceiptMessage" element="message:MessageReceiptMessage"/>
+    </message>
+    
+    <message name="NotifyDocketingCompleteResponse">
+        <part name="MessageReceiptMessage" element="message:MessageReceiptMessage"/>
+    </message>
+    
+    <!-- ports -->
+    
+    <portType name="ServiceMDEPort">
+        <operation name="ServeFiling">
+            <input name="ServeFilingRequest" message="wsmp:ServeFilingRequest"/>
+            <output name="ServeFilingResponse" message="wsmp:ServeFilingResponse"/>
+        </operation>
+    </portType>
+
+    <portType name="FilingAssemblyMDEPort">
+        <operation name="NotifyFilingReviewComplete">
+            <input name="NotifyFilingReviewCompleteRequest" message="wsmp:NotifyFilingReviewCompleteRequest"/>
+            <output name="NotifyFilingReviewCompleteResponse" message="wsmp:NotifyFilingReviewCompleteResponse"/>
+        </operation>
+    </portType>
+
+    <portType name="CourtRecordMDEPort">
+        <operation name="RecordFiling">
+            <input name="RecordFilingRequest" message="wsmp:RecordFilingRequest"/>
+            <output name="RecordFilingResponse" message="wsmp:RecordFilingResponse"/>
+        </operation>
+        <operation name="GetCaseList">
+            <input name="GetCaseListRequest" message="wsmp:GetCaseListRequest"/>
+            <output name="GetCaseListResponse" message="wsmp:GetCaseListResponse"/>
+        </operation>
+        <operation name="GetCase">
+            <input name="GetCaseRequest" message="wsmp:GetCaseRequest"/>
+            <output name="GetCaseResponse" message="wsmp:GetCaseResponse"/>
+        </operation>
+        <operation name="GetDocument">
+            <input name="GetDocumentRequest" message="wsmp:GetDocumentRequest"/>
+            <output name="GetDocumentResponse" message="wsmp:GetDocumentResponse"/>
+        </operation>
+        <operation name="GetServiceInformation">
+            <input name="GetServiceInformationRequest" message="wsmp:GetServiceInformationRequest"/>
+            <output name="GetServiceInformationResponse" message="wsmp:GetServiceInformationResponse"/>
+        </operation>
+    </portType>
+
+    <portType name="FilingReviewMDEPort">
+        <operation name="ReviewFiling">
+            <input name="ReviewFilingRequest" message="wsmp:ReviewFilingRequest"/>
+            <output name="ReviewFilingResponse" message="wsmp:ReviewFilingResponse"/>
+        </operation>
+        <operation name="NotifyDocketingComplete">
+            <input name="NotifyDocketingCompleteRequest" message="wsmp:NotifyDocketingCompleteRequest"/>
+            <output name="NotifyDocketingCompleteResponse" message="wsmp:NotifyDocketingCompleteResponse"/>
+        </operation>
+        <operation name="GetFeesCalculation">
+            <input name="GetFeesCalculationRequest" message="wsmp:GetFeesCalculationRequest"/>
+            <output name="GetFeesCalculationResponse" message="wsmp:GetFeesCalculationResponse"/>
+        </operation>
+        <operation name="GetFilingList">
+            <input name="GetFilingListRequest" message="wsmp:GetFilingListRequest"/>
+            <output name="GetFilingListResponse" message="wsmp:GetFilingListResponse"/>
+        </operation>
+        <operation name="GetFilingStatus">
+            <input name="GetFilingStatusRequest" message="wsmp:GetFilingStatusRequest"/>
+            <output name="GetFilingStatusResponse" message="wsmp:GetFilingStatusResponse"/>
+        </operation>
+        <operation name="GetPolicy">
+            <input name="GetPolicyRequest" message="wsmp:GetPolicyRequest"/>
+            <output name="GetPolicyResponse" message="wsmp:GetPolicyResponse"/>
+        </operation>
+    </portType>
+
+    <!-- bindings -->
+    
+    <binding name="ServiceMDEPortSOAPBinding" type="wsmp:ServiceMDEPort">
+     	<wsp:PolicyReference URI="#MyPolicy" />
+     	<!--<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>-->
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="ServeFiling">
+            <soap:operation soapAction=""/>
+            <input name="ServeFilingRequest"><soap:body use="literal"/></input>
+            <output name="ServeFilingResponse"><soap:body use="literal"/></output>
+        </operation>
+    </binding>
+
+    <binding name="FilingAssemblyMDEPortSOAPBinding" type="wsmp:FilingAssemblyMDEPort">
+     	<wsp:PolicyReference URI="#MyPolicy" />
+     	<!--<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>-->
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="NotifyFilingReviewComplete">
+            <soap:operation soapAction=""/>
+            <input name="NotifyFilingReviewCompleteRequest"><soap:body use="literal"/></input>
+            <output name="NotifyFilingReviewCompleteResponse"><soap:body use="literal"/></output>
+        </operation>
+    </binding>
+
+    <binding name="CourtRecordMDEPortSOAPBinding" type="wsmp:CourtRecordMDEPort">
+     	<wsp:PolicyReference URI="#MyPolicy" />
+     	<!--<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>-->
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="RecordFiling">
+            <soap:operation soapAction=""/>
+            <input name="RecordFilingRequest"><soap:body use="literal"/></input>
+            <output name="RecordFilingResponse"><soap:body use="literal"/></output>
+        </operation>
+        <operation name="GetCaseList">
+            <soap:operation soapAction=""/>
+            <input name="GetCaseListRequest"><soap:body use="literal"/></input>
+            <output name="GetCaseListResponse"><soap:body use="literal"/></output>
+        </operation>
+        <operation name="GetCase">
+            <soap:operation soapAction=""/>
+            <input name="GetCaseRequest"><soap:body use="literal"/></input>
+            <output name="GetCaseResponse"><soap:body use="literal"/></output>
+        </operation>
+        <operation name="GetDocument">
+            <soap:operation soapAction=""/>
+            <input name="GetDocumentRequest"><soap:body use="literal"/></input>
+            <output name="GetDocumentResponse"><soap:body use="literal"/></output>
+        </operation>
+        <operation name="GetServiceInformation">
+            <soap:operation soapAction=""/>
+            <input name="GetServiceInformationRequest"><soap:body use="literal"/></input>
+            <output name="GetServiceInformationResponse"><soap:body use="literal"/></output>
+        </operation>
+    </binding>
+
+    <binding name="FilingReviewMDEPortSOAPBinding" type="wsmp:FilingReviewMDEPort">
+     	<wsp:PolicyReference URI="#MyPolicy" />
+     	<!--<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>-->
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="ReviewFiling">
+            <soap:operation soapAction=""/>
+            <input name="ReviewFilingRequest"><soap:body use="literal"/></input>
+            <output name="ReviewFilingResponse"><soap:body use="literal"/></output>
+        </operation>
+        <operation name="NotifyDocketingComplete">
+            <soap:operation soapAction=""/>
+            <input name="NotifyDocketingCompleteRequest"><soap:body use="literal"/></input>
+            <output name="NotifyDocketingCompleteResponse"><soap:body use="literal"/></output>
+        </operation>
+        <operation name="GetFeesCalculation">
+            <soap:operation soapAction=""/>
+            <input name="GetFeesCalculationRequest"><soap:body use="literal"/></input>
+            <output name="GetFeesCalculationResponse"><soap:body use="literal"/></output>
+        </operation>
+        <operation name="GetFilingList">
+            <soap:operation soapAction=""/>
+            <input name="GetFilingListRequest"><soap:body use="literal"/></input>
+            <output name="GetFilingListResponse"><soap:body use="literal"/></output>
+        </operation>
+        <operation name="GetFilingStatus">
+            <soap:operation soapAction=""/>
+            <input name="GetFilingStatusRequest"><soap:body use="literal"/></input>
+            <output name="GetFilingStatusResponse"><soap:body use="literal"/></output>
+        </operation>
+        <operation name="GetPolicy">
+            <soap:operation soapAction=""/>
+            <input name="GetPolicyRequest"><soap:body use="literal"/></input>
+            <output name="GetPolicyResponse"><soap:body use="literal"/></output>
+        </operation>
+    </binding>
+
+    <!-- services not defined here...defined in an implementation-specific WSDL that imports this one -->
+
+</definitions>
