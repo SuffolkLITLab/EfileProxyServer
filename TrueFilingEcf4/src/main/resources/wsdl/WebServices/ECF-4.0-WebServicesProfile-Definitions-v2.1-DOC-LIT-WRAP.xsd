@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2015 rel. 4 sp1 (http://www.altova.com) by ImageSoft, Inc. (ImageSoft, Inc.) -->
+<!--
+  LegalXML Electronic Court Filing 4.0 Specification
+
+  Copyright (C) OASIS Open (2008). All Rights Reserved.
+
+  This document and translations of it may be copied and furnished to others, and
+  derivative works that comment on or otherwise explain it or assist in its
+  implementation may be prepared, copied, published and distributed, in whole or
+  in part, without restriction of any kind, provided that the above copyright
+  notice and this paragraph are included on all such copies and derivative works.
+  However, this document itself may not be modified in any way, such as by
+  removing the copyright notice or references to OASIS, except as needed for the
+  purpose of developing OASIS specifications, in which case the procedures for
+  copyrights defined in the OASIS Intellectual Property Rights document must be
+  followed, or as required to translate it into languages other than English.
+
+  The limited permissions granted above are perpetual and will not be revoked by
+  OASIS or its successors or assigns.
+
+  This document and the information contained herein is provided on an "AS IS"
+  basis and OASIS DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+  LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT
+  INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR
+  A PARTICULAR PURPOSE.
+
+  ===============================================================================
+
+  LegalXML Electronic Court Filing 4.0 Specification
+      (http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=legalxml-courtfiling)
+  OASIS Open (http://www.oasis-open.org/)
+
+
+  Document Type:     Web Services Profile Schema Definitions
+  Generated On:       4 March 2016
+
+    This XSD document defines the tpes and elements for each operation on all Major Design Elements (MDEs) in the OASIS Electronic Court Filing 4.0 specification.
+    
+	Oct 2015:  Changes applied to all request messages to align with operations named in Section 2.5 of the Web Services Service Interaction Profile, including new types added for document/literal wrapped patterns.
+    Mar 2016:  Extracted type definitions from WSDL into this document and added import statement to WSDL definition document.
+	
+    -->
+<xsd:schema xmlns="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsrmp="http://docs.oasis-open.org/ws-rx/wsrmp/200702" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:caselistquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListQueryMessage-4.0" xmlns:caselistresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListResponseMessage-4.0" xmlns:casequery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseQueryMessage-4.0" xmlns:caseresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseResponseMessage-4.0" xmlns:casetype="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseTypeSpecificMessage-4.0" xmlns:core="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0" xmlns:policyquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyQueryMessage-4.0" xmlns:policyresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0" xmlns:court="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtSpecificMessage-4.0" xmlns:docquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentQueryMessage-4.0" xmlns:docresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentResponseMessage-4.0" xmlns:feesquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FeesCalculationQueryMessage-4.0" xmlns:feesresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FeesCalculationResponseMessage-4.0" xmlns:listquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListQueryMessage-4.0" xmlns:listresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListResponseMessage-4.0" xmlns:statusquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingStatusQueryMessage-4.0" xmlns:statusresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingStatusResponseMessage-4.0" xmlns:message="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:MessageReceiptMessage-4.0" xmlns:payment="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentMessage-4.0" xmlns:receipt="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentReceiptMessage-4.0" xmlns:docketcb="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingCallbackMessage-4.0" xmlns:docket="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingMessage-4.0" xmlns:reviewcb="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ReviewFilingCallbackMessage-4.0" xmlns:servicequery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceInformationQueryMessage-4.0" xmlns:serviceresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceInformationResponseMessage-4.0" xmlns:servicereceipt="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceReceiptMessage-4.0" xmlns:isi="urn:ImageSoft:ecf:schema:xsd:Common" targetNamespace="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0" version="4.0">
+	<xsd:annotation>
+		<xsd:documentation>WS-SIP Types</xsd:documentation>
+		<xsd:appinfo>
+			<i:ConformantIndicator>true</i:ConformantIndicator>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="../xsd/constraint/niem/appinfo/2.0/appinfo.xsd"/>
+	<xsd:import namespace="urn:ImageSoft:ecf:schema:xsd:Common" schemaLocation="../xsd/isi/ImageSoft.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-CaseListQueryMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-CaseListResponseMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-CaseQueryMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-CaseResponseMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-CoreFilingMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-CourtPolicyQueryMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-CourtPolicyResponseMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-DocumentQueryMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-DocumentResponseMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FeesCalculationQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-FeesCalculationQueryMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FeesCalculationResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-FeesCalculationResponseMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-FilingListQueryMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-FilingListResponseMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingStatusQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-FilingStatusQueryMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingStatusResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-FilingStatusResponseMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:MessageReceiptMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-MessageReceiptMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-PaymentMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentReceiptMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-PaymentReceiptMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingCallbackMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-RecordDocketingCallbackMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-RecordDocketingMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ReviewFilingCallbackMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-ReviewFilingCallbackMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceInformationQueryMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-ServiceInformationQueryMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceInformationResponseMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-ServiceInformationResponseMessage.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceReceiptMessage-4.0" schemaLocation="../xsd/message/ECF-4.0-ServiceReceiptMessage.xsd"/>
+	<!-- Requests -->
+	<xsd:complexType name="GetPolicyRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="policyquery:CourtPolicyQueryMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetPolicy" type="GetPolicyRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="GetCaseListRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="caselistquery:CaseListQueryMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetCaseList" type="GetCaseListRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="GetCaseRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="casequery:CaseQueryMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetCase" type="GetCaseRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="GetDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="docquery:DocumentQueryMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetDocument" type="GetDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="GetFeesCalculationRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="feesquery:FeesCalculationQueryMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetFeesCalculation" type="GetFeesCalculationRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="GetFilingListRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="listquery:FilingListQueryMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetFilingList" type="GetFilingListRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="GetFilingStatusRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="statusquery:FilingStatusQueryMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetFilingStatus" type="GetFilingStatusRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="GetServiceInformationRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="servicequery:ServiceInformationQueryMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetServiceInformation" type="GetServiceInformationRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="ServeFilingRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="core:CoreFilingMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="ServeFiling" type="ServeFilingRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- NotifyFilingReviewComplete Request -->
+	<xsd:complexType name="NotifyFilingReviewCompleteRequestMessageType">
+		<xsd:annotation>
+			<xsd:documentation>Multi-part message type (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="reviewcb:ReviewFilingCallbackMessage"/>
+			<xsd:element ref="receipt:PaymentReceiptMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="NotifyFilingReviewCompleteRequestMessage" type="NotifyFilingReviewCompleteRequestMessageType">
+		<xsd:annotation>
+			<xsd:documentation>Multi-part message (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="NotifyFilingReviewCompleteRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="NotifyFilingReviewCompleteRequestMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="NotifyFilingReviewComplete" type="NotifyFilingReviewCompleteRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- RecordFiling Request -->
+	<xsd:complexType name="RecordFilingRequestMessageType">
+		<xsd:annotation>
+			<xsd:documentation>Multi-part message type (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="docket:RecordDocketingMessage" maxOccurs="unbounded"/>
+			<xsd:element ref="core:CoreFilingMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="RecordFilingRequestMessage" type="RecordFilingRequestMessageType">
+		<xsd:annotation>
+			<xsd:documentation>Multi-part message (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="RecordFilingRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="RecordFilingRequestMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="RecordFiling" type="RecordFilingRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ReviewFiling Request -->
+	<xsd:complexType name="ReviewFilingRequestMessageType">
+		<xsd:annotation>
+			<xsd:documentation>Multi-part message type (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="core:CoreFilingMessage"/>
+			<xsd:element ref="payment:PaymentMessage" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="ReviewFilingRequestMessage" type="ReviewFilingRequestMessageType">
+		<xsd:annotation>
+			<xsd:documentation>Multi-part message (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="ReviewFilingRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="ReviewFilingRequestMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="ReviewFiling" type="ReviewFilingRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- NotifyDocketingComplete Request -->
+	<xsd:complexType name="NotifyDocketingCompleteRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="docketcb:RecordDocketingCallbackMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="NotifyDocketingComplete" type="NotifyDocketingCompleteRequestType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- *** Responses *** -->
+	<!-- GetPolicy Response -->
+	<xsd:complexType name="GetPolicyResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="policyresponse:CourtPolicyResponseMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetPolicyResponse" type="GetPolicyResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- GetCaseList Response -->
+	<xsd:complexType name="GetCaseListResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="caselistresponse:CaseListResponseMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetCaseListResponse" type="GetCaseListResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- GetCase Response -->
+	<xsd:complexType name="GetCaseResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="caseresponse:CaseResponseMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetCaseResponse" type="GetCaseResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- GetDocumentType Response -->
+	<xsd:complexType name="GetDocumentResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="docresponse:DocumentResponseMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetDocumentResponse" type="GetDocumentResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- GetFeesCalculation Response -->
+	<xsd:complexType name="GetFeesCalculationResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="feesresponse:FeesCalculationResponseMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetFeesCalculationResponse" type="GetFeesCalculationResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- GetFilingList Response -->
+	<xsd:complexType name="GetFilingListResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="listresponse:FilingListResponseMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetFilingListResponse" type="GetFilingListResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- GetFilingStatus Response -->
+	<xsd:complexType name="GetFilingStatusResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="statusresponse:FilingStatusResponseMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetFilingStatusResponse" type="GetFilingStatusResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- GetServiceInformationType Response -->
+	<xsd:complexType name="GetServiceInformationResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="serviceresponse:ServiceInformationResponseMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetServiceInformationResponse" type="GetServiceInformationResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ServeFiling Response -->
+	<xsd:complexType name="ServeFilingResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="servicereceipt:ServiceReceiptMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="ServeFilingResponse" type="ServeFilingResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- NotifyFilingReviewComplete Response -->
+	<xsd:complexType name="NotifyFilingReviewCompleteResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="message:MessageReceiptMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="NotifyFilingReviewCompleteResponse" type="NotifyFilingReviewCompleteResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- RecordFiling Response -->
+	<xsd:complexType name="RecordFilingResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="message:MessageReceiptMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="RecordFilingResponse" type="RecordFilingResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ReviewFiling Response -->
+	<xsd:complexType name="ReviewFilingResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="message:MessageReceiptMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="ReviewFilingResponse" type="ReviewFilingResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- NotifyDocketingComplete Response -->
+	<xsd:complexType name="NotifyDocketingCompleteResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="message:MessageReceiptMessage"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="NotifyDocketingCompleteResponse" type="NotifyDocketingCompleteResponseType">
+		<xsd:annotation>
+			<xsd:documentation>Document/literal wrapped pattern</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+</xsd:schema>

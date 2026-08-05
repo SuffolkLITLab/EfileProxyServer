@@ -17,6 +17,7 @@ jobs:
           cache-dependency-path: |
             EfspCommons/pom.xml
             TylerEfmClient/pom.xml
+            TrueFilingEcf4/pom.xml
             TylerEcf4/pom.xml
             TylerEcf5/pom.xml
             proxyserver/pom.xml

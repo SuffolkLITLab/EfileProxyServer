@@ -3,6 +3,7 @@ ARG CI_COMMIT_SHA
 LABEL git-commit=$CI_COMMIT_SHA
 COPY pom.xml /app/
 COPY EfspCommons /app/EfspCommons/
+COPY TrueFilingEcf4 /app/TrueFilingEcf4/
 COPY TylerEcf4 /app/TylerEcf4/
 COPY TylerEcf5 /app/TylerEcf5/
 COPY TylerEfmClient /app/TylerEfmClient/

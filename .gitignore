@@ -91,3 +91,7 @@ google-java-format_*
 site
 
 .jqwik-database
+
+# Eclipse
+
+.factorypath

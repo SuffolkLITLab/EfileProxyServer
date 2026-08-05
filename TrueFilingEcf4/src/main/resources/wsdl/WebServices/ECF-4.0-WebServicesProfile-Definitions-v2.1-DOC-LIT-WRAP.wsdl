@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  LegalXML Electronic Court Filing 4.0 Specification
+
+  Copyright (C) OASIS Open (2008). All Rights Reserved.
+
+  This document and translations of it may be copied and furnished to others, and
+  derivative works that comment on or otherwise explain it or assist in its
+  implementation may be prepared, copied, published and distributed, in whole or
+  in part, without restriction of any kind, provided that the above copyright
+  notice and this paragraph are included on all such copies and derivative works.
+  However, this document itself may not be modified in any way, such as by
+  removing the copyright notice or references to OASIS, except as needed for the
+  purpose of developing OASIS specifications, in which case the procedures for
+  copyrights defined in the OASIS Intellectual Property Rights document must be
+  followed, or as required to translate it into languages other than English.
+
+  The limited permissions granted above are perpetual and will not be revoked by
+  OASIS or its successors or assigns.
+
+  This document and the information contained herein is provided on an "AS IS"
+  basis and OASIS DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+  LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT
+  INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR
+  A PARTICULAR PURPOSE.
+
+  ===============================================================================
+
+  LegalXML Electronic Court Filing 4.0 Specification
+      (http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=legalxml-courtfiling)
+  OASIS Open (http://www.oasis-open.org/)
+
+
+  Document Type:     Web Services Profile Definitions
+  Generated On:       25 August 2008
+
+    This WSDL document defines the interface to all Major Design Elements (MDEs) in the OASIS Electronic Court Filing 4.0 specification.
+    
+	Oct 2015:  Changes applied to all request messages to align with operations named in Section 2.5 of the Web Services Service Interaction Profile, including new types added for document/literal wrapped patterns.
+    Mar 2016:  Changes applied to all response messages to align with operations named in Section 2.5 of the Web Service Service Interaction Profile. Follows accepted convention of appending "Response" to the element name of the Operation. i.e. GetCaseResponse, GetCaseListResponse, etc.
+	
+    -->
+<definitions targetNamespace="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0" xmlns:wsmp="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsrmp="http://docs.oasis-open.org/ws-rx/wsrmp/200702" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+	<wsp:UsingPolicy wsdl:required="true"/>
+	<wsp:Policy wsu:Id="MyPolicy">
+		<wsrmp:RMAssertion>
+			<wsp:Policy/>
+		</wsrmp:RMAssertion>
+	</wsp:Policy>
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0" schemaLocation="ECF-4.0-WebServicesProfile-Definitions-v2.1-DOC-LIT-WRAP.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<!-- request messages -->
+	<message name="GetPolicyRequest">
+		<part name="CourtPolicyQueryMessage" element="wsmp:GetPolicy"/>
+	</message>
+	<message name="GetCaseListRequest">
+		<part name="CaseListQueryMessage" element="wsmp:GetCaseList"/>
+	</message>
+	<message name="GetCaseRequest">
+		<part name="CaseQueryMessage" element="wsmp:GetCase"/>
+	</message>
+	<message name="GetDocumentRequest">
+		<part name="DocumentQueryMessage" element="wsmp:GetDocument"/>
+	</message>
+	<message name="GetFeesCalculationRequest">
+		<part name="FeesCalculationQueryMessage" element="wsmp:GetFeesCalculation"/>
+	</message>
+	<message name="GetFilingListRequest">
+		<part name="FilingListQueryMessage" element="wsmp:GetFilingList"/>
+	</message>
+	<message name="GetFilingStatusRequest">
+		<part name="FilingStatusQueryMessage" element="wsmp:GetFilingStatus"/>
+	</message>
+	<message name="GetServiceInformationRequest">
+		<part name="ServiceInformationQueryMessage" element="wsmp:GetServiceInformation"/>
+	</message>
+	<message name="ServeFilingRequest">
+		<part name="CoreFilingMessage" element="wsmp:ServeFiling"/>
+	</message>
+	<message name="NotifyFilingReviewCompleteRequest">
+		<part name="NotifyFilingReviewCompleteRequestMessage" element="wsmp:NotifyFilingReviewComplete"/>
+	</message>
+	<message name="RecordFilingRequest">
+		<part name="RecordFilingRequestMessage" element="wsmp:RecordFiling"/>
+	</message>
+	<message name="ReviewFilingRequest">
+		<part name="ReviewFilingRequestMessage" element="wsmp:ReviewFiling"/>
+	</message>
+	<message name="NotifyDocketingCompleteRequest">
+		<part name="RecordDocketingCallbackMessage" element="wsmp:NotifyDocketingComplete"/>
+	</message>
+	
+	<!-- response messages -->
+	<message name="GetPolicyResponse">
+		<part name="CourtPolicyResponseMessage" element="wsmp:GetPolicyResponse"/>
+	</message>
+	<message name="GetCaseListResponse">
+		<part name="CaseListResponseMessage" element="wsmp:GetCaseListResponse"/>
+	</message>
+	<message name="GetCaseResponse">
+		<part name="CaseResponseMessage" element="wsmp:GetCaseResponse"/>
+	</message>
+	<message name="GetDocumentResponse">
+		<part name="DocumentResponseMessage" element="wsmp:GetDocumentResponse"/>
+	</message>
+	<message name="GetFeesCalculationResponse">
+		<part name="FeesCalculationResponseMessage" element="wsmp:GetFeesCalculationResponse"/>
+	</message>
+	<message name="GetFilingListResponse">
+		<part name="FilingListResponseMessage" element="wsmp:GetFilingListResponse"/>
+	</message>
+	<message name="GetFilingStatusResponse">
+		<part name="FilingStatusReponseMessage" element="wsmp:GetFilingStatusResponse"/>
+	</message>
+	<message name="GetServiceInformationResponse">
+		<part name="ServiceInformationResponseMessage" element="wsmp:GetServiceInformationResponse"/>
+	</message>
+	<message name="ServeFilingResponse">
+		<part name="ServiceReceiptMessage" element="wsmp:ServeFilingResponse"/>
+	</message>
+	<message name="NotifyFilingReviewCompleteResponse">
+		<part name="MessageReceiptMessage" element="wsmp:NotifyFilingReviewCompleteResponse"/>
+	</message>
+	<message name="RecordFilingResponse">
+		<part name="MessageReceiptMessage" element="wsmp:RecordFilingResponse"/>
+	</message>
+	<message name="ReviewFilingResponse">
+		<part name="MessageReceiptMessage" element="wsmp:ReviewFilingResponse"/>
+	</message>
+	<message name="NotifyDocketingCompleteResponse">
+		<part name="MessageReceiptMessage" element="wsmp:NotifyDocketingCompleteResponse"/>
+	</message>
+	<!-- ports -->
+	<portType name="ServiceMDEPort">
+		<operation name="ServeFiling">
+			<input name="ServeFilingRequest" message="wsmp:ServeFilingRequest"/>
+			<output name="ServeFilingResponse" message="wsmp:ServeFilingResponse"/>
+		</operation>
+	</portType>
+	<portType name="FilingAssemblyMDEPort">
+		<operation name="NotifyFilingReviewComplete">
+			<input name="NotifyFilingReviewCompleteRequest" message="wsmp:NotifyFilingReviewCompleteRequest"/>
+			<output name="NotifyFilingReviewCompleteResponse" message="wsmp:NotifyFilingReviewCompleteResponse"/>
+		</operation>
+	</portType>
+	<portType name="CourtRecordMDEPort">
+		<operation name="RecordFiling">
+			<input name="RecordFilingRequest" message="wsmp:RecordFilingRequest"/>
+			<output name="RecordFilingResponse" message="wsmp:RecordFilingResponse"/>
+		</operation>
+		<operation name="GetCaseList">
+			<input name="GetCaseListRequest" message="wsmp:GetCaseListRequest"/>
+			<output name="GetCaseListResponse" message="wsmp:GetCaseListResponse"/>
+		</operation>
+		<operation name="GetCase">
+			<input name="GetCaseRequest" message="wsmp:GetCaseRequest"/>
+			<output name="GetCaseResponse" message="wsmp:GetCaseResponse"/>
+		</operation>
+		<operation name="GetDocument">
+			<input name="GetDocumentRequest" message="wsmp:GetDocumentRequest"/>
+			<output name="GetDocumentResponse" message="wsmp:GetDocumentResponse"/>
+		</operation>
+		<operation name="GetServiceInformation">
+			<input name="GetServiceInformationRequest" message="wsmp:GetServiceInformationRequest"/>
+			<output name="GetServiceInformationResponse" message="wsmp:GetServiceInformationResponse"/>
+		</operation>
+	</portType>
+	<portType name="FilingReviewMDEPort">
+		<operation name="ReviewFiling">
+			<input name="ReviewFilingRequest" message="wsmp:ReviewFilingRequest"/>
+			<output name="ReviewFilingResponse" message="wsmp:ReviewFilingResponse"/>
+		</operation>
+		<operation name="NotifyDocketingComplete">
+			<input name="NotifyDocketingCompleteRequest" message="wsmp:NotifyDocketingCompleteRequest"/>
+			<output name="NotifyDocketingCompleteResponse" message="wsmp:NotifyDocketingCompleteResponse"/>
+		</operation>
+		<operation name="GetFeesCalculation">
+			<input name="GetFeesCalculationRequest" message="wsmp:GetFeesCalculationRequest"/>
+			<output name="GetFeesCalculationResponse" message="wsmp:GetFeesCalculationResponse"/>
+		</operation>
+		<operation name="GetFilingList">
+			<input name="GetFilingListRequest" message="wsmp:GetFilingListRequest"/>
+			<output name="GetFilingListResponse" message="wsmp:GetFilingListResponse"/>
+		</operation>
+		<operation name="GetFilingStatus">
+			<input name="GetFilingStatusRequest" message="wsmp:GetFilingStatusRequest"/>
+			<output name="GetFilingStatusResponse" message="wsmp:GetFilingStatusResponse"/>
+		</operation>
+		<operation name="GetPolicy">
+			<input name="GetPolicyRequest" message="wsmp:GetPolicyRequest"/>
+			<output name="GetPolicyResponse" message="wsmp:GetPolicyResponse"/>
+		</operation>
+	</portType>
+	<!-- bindings -->
+	<binding name="ServiceMDEPortSOAPBinding" type="wsmp:ServiceMDEPort">
+		<wsp:PolicyReference URI="#MyPolicy"/>
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="ServeFiling">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0\ServiceMDEPort\ServeFiling"/>
+			<input name="ServeFilingRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="ServeFilingResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<binding name="FilingAssemblyMDEPortSOAPBinding" type="wsmp:FilingAssemblyMDEPort">
+		<wsp:PolicyReference URI="#MyPolicy"/>
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="NotifyFilingReviewComplete">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0\FilingAssemblyMDEPort\NotifyFilingReviewComplete"/>
+			<input name="NotifyFilingReviewCompleteRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="NotifyFilingReviewCompleteResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<binding name="CourtRecordMDEPortSOAPBinding" type="wsmp:CourtRecordMDEPort">
+		<wsp:PolicyReference URI="#MyPolicy"/>
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="RecordFiling">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0\CourtRecordMDEPort\RecordFiling"/>
+			<input name="RecordFilingRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="RecordFilingResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetCaseList">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0\CourtRecordMDEPort\GetCaseList"/>
+			<input name="GetCaseListRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetCaseListResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetCase">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0\CourtRecordMDEPort\GetCase"/>
+			<input name="GetCaseRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetCaseResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetDocument">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0\CourtRecordMDEPort\GetDocument"/>
+			<input name="GetDocumentRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetDocumentResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetServiceInformation">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0\CourtRecordMDEPort\GetServiceInformation"/>
+			<input name="GetServiceInformationRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetServiceInformationResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<binding name="FilingReviewMDEPortSOAPBinding" type="wsmp:FilingReviewMDEPort">
+		<wsp:PolicyReference URI="#MyPolicy"/>
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="ReviewFiling">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0\FilingReviewMDEPort\ReviewFiling"/>
+			<input name="ReviewFilingRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="ReviewFilingResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="NotifyDocketingComplete">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0\FilingReviewMDEPort\NotifyDocketingComplete"/>
+			<input name="NotifyDocketingCompleteRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="NotifyDocketingCompleteResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetFeesCalculation">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0\FilingReviewMDEPort\GetFeesCalculation"/>
+			<input name="GetFeesCalculationRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetFeesCalculationResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetFilingList">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0\FilingReviewMDEPort\GetFilingList"/>
+			<input name="GetFilingListRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetFilingListResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetFilingStatus">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0\FilingReviewMDEPort\GetFilingStatus"/>
+			<input name="GetFilingStatusRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetFilingStatusResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetPolicy">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0\FilingReviewMDEPort\GetPolicy"/>
+			<input name="GetPolicyRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetPolicyResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<!-- services not defined here...defined in an implementation-specific WSDL that imports this one -->
+</definitions>

@@ -622,6 +622,7 @@ public class CodeUpdater {
 
       return switch (jurisdiction.getVendor()) {
         case Jurisdiction.Vendor.TYLER -> CodeDatabase.fromDS(jurisdiction, ds);
+        default -> throw new RuntimeException("Other databases not yet supported");
       };
     } catch (Exception ex) {
       throw new RuntimeException(ex);
