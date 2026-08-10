@@ -89,28 +89,15 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
 
-                <executions>
+                <!--executions>
                     <execution>
                         <id>copy-wsdl</id>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <phase>generate-sources</phase>
-                        <configuration>
-                            <outputDirectory>target/classes/wsdl/xsd</outputDirectory>
-                            <overwrite>true</overwrite>
-                            <resources>
-                                <resource>
-                                    <directory>../Niem/src/main/resources/xsd</directory>
-                                    <includes>
-                                        <include>**/*.xsd</include>
-                                        <include>**/**/*.xsd</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
                     </execution>
-                </executions>
+                </executions-->
             </plugin>
             <plugin>
                 <groupId>org.apache.cxf</groupId>
@@ -128,16 +115,13 @@
                             <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
                             <wsdlOptions>
                                 <wsdlOption>
-                                    <wsdl>target/classes/wsdl/WebServices/dev/ECF-4.0-FilingReviewMDEService.wsdl</wsdl>
+                                    <wsdl>src/main/resources/wsdl/WebServices/dev/ECF-4.0-FilingReviewMDEService.wsdl</wsdl>
                                 </wsdlOption>
                                 <wsdlOption>
-                                    <wsdl>target/classes/wsdl/WebServices/dev/ECF-4.0-CourtRecordMDEService.wsdl</wsdl>
+                                    <wsdl>src/main/resources/wsdl/WebServices/dev/ECF-4.0-CourtRecordMDEService.wsdl</wsdl>
                                 </wsdlOption>
                                 <wsdlOption>
-                                    <wsdl>target/classes/wsdl/WebServices/dev/ECF-4.0-ServiceMDEService.wsdl</wsdl>
-                                </wsdlOption>
-                                <wsdlOption>
-                                    <wsdl>target/classes/wsdl/WebServices/dev/ECF-4.0-FilingAssemblyMDEService.wsdl</wsdl>
+                                    <wsdl>src/main/resources/wsdl/WebServices/dev/ECF-4.0-FilingAssemblyMDEService.wsdl</wsdl>
                                 </wsdlOption>
                             </wsdlOptions>
                             <additionalJvmArgs>-Djavax.xml.accessExternalDTD=all</additionalJvmArgs>
