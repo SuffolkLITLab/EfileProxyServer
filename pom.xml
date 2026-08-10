@@ -14,6 +14,7 @@
         <module>TylerEfmClient</module>
         <module>TylerEcf4</module>
         <module>TylerEcf5</module>
+        <module>TrueFilingEcf4</module>
         <module>proxyserver</module>
     </modules>
 
@@ -72,6 +73,11 @@
             <dependency>
                 <groupId>edu.suffolk.litlab</groupId>
                 <artifactId>tyler-ecf5</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>edu.suffolk.litlab</groupId>
+                <artifactId>truefiling-ecf4</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
