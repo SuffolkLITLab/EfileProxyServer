@@ -6,7 +6,6 @@ import edu.suffolk.litlab.efsp.model.Address;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -32,18 +31,16 @@ public class AddressDocassembleJacksonDeserializer {
       throw err;
     }
 
-    List<InterviewVariable> potentiallyReq = new ArrayList<InterviewVariable>();
     boolean oneMissing = false;
     for (String member : List.of("address", "unit", "city", "state", "zip")) {
-      if (!node.has(member)) {
+      if (!node.has(member) || (node.has(member) && node.get(member).isNull())) {
         oneMissing = true;
-        potentiallyReq.add(collector.requestVar(member, "part of the address", "text"));
-        continue;
+        break;
       }
       if (node.has(member) && !node.get(member).isTextual()) {
         FilingError err =
             FilingError.malformedInterview(
-                "Refusing to parse an address where the "
+                "Refusing to parse address where the "
                     + member
                     + " isn't text: "
                     + node.toPrettyString());
@@ -53,11 +50,6 @@ public class AddressDocassembleJacksonDeserializer {
     }
     if (oneMissing) {
       return Optional.empty();
-    }
-    if (!potentiallyReq.isEmpty()) {
-      for (InterviewVariable memberVar : potentiallyReq) {
-        collector.addRequired(memberVar);
-      }
     }
     String address = (node.has("address")) ? node.get("address").asText("") : "";
     String unit = (node.has("unit")) ? node.get("unit").asText("") : "";
