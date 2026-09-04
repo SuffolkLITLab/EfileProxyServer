@@ -37,6 +37,9 @@ public class HeaderSigner {
   private final String pathToKeystore;
   private final String x509Password;
 
+  // Can be refreshed
+  private String signedTime = "";
+
   /**
    * The string password to the x509 certificate. This password is given by Tyler, and will also
    * unlock the .pfx file.
@@ -128,9 +131,22 @@ public class HeaderSigner {
    *
    * @return signed bytes of the timestamp string that has been base 64 encoded
    */
-  public Optional<String> signedCurrentTime() {
+  private Optional<String> signTime() {
     Instant now = Instant.now(Clock.systemUTC());
     String currentTimestamp = now.toString();
     return signedBase64(currentTimestamp);
+  }
+
+  public boolean refresh() {
+    var maybeTime = signTime();
+    maybeTime.ifPresent(
+        time -> {
+          this.signedTime = time;
+        });
+    return maybeTime.isPresent();
+  }
+
+  public String signedCurrentTime() {
+    return this.signedTime;
   }
 }

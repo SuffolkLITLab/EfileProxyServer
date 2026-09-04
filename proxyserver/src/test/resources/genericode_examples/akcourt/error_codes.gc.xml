@@ -1,0 +1,1621 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://docs.oasis-open.org/codelist/ns/genericode/1.0/">
+  <Identification xmlns="">
+    <ShortName>ErrorCode</ShortName>
+    <LongName>ErrorCode</LongName>
+    <Version>-11467396234</Version>
+    <CanonicalUri>urn:oasis:names:tc:legalxml-courtfiling:codelist:gc:ErrorCode</CanonicalUri>
+    <CanonicalVersionUri>urn:oasis:names:tc:legalxml-courtfiling:codelist:gc:ErrorCode-1.0</CanonicalVersionUri>
+    <Agency>
+      <LongName>OASIS LegalXML Electronic Court Filing Technical Committee</LongName>
+    </Agency>
+  </Identification>
+  <ColumnSet xmlns="">
+    <Column Id="code" Use="required">
+      <ShortName>Code</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="name" Use="optional">
+      <ShortName>Name</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Key Id="codeKey">
+      <ShortName>CodeKey</ShortName>
+      <ColumnRef Ref="code" />
+    </Key>
+  </ColumnSet>
+  <SimpleCodeList xmlns="">
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>No Errors</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1000</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>XML Validation Error</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1001</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>CourtId undefined</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1002</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Unable to initialize a Bundle for this request</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1003</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>A DocumentIdentification for the BUNDLEID is required in the ReviewFilingCallbackMessage</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1004</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid BUNDLEID '*', expecting an integer</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1005</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid BUNDLEID '*', does not exist</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1006</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewedDocument '*', a DocumentIdentification for the FILINGID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1007</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewedConnectedDocument '*', a ParentDocumentReference is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1008</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ParentDocumentReference '*', referenced ReviewedLeadDocument '*' does not exist</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1009</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, SendingMDELocationID/IdentificationID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1010</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, SendingMDELocationID/IdentificationID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1011</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, Case/CaseTrackingID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1012</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, Case/CaseTrackingID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1013</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, Case/CaseAugmentation/CaseCourt/OrganizationIdentification/IdentificationID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1014</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, Case/CaseAugmentation/CaseCourt/OrganizationIdentification/IdentificationID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1015</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentFileControlID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1016</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentFileControlID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1017</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentMetadata/FilingAttorneyID/IdentificationID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1018</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentMetadata/FilingAttorneyID/IdentificationID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1019</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentMetadata/FilingAttorneyID/CategoryText is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1020</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentMetadata/FilingAttorneyID/CategoryText must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1021</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentMetadata/FilingAttorneyID/SourceText is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1022</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentMetadata/FilingAttorneyID/SourceText must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1023</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, at least one FilingLeadDocument/DocumentMetadata/FilingPartyID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1024</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentMetadata/FilingPartyID/IdentificationID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1025</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentMetadata/FilingPartyID/IdentificationID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1026</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentMetadata/FilingPartyID/CategoryText is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1027</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentMetadata/FilingPartyID/CategoryText must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1028</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentMetadata/FilingPartyID/SourceText is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1029</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentMetadata/FilingPartyID/SourceText must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1030</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentRendition/DocumentRenditionMetadata/DocumentAttachment/BinaryFormatStandardName is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1031</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingLeadDocument/DocumentRendition/DocumentRenditionMetadata/DocumentAttachment/BinaryFormatStandardName must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1032</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, a valid Case must be provided</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1033</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, unrecognized Case Type</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1034</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingConnectedDocument/DocumentMetadata/ParentDocumentReference is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1035</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingConnectedDocument/DocumentMetadata/ParentDocumentReference must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1036</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, SendingMDEProfileCode '*' does not match '*'</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1037</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingDocument/DocumentMetadata/RegisterActionDescriptionText is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1038</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingDocument/DocumentMetadata/RegisterActionDescriptionText must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1039</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingDocument/DocumentSequenceID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1040</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, FilingDocument/DocumentSequenceID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1041</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, CoreFilingMessage/DocumentSubmitter is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1042</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, DocumentSubmitter/EntityPerson/PersonName/PersonGivenName is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1043</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, DocumentSubmitter/EntityPerson/PersonName/PersonGivenName must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1044</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, DocumentSubmitter/EntityPerson/PersonName/PersonSurName is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1045</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, DocumentSubmitter/EntityPerson/PersonName/PersonSurName must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1046</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, DocumentSubmitter/EntityPerson/PersonAugmentation/ContactInformation/ContactEmailID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1047</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, DocumentSubmitter/EntityPerson/PersonAugmentation/ContactInformation/ContactEmailID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1048</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, unrecognized SendingMDELocationID/IdentificationID</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1049</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, unrecognized Guid format for Case/CaseAugmentation/CaseCourt/OrganizationIdentification/IdentificationID</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1050</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, Case/CaseCategoryText is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1051</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, Case/CaseCategoryText must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1052</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, unrecognized Guid format for Case/CaseCategoryText</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1053</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, unrecognized Guid format for FilingDocument/DocumentMetadata/RegisterActionDescriptionText</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1054</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, AllowanceCharge/AccountingCostCode is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1055</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, AllowanceCharge/AccountingCostCode must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1056</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, unrecognized Guid format for AllowanceCharge/AccountingCostCode</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1057</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, AllowanceCharge/AllowanceChargeReasonCode is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1058</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, AllowanceCharge/AllowanceChargeReasonCode must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1059</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid ReviewFilingRequestMessage, AllowanceCharge/AllowanceChargeReasonCode must reference a FilingDocument/DocumentFileControlID</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1060</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, SendingMDELocationID/IdentificationID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1061</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, SendingMDELocationID/IdentificationID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1062</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, SendingMDEProfileCode '*' does not match '*'</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1063</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, CoreFilingMessage/QuerySubmitter is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1064</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, QuerySubmitter/EntityPerson/PersonName/PersonGivenName is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1065</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, QuerySubmitter/EntityPerson/PersonName/PersonGivenName must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1066</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, QuerySubmitter/EntityPerson/PersonName/PersonSurName is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1067</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, QuerySubmitter/EntityPerson/PersonName/PersonSurName must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1068</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, QuerySubmitter/EntityPerson/PersonAugmentation/ContactInformation/ContactEmailID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1069</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, QuerySubmitter/EntityPerson/PersonAugmentation/ContactInformation/ContactEmailID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1070</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, CaseTrackingID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1071</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, CaseTrackingID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1072</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, unrecognized Guid format for CaseTrackingID</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1073</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, CaseDocketID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1074</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentQueryMessage, CaseDocketID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1075</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>An exception occurred when attempting to retrieve the document: *</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1076</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>No document found</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1077</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>An exception occurred when attempting to retrieve the court policy: *</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1078</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid GetPolicyMessage, SendingMDELocationID/IdentificationID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1079</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid GetPolicyMessage, SendingMDELocationID/IdentificationID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1080</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid GetPolicyMessage, SendingMDEProfileCode '*' does not match '*'</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1081</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid GetPolicyMessage, CoreFilingMessage/QuerySubmitter is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1082</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid GetPolicyMessage, QuerySubmitter/EntityPerson/PersonName/PersonGivenName is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1083</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid GetPolicyMessage, QuerySubmitter/EntityPerson/PersonName/PersonGivenName must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1084</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid GetPolicyMessage, QuerySubmitter/EntityPerson/PersonName/PersonSurName is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1085</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid GetPolicyMessage, QuerySubmitter/EntityPerson/PersonName/PersonSurName must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1086</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid GetPolicyMessage, QuerySubmitter/EntityPerson/PersonAugmentation/ContactInformation/ContactEmailID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1087</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid GetPolicyMessage, QuerySubmitter/EntityPerson/PersonAugmentation/ContactInformation/ContactEmailID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1088</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid GetPolicyMessage, CaseCourt is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1089</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid GetPolicyMessage, CaseCourt/OrganizationID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1090</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid GetPolicyMessage, CaseCourt/OrganizationID/IdentificationID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1091</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid GetPolicyMessage, CaseCourt/OrganizationID/IdentificationID must be a Guid</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1092</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, SendingMDELocationID/IdentificationID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1093</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, SendingMDELocationID/IdentificationID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1094</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, SendingMDEProfileCode '*' does not match '*'</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1095</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, CaseCourt is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1096</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, Case/CaseDocketID cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1097</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, Case/CaseDocketID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1098</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, Case/CaseTrackingID cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1099</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, Case/CaseTrackingID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1100</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, Case/CaseCategoryText cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1101</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, Case/CaseCategoryText is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1102</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, Case/CaseTitleText cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1103</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, Case/CaseTrackingId is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1104</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, Case/ActivityDate/DateTime cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1105</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, Case/ActivityDate/DateTime must be a valid DateTime</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1106</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, Case/ActivityDate/DateTime cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1107</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseListResponse, CaseCourt/ActivityDate is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1108</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, SendingMDELocationID/IdentificationID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1109</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, SendingMDELocationID/IdentificationID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1110</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, SendingMDEProfileCode is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1111</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, SendingMDEProfileCode '*' does not match '*'</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1112</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CaseCourt is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1113</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/CaseDocketID cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1114</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/CaseDocketID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1115</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/CaseTrackingID cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1116</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/CaseTrackingID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1117</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/CaseCategoryText cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1118</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/CaseCategoryText is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1119</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/CaseTitleText cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1120</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/CaseTrackingId is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1121</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/ActivityDate/DateTime cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1122</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/ActivityDate/DateTime must be a valid DateTime</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1123</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/ActivityDate/DateTime cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1124</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CaseCourt/ActivityDate is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1125</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/ActivityStatus/StatusText cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1126</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/ActivityStatus/StatusText cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1127</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/ActivityStatus/StatusDescriptionText cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1128</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/ActivityStatus/StatusDescriptionText cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1129</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/ActivityStatus is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1130</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/AssetNoticeIndicator cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1131</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/AssetNoticeIndicator is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1132</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/NumberOfCreditorsValueLevelCode is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1133</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/EstimatedAssetsValueLevelCode is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1134</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/EstimatedDebtsValueLevelCode is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1135</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/SmallBusinessIndicator cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1136</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/SmallBusinessIndicator is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1137</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/Section1121eIndicator cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1138</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/Section1121eIndicator is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1139</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/DebtorTypeCode is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1140</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/JointPetitionIndicator cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1141</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/JointPetitionIndicator is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1142</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/NatureOfDebtCode is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1143</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/VoluntaryIndicator cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1144</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/VoluntaryIndicator is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1145</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/BankruptcyStatute is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1146</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/Debtor/EntityItem is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1147</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, BankruptcyCase/Debtor is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1148</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CitationCase/CitationCaseAugmentation/Citation is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1149</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CitationCase/CitationCaseAugmentation is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1150</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CivilCase/ecf:CaseAugmentation is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1151</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CivilCase/CauseOfActionCode is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1152</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CivilCase/ClassActionIndicator cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1153</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CivilCase/ClassActionIndicator is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1154</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CivilCase/JuryDemandIndicator cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1155</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CivilCase/JuryDemandIndicator is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1156</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CivilCase/ReliefTypeCode is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1157</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CriminalCase/ecf:CaseAugmentation is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1158</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CriminalCase/CaseArrest is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1159</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CriminalCase/ClassActionIndicator is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1160</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CriminalCase/ChargeAmendedIndicator cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1161</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CriminalCase/ChargeAmendedIndicator is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1162</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, CriminalCase/CaseCharge is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1163</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, DomesticCase/ecf:CaseAugmentation is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1164</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, DomesticCase/CauseOfActionCode is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1165</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, DomesticCase/CaseContestedIndicator cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1166</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, DomesticCase/CaseContestedIndicator is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1167</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, DomesticCase/DomesticCasePerson is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1168</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, JuvenileCase/PersonEmancipatedIndicator cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1169</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, JuvenileCase/JuvenileCaseJuvenile/PersonEmancipatedIndicator is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1170</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, JuvenileCase/JuvenileCaseJuvenile is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1171</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/j:CaseAugmentation/CaseCourt is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1172</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid CaseResponse, Case/j:CaseAugmentation is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1173</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, SendingMDELocationID/IdentificationID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1174</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, SendingMDELocationID/IdentificationID must have a value</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1175</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, SendingMDEProfileCode '*' does not match '*'</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1176</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, Document/DocumentIdentification cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1177</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentIdentification/IdentificationID is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1178</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentIdentification/IdentificationID cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1179</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentIdentification/IdentificationCategoryText is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1180</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentIdentification/IdentificationCategoryText cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1181</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentIdentification/IdentificationSourceText is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1182</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentIdentification/IdentificationSourceText cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1183</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentMetadata/RegisterActionDescriptionText is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1184</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentRendition/DocumentDescriptionText is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1185</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentRendition/DocumentDescriptionText cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1186</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentRendition/DocumentPostDate cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1187</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentAttachment/BinaryBase64Object attribute xsi:nil value is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1188</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentAttachment/BinaryBase64Object must have attribute xsi:nil</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1189</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentAttachment/BinaryBase64Object cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1190</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentAttachment/BinaryDescriptionText is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1191</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentAttachment/BinaryDescriptionText cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1192</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentAttachment/BinaryFormatStandardName is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1193</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentAttachment/BinaryFormatStandardName cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1194</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentAttachment/BinaryLocationURI is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1195</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentAttachment/BinaryLocationURI cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1196</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentAttachment/BinarySizeValue is required</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1197</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Invalid DocumentResponseMessage, DocumentAttachment/BinarySizeValue cannot be empty</SimpleValue>
+      </Value>
+    </Row>
+  </SimpleCodeList>
+</CodeList>

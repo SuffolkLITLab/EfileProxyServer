@@ -53,13 +53,14 @@ import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
-import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCourtSpecificSerializer;
 import edu.suffolk.litlab.efsp.server.ecf4.PaymentFactory;
 import edu.suffolk.litlab.efsp.server.ecf4.PolicyCacher;
 import edu.suffolk.litlab.efsp.server.ecf4.QueryType;
+import edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.tyler.Ecf4Helper;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerAdminUserUtils;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
@@ -269,7 +270,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         ComboCaseCodes allCodes;
         if (!isFirstIndexedFiling) {
           CaseQueryMessageType query = new CaseQueryMessageType();
-          Ecf4Helper.prep(query, info.getCourtLocation());
+          TylerEcf4Helper.prep(query, info.getCourtLocation());
           query.setCaseTrackingID(Ecf4Helper.convertString(info.getPreviousCaseId().get()));
           query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
           CaseResponseMessageType resp = recordPort.getCase(query);
@@ -386,7 +387,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
           id.setIdentificationSourceText(Ecf4Helper.convertText(serviceCode.get().code));
           servInfo.setServiceRecipientID(id);
           servInfo.setId(servContact.refId);
-          servInfo.setReceivingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+          servInfo.setReceivingMDEProfileCode(Ecf4Helper.MDE_PROFILE_CODE);
           servInfo.setReceivingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.ASSEMBLY_PORT));
           serviceContactXmlObjs.put(servContact.refId, servInfo);
           cfm.getElectronicServiceInformation().add(servInfo);
@@ -420,7 +421,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         }
 
         cfm.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
-        cfm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+        cfm.setSendingMDEProfileCode(Ecf4Helper.MDE_PROFILE_CODE);
         cfm.setCase(assembledCase);
 
         MeasureType maxIndivDocSize =
@@ -594,7 +595,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         PaymentFactory.makePaymentMessage(info.getPaymentId(), this.jurisdiction);
     ReviewFilingRequestMessageType rfrm = wsOf.createReviewFilingRequestMessageType();
     rfrm.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
-    rfrm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+    rfrm.setSendingMDEProfileCode(Ecf4Helper.MDE_PROFILE_CODE);
     rfrm.setCoreFilingMessage(cfm);
     rfrm.setPaymentMessage(pmt);
 
@@ -695,7 +696,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     var err = Ecf4Helper.checkErrors(resp.getError());
     logTylerErrorsWithContext(err, info);
 
-    Response httpResponse = Ecf4Helper.mapTylerCodesToHttp(err, () -> Response.ok(resp).build());
+    Response httpResponse =
+        TylerEcf4Helper.mapTylerCodesToHttp(err, () -> Response.ok(resp).build());
     return Result.ok(httpResponse);
   }
 
@@ -778,7 +780,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     query.setCoreFilingMessage(cfm);
     ServiceTypesResponseMessageType resp = filingPort.getServiceTypes(query);
     return Result.ok(
-        Ecf4Helper.makeResponse(resp, () -> Response.ok(resp.getServiceType()).build()));
+        TylerEcf4Helper.makeResponse(resp, () -> Response.ok(resp.getServiceType()).build()));
   }
 
   @Override
@@ -857,7 +859,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     for (MatchingFilingType match : resp.getMatchingFiling()) {
       log.trace("Matched: {}, {}", match.getCaseTrackingID(), match);
     }
-    return Ecf4Helper.makeResponse(
+    return TylerEcf4Helper.makeResponse(
         resp,
         () -> {
           if (resp.getMatchingFiling().size() <= 0) {
@@ -884,7 +886,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     status.setDocumentIdentification(Ecf4Helper.convertId(filingId));
     FilingStatusResponseMessageType statusResp = port.getFilingStatus(status);
 
-    return Ecf4Helper.makeResponse(statusResp, () -> Response.ok().entity(statusResp).build());
+    return TylerEcf4Helper.makeResponse(statusResp, () -> Response.ok().entity(statusResp).build());
   }
 
   @Override
@@ -898,7 +900,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     id.setIdentificationID(Ecf4Helper.convertString(contactId));
     req.setServiceContactIdentification(id);
     FilingServiceResponseMessageType resp = port.getFilingService(req);
-    return Ecf4Helper.makeResponse(resp, () -> Response.ok(resp).build());
+    return TylerEcf4Helper.makeResponse(resp, () -> Response.ok(resp).build());
   }
 
   @Override
@@ -917,7 +919,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         prep(detailObjFac.createFilingDetailQueryMessageType(), courtId);
     m.setDocumentIdentification(Ecf4Helper.convertId(filingId));
     FilingDetailResponseMessageType resp = port.getFilingDetails(m);
-    return Ecf4Helper.makeResponse(resp, () -> Response.ok().entity(resp).build());
+    return TylerEcf4Helper.makeResponse(resp, () -> Response.ok().entity(resp).build());
   }
 
   @Override
@@ -933,7 +935,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     FilingReviewMDEPort port = setupFilingPort(creds);
 
     CourtPolicyResponseMessageType resp = policyCacher.getPolicyFor(port, courtId);
-    return Ecf4Helper.makeResponse(resp, () -> Response.ok(resp).build());
+    return TylerEcf4Helper.makeResponse(resp, () -> Response.ok(resp).build());
   }
 
   @Override
@@ -948,7 +950,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       CancelFilingMessageType cancel = prep(cancelObjFac.createCancelFilingMessageType(), courtId);
       cancel.setDocumentIdentification(Ecf4Helper.convertId(filingId));
       CancelFilingResponseMessageType resp = port.cancelFiling(cancel);
-      return Ecf4Helper.makeResponse(resp, () -> Response.noContent().build());
+      return TylerEcf4Helper.makeResponse(resp, () -> Response.noContent().build());
     } catch (SQLException ex) {
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }
@@ -972,7 +974,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   private static <T extends QueryMessageType> T prep(T newMsg, String courtId) {
-    return Ecf4Helper.prep(newMsg, courtId);
+    return TylerEcf4Helper.prep(newMsg, courtId);
   }
 
   private FilingReviewMDEPort setupFilingPort(TylerUserNamePassword creds) {

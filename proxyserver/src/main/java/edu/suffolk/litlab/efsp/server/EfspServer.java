@@ -23,6 +23,7 @@ import edu.suffolk.litlab.efsp.server.services.MessageSettingsService;
 import edu.suffolk.litlab.efsp.server.services.RootService;
 import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
+import edu.suffolk.litlab.efsp.server.setup.truefiling.TrueFilingModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.tyler.TylerModuleSetup;
 import edu.suffolk.litlab.efsp.server.utils.AuthenticateRequestInterceptor;
 import edu.suffolk.litlab.efsp.server.utils.EnumExceptionMapper;
@@ -248,7 +249,9 @@ public class EfspServer {
 
     Optional<String> togaKeyStr = GetEnv("TOGA_CLIENT_KEYS");
     List<Jurisdiction> jurisdictions =
-        Stream.of(GetEnv("TYLER_JURISDICTIONS").orElse("").split(" "))
+        GetEnv("TYLER_JURISDICTIONS")
+            .map(j -> Stream.of(j.split(" ")))
+            .orElse(Stream.empty())
             .map(Jurisdiction::parse)
             .toList();
     List<String> togaKeys = List.of(togaKeyStr.orElse("").split(" "));
@@ -275,9 +278,19 @@ public class EfspServer {
               sender)
           .ifPresent(mod -> modules.add(mod));
     }
+    List<Jurisdiction> tfJurisdictions =
+        GetEnv("TRUEFILING_JURISDICTIONS")
+            .map(j -> Stream.of(j.split(" ")))
+            .orElse(Stream.empty())
+            .map(Jurisdiction::parse)
+            .toList();
+    for (int idx = 0; idx < tfJurisdictions.size(); idx++) {
+      var jurisdiction = tfJurisdictions.get(idx);
+      TrueFilingModuleSetup.create(jurisdiction, codeDs, userDs).ifPresent(mod -> modules.add(mod));
+    }
     if (modules.isEmpty()) {
       log.error(
-          "Couldn't load enough parameters to start any of the Tyler filer modules."
+          "Couldn't load enough parameters to start any of the Tyler or True Filing filer modules."
               + "Please check your environment variables and try again.");
       throw new RuntimeException("No filer modules available");
     }

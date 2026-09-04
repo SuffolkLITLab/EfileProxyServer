@@ -99,9 +99,17 @@ public class CodeDatabase extends CodeDatabaseAPI {
           Map.entry("tyler:DataFieldConfigCode", "datafieldconfig"),
           Map.entry("tyler:DocumentOptionalService", "optionalservices"));
 
+  // NOTE: the Tyler docs say "error" is available from `GetPolicy'. That is wrong.
+  private static final Set<String> systemwideTables = Set.of("version", "location", "error");
+
   @Override
   public Map<String, String> xmlElemToTableName() {
     return ecf4Map;
+  }
+
+  @Override
+  public Set<String> systemTables() {
+    return systemwideTables;
   }
 
   public static CodeDatabase fromDS(Jurisdiction jurisdiction, DataSource ds) {

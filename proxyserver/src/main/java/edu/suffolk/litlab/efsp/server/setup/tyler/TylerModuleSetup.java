@@ -27,8 +27,8 @@ import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efsp.server.utils.UpdateCodeVersions;
 import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeUpdater;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.DataFieldRow;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.TylerCodeUpdater;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import java.sql.SQLException;
 import java.time.LocalTime;
@@ -186,11 +186,11 @@ public class TylerModuleSetup implements EfmModuleSetup {
               "Downloading just codes for {} in {}: please wait a bit",
               testOnlyLocation,
               jurisdiction);
-          CodeUpdater.executeCommand(
+          TylerCodeUpdater.executeCommand(
               () -> cd, jurisdiction, List.of("replacesome", testOnlyLocation), this.x509Password);
         } else {
           log.info("Downloading all codes for {}: please wait a bit", jurisdiction);
-          CodeUpdater.executeCommand(
+          TylerCodeUpdater.executeCommand(
               () -> cd, jurisdiction, List.of("replaceall"), this.x509Password);
         }
       }

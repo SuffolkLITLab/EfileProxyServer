@@ -5,11 +5,14 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class CodeDatabaseUtils {
   /** This exception is returned when a given table name isn't in the pre-approved list of names. */
   public static class UnsupportedTableException extends SQLException {
+    private static final long serialVersionUID = 42L;
+
     public UnsupportedTableException(String message) {
       super(message);
     }
@@ -131,6 +134,12 @@ public class CodeDatabaseUtils {
           stmt.setInt(idx, Integer.parseInt(rowVals.get(col.name)));
         } else {
           stmt.setNull(idx, Types.INTEGER);
+        }
+      } else if (col.type.equalsIgnoreCase("uuid")) {
+        if (rowVals.containsKey(col.name)) {
+          stmt.setObject(idx, UUID.fromString(rowVals.get(col.name)));
+        } else {
+          stmt.setNull(idx, Types.JAVA_OBJECT);
         }
       } else {
         // colType.equalsIgnoreCase("text") || colType.startsWith("varchar")

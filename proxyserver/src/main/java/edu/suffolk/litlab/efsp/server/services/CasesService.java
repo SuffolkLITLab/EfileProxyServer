@@ -27,13 +27,13 @@ import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRec
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
-import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.FileableCourtType;
+import edu.suffolk.litlab.efsp.tyler.Ecf4Helper;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
@@ -199,7 +199,7 @@ public class CasesService {
     query.setQuerySubmitter(typ);
     query.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
     query.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
-    query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+    query.setSendingMDEProfileCode(Ecf4Helper.MDE_PROFILE_CODE);
 
     if (docketId != null) {
       CaseType ct = new CaseType();
@@ -275,7 +275,7 @@ public class CasesService {
       query.setQuerySubmitter(typ);
       query.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
       query.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
-      query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+      query.setSendingMDEProfileCode(Ecf4Helper.MDE_PROFILE_CODE);
       query.setCaseTrackingID(Ecf4Helper.convertString(caseId));
       query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
       CaseResponseMessageType resp = maybePort.get().getCase(query);
@@ -356,7 +356,7 @@ public class CasesService {
     query.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
     query.setServiceContactIdentification(Ecf4Helper.convertId(serviceId));
     query.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
-    query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+    query.setSendingMDEProfileCode(Ecf4Helper.MDE_PROFILE_CODE);
     ServiceAttachCaseListResponseMessageType resp = maybePort.get().getServiceAttachCaseList(query);
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getError()).build();
@@ -385,7 +385,7 @@ public class CasesService {
     query.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
     query.setCaseTrackingID(Ecf4Helper.convertString(caseId));
     query.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
-    query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+    query.setSendingMDEProfileCode(Ecf4Helper.MDE_PROFILE_CODE);
     ServiceInformationResponseMessageType resp = maybePort.get().getServiceInformation(query);
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getError()).build();
@@ -414,7 +414,7 @@ public class CasesService {
     query.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
     query.setCaseTrackingID(Ecf4Helper.convertString(caseId));
     query.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
-    query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+    query.setSendingMDEProfileCode(Ecf4Helper.MDE_PROFILE_CODE);
     ServiceInformationHistoryResponseMessageType resp =
         maybePort.get().getServiceInformationHistory(query);
     if (hasError(resp)) {

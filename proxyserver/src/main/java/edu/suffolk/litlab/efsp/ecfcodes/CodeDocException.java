@@ -7,6 +7,8 @@ package edu.suffolk.litlab.efsp.ecfcodes;
  * (instead of an ops issue).
  */
 public class CodeDocException extends Exception {
+  private static final long serialVersionUID = 1L;
+
   public CodeDocException(String message, Throwable ex) {
     super(message, ex);
   }

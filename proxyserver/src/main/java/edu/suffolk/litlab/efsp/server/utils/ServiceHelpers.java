@@ -26,13 +26,6 @@ import org.slf4j.LoggerFactory;
 public class ServiceHelpers {
   private static final Logger log = LoggerFactory.getLogger(ServiceHelpers.class);
 
-  /**
-   * One of the ways that you can communicate over ECF. For more information, see
-   * https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc425241629
-   */
-  public static final String MDE_PROFILE_CODE =
-      "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0";
-
   public static final String MDE_PROFILE_CODE_5 =
       "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-5.0";
 

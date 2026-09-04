@@ -4,7 +4,7 @@ import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeUpdater;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.TylerCodeUpdater;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -40,7 +40,7 @@ public class UpdateCodeVersions implements Job {
             DatabaseCreator.makeSingleConnection(pgDb, pgFullUrl, pgUser, pgPassword);
         CodeDatabase cd = new CodeDatabase(jurisdiction, conn)) {
       success =
-          CodeUpdater.executeCommand(() -> cd, jurisdiction, List.of("refresh"), x509Password);
+          TylerCodeUpdater.executeCommand(() -> cd, jurisdiction, List.of("refresh"), x509Password);
     } catch (SQLException e) {
       log.error("Couldn't connect to Codes db from Job Executor: ", e);
       success = false;

@@ -7,6 +7,7 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecompo
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AllowanceChargeReasonType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
 import ecf4.latest.tyler.ecf.extensions.common.ReviewedDocumentType;
+import edu.suffolk.litlab.efsp.tyler.Ecf4Helper;
 import java.time.LocalDate;
 import java.util.GregorianCalendar;
 import java.util.List;

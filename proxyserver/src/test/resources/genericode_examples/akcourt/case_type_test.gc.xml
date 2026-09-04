@@ -1,0 +1,3482 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<gc:CodeList xmlns:ct="http://release.niem.gov/niem/conformanceTargets/3.0/" xmlns:gc="http://docs.oasis-open.org/codelist/ns/genericode/1.0/" xmlns:gca="http://example.org/namespace/genericode-appinfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docs.oasis-open.org/codelist/ns/genericode/1.0/ https://docs.oasis-open.org/codelist/cs-genericode-1.0/xsd/genericode.xsd">
+  <Identification>
+    <ShortName>CaseTypeCode</ShortName>
+    <LongName>CaseTypeCode</LongName>
+    <Version>1.0</Version>
+    <CanonicalUri />
+    <CanonicalVersionUri />
+    <Agency>
+      <LongName>ImageSoft TrueFiling EFM</LongName>
+      <Identifier />
+    </Agency>
+  </Identification>
+  <ColumnSet>
+    <Column Id="id" Use="required">
+      <ShortName>Id</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="code" Use="optional">
+      <ShortName>Code</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="description" Use="optional">
+      <ShortName>Description</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="casecategory" Use="optional">
+      <ShortName>Case Category</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Key Id="codeKey">
+      <ShortName>CodeKey</ShortName>
+      <ColumnRef Ref="code" />
+    </Key>
+  </ColumnSet>
+  <SimpleCodeList>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>1e17822a-9cef-4613-9b26-059fcf845f66</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU1AG</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>241fbac1-789f-4749-9c6b-e6eb3ef1cd50</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF1AG</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>c000dee2-343f-4976-bca6-1b69653ade48</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM1AG</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>e84a9882-4e47-4025-b35c-e2c2bb875b09</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC1AG</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>9fc1880f-c979-4838-b6ba-abe449b944da</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO1AG</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>e40edaad-0e00-4436-8847-012687f211c9</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP1AG</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>6a47ff61-c78a-4993-8f07-3d024d139717</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU1HA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>5b1e45f6-7289-4d54-9997-651dd49fd6c2</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF1HA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>33c04d34-5e27-45e1-833c-b8d42fc23e27</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM1HA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>3ccfcb4e-c614-46c5-9c55-17a33f733757</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC1HA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>c08db1fc-014f-4201-949a-dadb8f2c7332</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO1HA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>7b5c92e1-3d4e-4d4d-b514-85ce84ba0e84</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP1HA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>67b2bf72-cdee-4bec-9e31-704e0b133b50</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU1HN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>c5b6a7de-1c02-4233-b54a-95fb3ed1ab72</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF1HN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>9ed670cb-a19e-4743-a45d-8097a5aee9a9</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM1HN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>0a064887-e821-430f-999d-2e8c4288e050</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC1HN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>490941cc-888b-4e2e-b59e-b8562dab6622</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO1HN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>58782c77-e737-479f-aa38-f702607b48af</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP1HN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>2373e81c-a32b-4499-b749-c8f7d7532c66</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU1JU</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>dc49c481-4582-4769-a81c-c78afd3a51ae</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF1JU</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>0f0535a5-0725-4491-9d89-8b80dd8386a6</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM1JU</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>31c905ce-ecb4-47aa-b9ca-9d86d358e44f</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC1JU</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>97cbcfed-6cea-43dd-8e45-4389780ff9b2</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO1JU</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>d7f8ebe1-5b34-4314-a06d-bee670a9c5db</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP1JU</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>59d42745-74b2-4a3b-970f-28641042fc52</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU1KA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>7e406c30-668b-4e6b-a4e1-84d2c5527137</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF1KA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>e68b1044-7163-4fa7-bc7a-d31659a576aa</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM1KA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>70009fbf-8d26-4998-ab49-fca4132de9d9</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC1KA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>e8c514c3-41d2-40be-92c2-6a756280073b</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO1KA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>d87b2397-0dc5-4126-8de0-fccb414d8342</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP1KA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>5dba4131-628c-45ec-8902-54d7cdc8db47</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU1KE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>3c3031ba-e028-45a6-bc9e-a356c85af77b</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF1KE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>cc17537b-a7fb-4fa1-8d08-7f4533a520d2</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM1KE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>d7488fed-3746-4074-ab22-0b4c79a444a8</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC1KE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>5a48c105-a141-4a8b-95a8-f5bd3ca43632</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO1KE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>8021f051-b8a7-444e-9c4b-5b8108d04b7a</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP1KE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>d3bcb4be-e356-4820-b420-30cc35bfd4e5</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU1PE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>0bd90f8e-aea7-4c08-999a-0b9f860d959f</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF1PE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>90a2c7f7-5929-46bf-b8a5-0c6d51695315</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM1PE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>c50aec5d-bfd2-4c77-bb81-18b43ed7f9a5</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC1PE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>78098687-d9e0-4131-85d5-3ccfa204c322</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO1PE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>e97363ed-2b93-4c8a-9744-904b60141c0b</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP1PE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>735e5656-82c7-4704-b5e7-a4acbce49de8</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU1PW</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>3f26fb1a-fc43-4188-8684-e842252d665e</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF1PW</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>798b0736-663e-47a8-a3aa-ab2ee8e89d27</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM1PW</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>6ddc17a3-2d54-48c5-a7f0-9d3fcfd49752</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC1PW</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>b7885e14-6c12-463f-8f76-191eab50f3e6</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO1PW</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>5465a118-2cf2-4b9e-b1a0-1fe4503d2faf</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP1PW</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>f07023e5-858d-44f1-8188-c8f49984e855</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU1SI</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>4700c091-3c4a-4c15-ba21-dc2511865778</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF1SI</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>7c0bf37f-9837-4ffe-a459-7edb9e54ce54</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM1SI</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>00942a7c-060f-4fe6-81df-604ba34119f1</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC1SI</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>daa74c4d-e2a4-4318-9801-215fc34ba52e</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO1SI</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>5a152fe3-ec97-4361-a7e2-027e49b7629e</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP1SI</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>0e76d9e3-473f-4473-9766-bdfa0a44dfc4</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU1SK</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>94bf3580-dbfa-4e78-9206-84f01dd9fbab</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF1SK</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>0e086904-d295-4d4e-a237-bfaced8c3224</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM1SK</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>c5908f7a-e52c-49d6-84d4-f698985ad16c</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC1SK</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>fa98166c-c2ff-4a2a-b614-0f400dcf3b54</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO1SK</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>54ed3893-a83a-4b76-a4b4-2b1b33c9463b</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP1SK</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>4e89a96c-cc4a-48d4-97bb-d4b23bd40840</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU1WR</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>5d569c73-2786-4d91-90ae-f741a2132117</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF1WR</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>37b7c43e-b9ee-47c0-8591-39750bd60596</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM1WR</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>a6bb2f36-57da-4f00-bd6a-48e2b80373de</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC1WR</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>47a8f4e0-3c42-476b-acce-c430e0ed5f8b</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO1WR</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>29bfc803-82f8-497f-a222-8c7da1ce1aca</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP1WR</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>e982489d-7c74-48b5-b07a-ebdaa677a6d2</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU1YA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>5d77fd01-d9b2-4ed3-a97c-70a1528f4b6f</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF1YA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>05e874c5-6a6d-495d-8be6-b513d1eedda9</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM1YA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>24de0214-33b2-4eb1-91b2-9b3ba9cc1a6a</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC1YA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>7e6b1eff-a1c4-4918-966d-a7456f3276ff</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO1YA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>7b17501e-b1d7-4f7f-ba6d-39cd9c5b232c</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP1YA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>875802bf-b802-44d8-9097-210694ffe61d</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU2BA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>24143839-4ab5-438a-8ddc-c3d796e36eaa</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF2BA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>c7823dcf-38df-4bd7-af45-35986573f753</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM2BA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>0f24d73e-f64a-4cea-aee1-a6bac0b47553</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC2BA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>f0d7bfb3-f3ac-4535-8257-797fde609b6d</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO2BA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>e924b524-9f59-4737-99c1-f0fc72d67788</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP2BA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>e81aa261-67f3-47bd-8f49-fa029b6aed5f</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU2KB</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>2ca31a8a-db43-4572-b134-59b23f959a05</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF2KB</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>bc8835c4-2ce9-4cbf-8870-6b8eb6ef398f</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM2KB</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>c8b6d2d1-a1b6-4ab0-85d8-8be7e9354543</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC2KB</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>ef3cac53-edf4-456d-af6e-ceb6d5b77497</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO2KB</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>d50bc8dd-8a54-4cc2-9d4e-a001618baf1d</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP2KB</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>81164db2-9f56-4e40-a7ba-342fd2f82637</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU2NO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>83c96f48-43d1-4dc2-9fe7-7aee64a9b31a</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF2NO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>66b4bdab-2fb2-4811-b919-1117fd275903</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM2NO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>9aeff690-be29-47f7-b754-0a2f507227e9</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC2NO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>1f27fca7-9713-483a-a55d-364c3a2d8026</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO2NO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>2e5cfb61-fbf3-42bc-a4a6-00bd8e4ecdc7</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP2NO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>f11da566-3953-4f93-a8e8-b7f7f2176389</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU2UT</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>36b3c634-e6a8-4db8-9cb7-a7a5da6263cb</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF2UT</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>9ba209b4-cb9f-4e25-8024-70eadab4238d</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM2UT</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>ebb0f208-d814-40c1-b17f-3dd6608e6bbd</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC2UT</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>15db79e2-3168-4346-9dee-6380c54bab22</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO2UT</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>934188f9-ccc9-4183-8c53-8a491075cd5b</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP2UT</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>4e792d79-230e-45da-9d7a-c7154c292ef9</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU3AN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>176e8872-b16f-459c-a545-445e913a569e</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF3AN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>97526eaf-1cda-4657-952b-dfc421b63a1e</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM3AN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>11c4c466-8fe6-4546-acd0-ebd00c456e46</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC3AN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>b9c61362-56da-4ef9-be9f-9acc6970e064</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO3AN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>89878383-53db-4cf0-9b17-83b6a9d856f0</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP3AN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>aac69fe0-6d76-4a13-accd-1778a3bb8e19</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU3CO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>2be6385c-7d97-4eb3-a54e-177fc78cecc4</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF3CO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>4d41ac0b-89e0-4619-965c-a1e58595d9e2</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM3CO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>e9f53ff5-257d-4147-a607-7d0a288bfba9</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC3CO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>4d869a08-9900-45e0-b697-1d04d75ace47</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO3CO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>18a2950e-8f70-487f-8ae2-9ffeb9ef6464</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP3CO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>ab047f0d-884d-4901-a41c-4b534fd14395</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU3DI</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>1f20b6b6-65db-4270-8fe3-3754514fa535</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF3DI</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>33083c45-ea3e-49cc-88f9-181be7cca7b8</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM3DI</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>25cf16fb-19a6-4b95-8d16-50ef42589265</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC3DI</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>d987b5f2-fd1e-409a-80b4-0087e826e397</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO3DI</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>5dd5d4e9-bed9-4a6b-81c7-f8bfecf5a228</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP3DI</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>c8e76464-8c0e-4c7c-9a82-7dbfa657591a</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU3GL</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>bd92475d-6479-4500-8f9a-f5d1b0078f2a</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF3GL</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>2102ee87-6e20-446d-b9ba-b5f875e2428d</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM3GL</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>cd3ec76e-10bb-46b6-92c8-f30a05f7ad4d</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC3GL</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>269b94c5-7d55-4805-8bb4-9c4e55100b33</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO3GL</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>6fc39130-d8aa-414f-ac7d-4c9706ffd0b5</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP3GL</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>35c96846-9d05-4992-b8b5-c45645abd1b5</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU3HO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>a40d554d-c6b1-4edd-b319-0d0c3373b3bf</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF3HO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>4f83f46d-ed74-4209-b44c-be0f3763aff2</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM3HO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>1a749aaf-35df-4826-a88c-c567a9c22c69</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC3HO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>413a2d90-6bcc-4bf6-899e-22c0d6f0af67</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO3HO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>6ce3284e-cef8-41f7-8db2-9a7d1be9424b</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP3HO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>5f017786-7c80-430c-a037-6bb06d0846e3</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU3KN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>958ec256-6bbb-472f-81a7-5fae167b671c</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF3KN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>b468bc19-77f4-45e3-a2d1-0fe4d38a92c3</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM3KN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>697db64f-aee5-4731-a115-21b03a42af3d</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC3KN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>01165905-b4c4-46a1-8ee2-692c3713844a</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO3KN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>266a42e5-097d-4d55-8c07-c88ff4e9441d</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP3KN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>06c035e6-4db0-462b-a96f-5196f35f16ac</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU3KO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>31a3cc9d-8f2d-451f-a895-98c56555aad0</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF3KO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>fbeb0236-219a-44cb-bc0b-d14b8aedbf68</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM3KO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>7a653c8c-5bee-4f45-92ba-26b4d8d98a21</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC3KO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>9c2cd115-3550-4bdc-bad6-187bd577ca0e</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO3KO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>78ab29cd-d341-41a6-a33b-f2f631fe24c7</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP3KO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>43a25cdf-9747-418a-bef5-c9c27ef321f9</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU3NA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>17adfed7-4180-4434-9527-193f054e36a0</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF3NA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>3ed9d6ee-3597-4fcb-b233-42ba6dbee087</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM3NA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>32c53202-9f4d-4995-9795-8785bde365a1</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC3NA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>c25cab2a-688b-4776-83c0-9cf69d3bbafd</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO3NA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>60e3aa74-d0cd-4f4e-971c-2d2c0ff74aa3</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP3NA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>6e6778de-fd2b-4048-827b-d6f111c0610c</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU3PA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>8b91b7c7-8c05-4650-8e2b-d8884fe48d33</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF3PA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>ebde3fe9-4a1f-4c80-ae01-66699df912fd</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM3PA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>a96928a9-5676-45b7-b42e-c2439cf2784f</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC3PA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>da7fcf84-e9f4-431d-acac-36348eafe79b</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO3PA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>c53c082e-53e0-445f-9bf3-eade1a2c5b36</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP3PA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>2ca1ea69-d872-447e-98ee-5e8d73a61f4e</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU3SP</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>31125752-7a15-4ce9-8a15-fd4aa51ebe2b</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF3SP</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>0fca6aeb-cc66-45a2-9aec-8058a10dfdef</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM3SP</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>fa53a16b-3539-45c9-9287-2088e41ba51b</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC3SP</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>13cd2f40-2db1-42a4-890c-b5fd76f0b5cc</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO3SP</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>8948050c-c4da-454d-8092-b4c55f2b4bcf</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP3SP</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>3ce0cce2-e194-4326-9064-e63069dd5ff1</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU3ST</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>e2b73cbb-f2bc-4b5d-a0b3-002d4823e8b2</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF3ST</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>ce444d77-873f-4f49-9e17-51a066092c3c</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM3ST</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>5f197752-dec5-43a0-952a-8f8bee5d0638</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC3ST</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>84cc4faf-a0bb-4e2e-99a0-744b28f70e3d</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO3ST</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>f6d44956-ad6d-4548-b602-9e83d18c00b7</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP3ST</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>885ffdd6-1fb9-46f2-a073-cf8f0dd483e0</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU3SW</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>122397f2-40fa-47d3-94ba-740503ac63f2</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF3SW</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>856324a8-3497-407f-a944-2188f48293d1</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM3SW</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>4f70c735-6a31-4e3e-9e45-cad81a51ba85</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC3SW</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>019087d8-48c2-46be-91dd-a0a55ea2728b</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO3SW</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>c83c5957-d763-4ad0-9d1f-64c35c150a05</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP3SW</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>bc82c9ac-ff48-4e8d-8482-f6706e78982a</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU3UN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>87e5affa-d124-493c-a38e-50315887fd51</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF3UN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>34390039-f2ef-4bf1-9193-4fc9ae66b7a2</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM3UN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>8704ed22-6118-435f-b9fa-fb1dee98fc18</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC3UN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>50f853c1-5474-46c3-a70e-b3670004d4d2</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO3UN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>665e32f4-1ed9-4f7e-b4c0-21e07c3fbe71</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP3UN</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>4cad912e-4f65-4563-9e24-b0e01bf3434f</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU3VA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>56de0829-4a3c-48b4-868e-5b509da50b57</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF3VA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>bc93a0a1-aa67-4a3c-836e-d7ebe4c95406</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM3VA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>082e8881-6d14-44d8-929c-6da3e6fd396b</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC3VA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>51fb3c35-ad8a-4e6b-abd1-d353115b52c1</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO3VA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>641aa0eb-257f-4c4c-bdeb-f23d4a6f657f</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP3VA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>70a0cade-c5a4-4835-9038-c508b30a34fd</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU4AK</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>cf2de7f4-e1b0-4680-bb5d-11b3def68bb1</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF4AK</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>73dfa882-570f-4f6c-9d84-9f06dc5e8c29</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM4AK</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>f31002c4-5fd1-4b45-b21d-0b2abb48237d</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC4AK</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>52f807a3-8bbe-4f6f-9f60-8c822507016e</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO4AK</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>f3cb5579-54de-4aaf-9dba-c8261ae9bdbb</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP4AK</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>239dae0f-ff40-4d95-853e-81208cd4cf69</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU4BE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>f53e3ef3-eab4-47b3-9f84-1594eb4330dd</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF4BE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>506fe563-17df-4f0d-92d8-1e0c6148aeb2</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM4BE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>2de086f9-9b5c-4a88-b8a0-b63009c2d010</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC4BE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>0ec882eb-62da-4982-be69-27c1c7dc1370</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO4BE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>dfbcbe10-98cf-4a8c-8602-0d08976f2f00</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP4BE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>c624f5a9-c197-4f85-b446-065d85250ad5</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU4DJ</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>3d3d5e18-59cc-4374-9ec1-d24a3600b519</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF4DJ</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>05ef0a94-d683-4751-b5e8-782e4e383c2c</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM4DJ</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>a6ca3858-218c-4398-ac6b-e1e345e55520</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC4DJ</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>31244714-845c-4678-9bc6-1e3e6f19b9b6</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO4DJ</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>97b9662b-99e4-4ca6-8214-2d0431c2ebb9</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP4DJ</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>08621a08-7d25-4e9b-b78d-cf309eb280fb</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU4EM</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>1383af71-be8e-4875-96a0-ccd2c2e404a5</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF4EM</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>7c6b5c71-c666-4eda-8b36-26c21410df7c</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM4EM</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>331ffc31-2505-4567-b8f8-8e218013f45a</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC4EM</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>fa99f1fb-013f-41a2-a954-34977b160ba8</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO4EM</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>19e30453-0bc6-43a5-bdbe-5130811a30a1</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP4EM</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>aa3f95b9-849f-4974-9a6b-03bf82b4ca83</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU4FA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>0dba3062-c496-4983-84d5-e756759cf9ed</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF4FA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>364a3ddb-f55c-4139-9c22-56f7793e6490</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM4FA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>7e0e49f7-6e8f-4707-af23-37e233d49ee9</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC4FA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>7b104dc2-0393-4660-94b7-f716e3fcde30</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO4FA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>4e616dd9-aa93-463a-93b6-48cefe00af20</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP4FA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>d2d69255-a81a-41ce-9ed1-5e60b3a80ddd</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU4FY</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>636283f9-6be4-4961-bb55-92da7ab51961</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF4FY</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>da659c3c-7504-4e18-bf9a-cd062a257035</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM4FY</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>1fdbf966-10e3-4414-ab5a-7af8933d80bc</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC4FY</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>33b4e33c-f8c5-4b70-a077-b0e8bdc40440</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO4FY</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>1527a9dc-3fe3-4143-8ecf-3e86abd181b0</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP4FY</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>b7e83fa0-82fa-4e31-9d61-574e4ab616e1</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU4GA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>8a418308-4afb-4ae4-8a50-a2feeb07666d</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF4GA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>d779d141-04a6-4174-84ee-733f333bbb86</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM4GA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>3a84a15b-6880-4ec9-ad53-7b2e0d2a7ca5</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC4GA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>e3d1ee04-17cb-4f47-bf5f-45d08fbd268b</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO4GA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>ed709ff0-af91-4fdf-a738-98a1cb10d5e3</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP4GA</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>b08551e1-bbb1-4403-bed1-13741ded671a</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU4HB</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>1091fbde-4fbf-4645-81c3-d23ccc5715f5</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF4HB</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>553d9370-c080-4923-9fbe-2aedc1d39b27</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM4HB</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>8d5b956d-b901-43f0-b1c5-7148700776af</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC4HB</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>21689419-fcf0-4241-94cd-96e20dadb184</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO4HB</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>e4dcc06f-2431-4801-8317-12a0146d35a3</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP4HB</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>7d2bb8bb-0f46-4075-8c04-85be7e1d7d85</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU4NE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>4b3454f8-9057-494f-928c-b3f00e721ea7</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF4NE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>b495316f-5572-4376-8542-86d876d69cdd</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM4NE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>e6c33692-67ec-44de-87db-719fd4df738a</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC4NE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>04c288dd-c415-4aa8-862c-9a36984d3302</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO4NE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>e21335c9-b7ca-4463-9a7d-ad0875b9c82e</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP4NE</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>f962f0e0-db55-4c99-8b99-dc3a1a23ade8</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU4SM</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>a2d984c9-720b-4e7a-b7af-aa61a9e28617</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF4SM</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>1c5e2432-7259-4574-bb0f-0fad9f14b901</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM4SM</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>5cbce58e-6a19-444f-8ffa-b4da94c3f0e8</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC4SM</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>b59b7f7a-f301-490c-a5a6-bd8a72e77cef</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO4SM</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>6f5d4134-6544-47ba-a7ae-61318d29efaf</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP4SM</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>6900b7e5-4cc7-49e1-aee2-7379465189e3</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>AU4TO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published - Underage Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>6cb321de-cf23-42b7-81c9-14c3d28ec6db</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDF4TO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>468e2c8f-d765-4a98-8692-806433b1549f</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRDM4TO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Dist Ct Misd</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>f7926db7-4e9b-4904-8f95-7a35eb8b3ffa</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>CRSC4TO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Crim Superior Ct</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>c36c9835-47db-423d-b55d-e49e839bca70</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MO4TO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Minor Offense</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="id">
+        <SimpleValue>b4b3d282-d1ca-4241-b148-62309f33114c</SimpleValue>
+      </Value>
+      <Value ColumnRef="code">
+        <SimpleValue>MONP4TO</SimpleValue>
+      </Value>
+      <Value ColumnRef="description">
+        <SimpleValue>Not Published MO-Minor Consuming</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>criminal</SimpleValue>
+      </Value>
+    </Row>
+  </SimpleCodeList>
+</gc:CodeList>
