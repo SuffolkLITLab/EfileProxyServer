@@ -465,7 +465,7 @@ public class TylerCodesParserTest {
     var components = new ArrayList<NameAndCode>();
     components.add(component);
     var res = parser.vetFilingComponent("333", components);
-    assertThat(res).containsOk(component);
+    assertThat(res).containsOk(Optional.of(component));
     var resAgain = parser.vetFilingComponent("333", components);
     assertThat(resAgain).containsErr(new NoMatchingCode("333", List.of()));
   }

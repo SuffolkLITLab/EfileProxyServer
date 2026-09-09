@@ -31,7 +31,6 @@ import ecf4.latest.tyler.ecf.extensions.common.CapabilityType;
 import ecf4.latest.tyler.ecf.extensions.common.DocumentOptionalServiceType;
 import ecf4.latest.tyler.ecf.extensions.common.DocumentType;
 import ecf4.latest.tyler.ecf.extensions.common.FilingTypeType;
-import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.model.Address;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
 import edu.suffolk.litlab.efsp.model.FilingAction;
@@ -389,7 +388,8 @@ public class EcfCourtSpecificSerializer {
     // TODO(brycew-later): what should this actually be? Very unclear
     DocumentAttachmentType attachment = ecfOf.createDocumentAttachmentType();
     attachment.setBinaryDescriptionText(Ecf4Helper.convertText(fa.documentDescription()));
-    NameAndCode filt = fa.filingComponentCode();
+    // We know it has to be present for Tyler
+    var filt = fa.filingComponentCode().get();
 
     attachment.setBinaryCategoryText(Ecf4Helper.convertText(filt.code()));
 

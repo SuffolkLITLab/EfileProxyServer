@@ -5,7 +5,7 @@ import java.util.Optional;
 
 /** An individual PDF, all a part of the same "document". The equivalent of an ALDocument. */
 public record FilingAttachment(
-    NameAndCode filingComponentCode,
+    Optional<NameAndCode> filingComponentCode,
     /** The description of this document. Goes into BinaryDescriptionText for Tyler. */
     String documentDescription,
     String fileName,

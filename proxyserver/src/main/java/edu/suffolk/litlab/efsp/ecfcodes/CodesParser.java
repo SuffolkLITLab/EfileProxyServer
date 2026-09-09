@@ -23,8 +23,6 @@ import java.util.regex.Pattern;
 /**
  * Given the strings from an input case, 'parses' them (i.e. checks, confirms, and converts them
  * into slightly more strict types).
- *
- * <p>TODO(brycew): still needs to remove the tyler specific codes from this API
  */
 public interface CodesParser extends AutoCloseable {
   // Types specifically for errors.
@@ -107,7 +105,7 @@ public interface CodesParser extends AutoCloseable {
 
   public List<NameAndCode> retrieveFilingComponents(NameAndCode filingCode);
 
-  public Result<NameAndCode, CodeError> vetFilingComponent(
+  public Result<Optional<NameAndCode>, CodeError> vetFilingComponent(
       String filingComponent, ArrayList<NameAndCode> components);
 
   public Result<Optional<NameAndCode>, CodeError> vetFilerType(Optional<String> maybeFilerType);
