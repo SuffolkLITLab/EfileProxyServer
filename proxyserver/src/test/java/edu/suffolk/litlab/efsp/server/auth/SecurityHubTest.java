@@ -154,12 +154,15 @@ public class SecurityHubTest {
     }
 
     @Test
-    public void testLoginWithUnauthorizedJeffNet() throws Exception {
+    public void testLoginWithDeprecatedJeffNet() throws Exception {
       ObjectNode jeffNetNode = mapper.createObjectNode();
       jeffNetNode.put("api_key", "the_jeffnet_key");
       loginNode.set("jeffnet", jeffNetNode);
       Optional<NewTokens> withJeffnet = hub.login(API_KEY, loginNode);
-      assertThat(withJeffnet).isEmpty();
+      assertThat(withJeffnet).isPresent();
+      var tokens = withJeffnet.get().getTokens();
+      assertThat(tokens).containsKey("JEFFNET-TOKEN");
+      assertThat(tokens.get("JEFFNET-TOKEN")).isEqualTo("deprecated");
     }
 
     @Test

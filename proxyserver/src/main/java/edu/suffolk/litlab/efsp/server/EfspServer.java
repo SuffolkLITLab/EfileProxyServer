@@ -14,6 +14,7 @@ import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.MessageSettingsDatabase;
 import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.docassemble.DocassembleToFilingInformationConverter;
+import edu.suffolk.litlab.efsp.server.auth.AuthenticateRequestInterceptor;
 import edu.suffolk.litlab.efsp.server.auth.SecurityHub;
 import edu.suffolk.litlab.efsp.server.services.ApiUserSettingsService;
 import edu.suffolk.litlab.efsp.server.services.AuthenticationService;
@@ -25,12 +26,12 @@ import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.setup.truefiling.TrueFilingModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.tyler.TylerModuleSetup;
-import edu.suffolk.litlab.efsp.server.utils.AuthenticateRequestInterceptor;
 import edu.suffolk.litlab.efsp.server.utils.EnumExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.JsonExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.ObservabilityHeadersInterceptor;
 import edu.suffolk.litlab.efsp.server.utils.ObservabilityResetInterceptor;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
+import edu.suffolk.litlab.efsp.server.utils.ProxyServerExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.SendMessage;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapExceptionMapper;
@@ -136,7 +137,7 @@ public class EfspServer {
         Map.of(
             "xml", MediaType.APPLICATION_XML,
             "json", MediaType.APPLICATION_JSON));
-    sf.setProviders(providers(ldSupplier));
+    sf.setProviders(providers(ldSupplier, security));
 
     sf.setAddress(ServiceHelpers.BASE_LOCAL_URL);
     server = sf.create();
@@ -196,7 +197,7 @@ public class EfspServer {
     }
   }
 
-  public static List<?> providers(Supplier<LoginDatabase> ldSupplier) {
+  public static List<?> providers(Supplier<LoginDatabase> ldSupplier, SecurityHub security) {
     var objMapper = new ObjectMapper().registerModule(new Jdk8Module());
     return List.of(
         new JAXBElementProvider<Object>(),
@@ -204,9 +205,10 @@ public class EfspServer {
         new SoapExceptionMapper(),
         new JsonExceptionMapper(),
         new EnumExceptionMapper(),
+        new ProxyServerExceptionMapper(),
         new ObservabilityHeadersInterceptor(),
         new ObservabilityResetInterceptor(),
-        new AuthenticateRequestInterceptor(ldSupplier));
+        new AuthenticateRequestInterceptor(ldSupplier, security));
   }
 
   public static void main(String[] args) throws Exception {

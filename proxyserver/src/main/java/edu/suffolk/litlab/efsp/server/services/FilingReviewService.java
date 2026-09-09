@@ -11,15 +11,14 @@ import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.FilingResult;
 import edu.suffolk.litlab.efsp.model.Person;
-import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
+import edu.suffolk.litlab.efsp.server.auth.EfspSecurityContext;
+import edu.suffolk.litlab.efsp.server.auth.NeedsAuthorization;
+import edu.suffolk.litlab.efsp.server.auth.UserCreds;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.services.api.EfmFilingInterface;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
-import edu.suffolk.litlab.efsp.server.utils.EfspSecurityContext;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
-import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
-import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
@@ -69,7 +68,6 @@ public class FilingReviewService {
   private final OrgMessageSender msgSender;
   private final Supplier<UserDatabase> udSupplier;
   private final EndpointReflection ef;
-  private final Jurisdiction jurisdiction;
 
   public FilingReviewService(
       Jurisdiction jurisdiction,
@@ -83,7 +81,6 @@ public class FilingReviewService {
     this.callbackInterfaces = callbackInterfaces;
     this.udSupplier = udSupplier;
     this.msgSender = msgSender;
-    this.jurisdiction = jurisdiction;
     this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction.getName() + "/filingreview");
   }
 
@@ -133,11 +130,8 @@ public class FilingReviewService {
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
 
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    if (tylerUser.isEmpty()) {
-      return Response.status(401).entity("Not logged in to file with " + courtId).build();
-    }
-    var toRet = filer.getFilingStatus(courtId, filingId, tylerUser.get().creds());
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    var toRet = filer.getFilingStatus(courtId, filingId, userCreds);
     return toRet;
   }
 
@@ -157,15 +151,12 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = filingInterfaces.get(courtId);
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    if (tylerUser.isEmpty()) {
-      return Response.status(401).entity("Not logged in to file with " + courtId).build();
-    }
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
     try {
       LocalDate startDate = (startStr != null) ? LocalDate.parse(startStr) : null;
       LocalDate beforeDate = (beforeStr != null) ? LocalDate.parse(beforeStr) : null;
       // beforeDate is exclusive!
-      return filer.getFilingList(courtId, userId, startDate, beforeDate, tylerUser.get().creds());
+      return filer.getFilingList(courtId, userId, startDate, beforeDate, userCreds);
     } catch (DateTimeParseException ex) {
       return Response.status(400)
           .entity(
@@ -189,20 +180,18 @@ public class FilingReviewService {
     if (mediaType == null) {
       mediaType = MediaType.valueOf("application/json");
     }
-    String userUuid = httpHeaders.getHeaderString(TylerLogin.getHeaderId(jurisdiction));
+    var efspSecurity = (EfspSecurityContext) security;
+    var userUuid = efspSecurity.getUserId();
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    if (tylerUser.isEmpty()) {
-      return Response.status(401).entity("Not logged in to file with " + courtId).build();
-    }
+    var userCreds = efspSecurity.getUserCreds();
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
-    Result<CodesParser, Response> maybeParser = makeParser(courtId, tylerUser.get().creds(), filer);
+    Result<CodesParser, Response> maybeParser = makeParser(courtId, userCreds, filer);
     if (maybeParser.isErr()) {
       return maybeParser.unwrapErrOrElseThrow();
     }
@@ -219,7 +208,7 @@ public class FilingReviewService {
       FilingInformation info = res.unwrapOrElseThrow();
       info.setCourtLocation(courtId);
       Result<NullValue, FilingError> resEfm =
-          filer.checkFiling(info, tylerUser.get().creds(), userUuid, collector);
+          filer.checkFiling(info, userCreds, userUuid, collector);
       if (resEfm.isErr()) {
         log.error("Error on checkFiling: {}", resEfm.toString());
         return Response.ok(collector.jsonSummary()).build();
@@ -249,14 +238,11 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    if (tylerUser.isEmpty()) {
-      return Response.status(401).entity("Not logged in to file with " + courtId).build();
-    }
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
-    Result<CodesParser, Response> maybeParser = makeParser(courtId, tylerUser.get().creds(), filer);
+    Result<CodesParser, Response> maybeParser = makeParser(courtId, userCreds, filer);
     if (maybeParser.isErr()) {
       return maybeParser.unwrapErrOrElseThrow();
     }
@@ -272,7 +258,7 @@ public class FilingReviewService {
       }
       FilingInformation info = res.unwrapOrElseThrow();
       info.setCourtLocation(courtId);
-      Result<Response, FilingError> fees = filer.getFilingFees(info, tylerUser.get().creds());
+      Result<Response, FilingError> fees = filer.getFilingFees(info, userCreds);
       return fees.match(err -> Response.status(400).entity(err.toJson()).build(), respon -> respon);
     } finally {
       parser.close();
@@ -299,14 +285,11 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    if (tylerUser.isEmpty()) {
-      return Response.status(401).entity("Not logged in to file with " + courtId).build();
-    }
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
-    Result<CodesParser, Response> maybeParser = makeParser(courtId, tylerUser.get().creds(), filer);
+    Result<CodesParser, Response> maybeParser = makeParser(courtId, userCreds, filer);
     if (maybeParser.isErr()) {
       return maybeParser.unwrapErrOrElseThrow();
     }
@@ -320,7 +303,7 @@ public class FilingReviewService {
       }
       FilingInformation info = res.unwrapOrElseThrow();
       info.setCourtLocation(courtId);
-      Result<Response, FilingError> fees = filer.getServiceTypes(info, tylerUser.get().creds());
+      Result<Response, FilingError> fees = filer.getServiceTypes(info, userCreds);
       return fees.match(err -> Response.status(400).entity(err.toJson()).build(), respon -> respon);
     } finally {
       parser.close();
@@ -338,12 +321,9 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    if (tylerUser.isEmpty()) {
-      return Response.status(401).entity("Not logged in to file with " + courtId).build();
-    }
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
 
-    var toRet = filer.getPolicy(courtId, tylerUser.get().creds());
+    var toRet = filer.getPolicy(courtId, userCreds);
     return toRet;
   }
 
@@ -402,26 +382,22 @@ public class FilingReviewService {
     if (mediaType == null) {
       mediaType = MediaType.valueOf("application/json");
     }
-    String userUuid = httpHeaders.getHeaderString(TylerLogin.getHeaderId(jurisdiction));
+    var userUuid = security.getUserId();
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    if (tylerUser.isEmpty()) {
-      return Response.status(401).entity("Not logged in to file with " + courtId).build();
-    }
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
     Result<FilingInformation, Response> maybeInfo =
-        parseFiling(allVars, filer, courtId, tylerUser.get().creds(), mediaType);
+        parseFiling(allVars, filer, courtId, userCreds, mediaType);
     if (maybeInfo.isErr()) {
       return maybeInfo.unwrapErrOrElseThrow();
     }
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
     Result<FilingResult, FilingError> result =
-        filer.sendFiling(
-            info, tylerUser.get().creds(), userUuid, EfmFilingInterface.ApiChoice.FileApi);
+        filer.sendFiling(info, userCreds, userUuid, EfmFilingInterface.ApiChoice.FileApi);
     if (result.isErr()) {
       return Response.status(500).entity(result.unwrapErrOrElseThrow().toJson()).build();
     }
@@ -452,7 +428,7 @@ public class FilingReviewService {
           user.getContactInfo().getEmail().orElse(""),
           filingIds,
           security.getServerId(),
-          tylerUser.get().creds().toString(),
+          userCreds.toString(),
           info.getCaseTypeCode().code,
           courtId,
           ts,
@@ -491,7 +467,7 @@ public class FilingReviewService {
       String allVars,
       EfmFilingInterface filer,
       String courtId,
-      TylerUserNamePassword activeToken,
+      UserCreds activeToken,
       MediaType mediaType) {
     log.trace("Court id: {}", courtId);
     if (!converterMap.containsKey(mediaType.toString())) {
@@ -536,11 +512,8 @@ public class FilingReviewService {
         return checked.unwrapErrOrElseThrow();
       }
       EfmFilingInterface filer = checked.unwrapOrElseThrow();
-      var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-      if (tylerUser.isEmpty()) {
-        return Response.status(401).entity("Not logged in to file with " + courtId).build();
-      }
-      return filer.getFilingDetails(courtId, filingId, tylerUser.get().creds());
+      var userCreds = ((EfspSecurityContext) security).getUserCreds();
+      return filer.getFilingDetails(courtId, filingId, userCreds);
     } finally {
     }
   }
@@ -559,11 +532,8 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    if (tylerUser.isEmpty()) {
-      return Response.status(401).entity("Not logged in to file with " + courtId).build();
-    }
-    var toRet = filer.getFilingService(courtId, filingId, contactId, tylerUser.get().creds());
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    var toRet = filer.getFilingService(courtId, filingId, contactId, userCreds);
     return toRet;
   }
 
@@ -580,11 +550,8 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    if (tylerUser.isEmpty()) {
-      return Response.status(401).entity("Not logged in to file with " + courtId).build();
-    }
-    var toRet = filer.cancelFiling(courtId, filingId, tylerUser.get().creds());
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    var toRet = filer.cancelFiling(courtId, filingId, userCreds);
     return toRet;
   }
 
@@ -596,7 +563,7 @@ public class FilingReviewService {
   }
 
   private Result<CodesParser, Response> makeParser(
-      String courtId, TylerUserNamePassword creds, EfmFilingInterface filer) {
+      String courtId, UserCreds creds, EfmFilingInterface filer) {
     var parser = filer.getParser(courtId, creds);
     if (parser.isEmpty()) {
       return Result.err(Response.status(404).entity("Cannot send filing to " + courtId).build());

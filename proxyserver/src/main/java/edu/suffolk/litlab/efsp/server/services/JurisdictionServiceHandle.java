@@ -66,6 +66,22 @@ public class JurisdictionServiceHandle {
   }
 
   public JurisdictionServiceHandle(
+      Jurisdiction jurisdiction,
+      FilingReviewService filingReview,
+      CasesService cases,
+      CodesService codes) {
+    this(
+        jurisdiction,
+        Optional.empty(),
+        Optional.of(cases),
+        Optional.of(codes),
+        Optional.empty(),
+        filingReview,
+        Optional.empty(),
+        Optional.empty());
+  }
+
+  public JurisdictionServiceHandle(
       Jurisdiction jurisdiction, FilingReviewService filingReview, CodesService codes) {
     this(
         jurisdiction,

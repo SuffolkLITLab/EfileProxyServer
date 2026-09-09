@@ -3,10 +3,10 @@ package edu.suffolk.litlab.efsp.server.utils;
 import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
 
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
+import edu.suffolk.litlab.efsp.server.auth.UserCreds;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
-import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.ws.BindingProvider;
@@ -69,8 +69,8 @@ public class ServiceHelpers {
     ctx.put("set-jaxb-validation-event-handler", "false");
   }
 
-  public static void setupServicePort(BindingProvider bp, TylerUserNamePassword creds) {
-    setupServicePort(bp, List.of(creds.toHeader()));
+  public static void setupServicePort(BindingProvider bp, UserCreds creds) {
+    setupServicePort(bp, creds.toHeaders());
   }
 
   public static void setupServicePort(BindingProvider bp, List<Header> headerList) {
@@ -130,9 +130,8 @@ public class ServiceHelpers {
     }
   }
 
-  public static boolean getIsIndividual(
-      TylerFirmFactory firmFactory, Optional<TylerUserNamePassword> tylerUser) {
-    Optional<TylerFirmClient> firmClient = setupFirmPort(firmFactory, tylerUser, true);
+  public static boolean getIsIndividual(TylerFirmFactory firmFactory, UserCreds userCreds) {
+    Optional<TylerFirmClient> firmClient = setupFirmPort(firmFactory, userCreds, true);
     boolean isIndividual =
         firmClient
             .map(
@@ -156,21 +155,16 @@ public class ServiceHelpers {
   }
 
   public static Optional<TylerFirmClient> setupFirmPort(
-      TylerFirmFactory firmFactory, Optional<TylerUserFromServer> tylerUser) {
-    return setupFirmPort(firmFactory, tylerUser.map(u -> u.creds()), true);
+      TylerFirmFactory firmFactory, UserCreds userCreds) {
+    return setupFirmPort(firmFactory, userCreds, true);
   }
 
   public static Optional<TylerFirmClient> setupFirmPort(
-      TylerFirmFactory firmFactory,
-      Optional<TylerUserNamePassword> creds,
-      boolean needsSoapHeader) {
+      TylerFirmFactory firmFactory, UserCreds creds, boolean needsSoapHeader) {
     if (needsSoapHeader) {
-      if (creds.isEmpty()) {
-        log.warn("No creds?");
-        return Optional.empty();
-      }
       return Optional.of(
-          firmFactory.makeFirmClient((port) -> ServiceHelpers.setupServicePort(port, creds.get())));
+          firmFactory.makeFirmClient(
+              (port) -> ServiceHelpers.setupServicePort(port, creds.toHeaders())));
     } else {
       return Optional.of(firmFactory.makeFirmClient(ServiceHelpers::setupServicePort));
     }

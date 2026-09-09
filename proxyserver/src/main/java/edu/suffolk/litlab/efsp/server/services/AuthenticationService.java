@@ -12,6 +12,8 @@ import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Optional;
@@ -56,17 +58,19 @@ public class AuthenticationService {
    */
   @StatusCodes({@ResponseCode(code = 403, condition = "login information not valid")})
   @POST
-  public Response authenticateUser(String loginInfo) {
+  public Response authenticateUser(@Context HttpHeaders headers, String loginInfo) {
     MDC.put(MDCWrappers.OPERATION, "AuthenticationService.authenticateUser");
     ObjectMapper mapper = new ObjectMapper();
-    String apiKey;
+    String apiKey = headers.getHeaderString("X-API-KEY");
     try {
       JsonNode node = mapper.readTree(loginInfo);
-      if (!node.isObject() || !node.has("api_key") || !node.get("api_key").isTextual()) {
-        log.error("Call didn't pass in an api_key in the auth call");
-        return Response.status(401).build();
+      if (apiKey == null || apiKey.isBlank()) {
+        if (!node.isObject() || !node.has("api_key") || !node.get("api_key").isTextual()) {
+          log.error("Call didn't pass in an api_key in the auth call");
+          return Response.status(401).build();
+        }
+        apiKey = node.get("api_key").asText();
       }
-      apiKey = node.get("api_key").asText();
       if (apiKey == null || apiKey.isBlank()) {
         log.error("Call passed in a null / blank api_key");
         return Response.status(401).build();

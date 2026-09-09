@@ -88,7 +88,7 @@ public class CodesServiceTest {
             "xml", MediaType.APPLICATION_XML,
             "json", MediaType.APPLICATION_JSON);
     sf.setExtensionMappings(extensionMappings);
-    List<?> providers = EfspServer.providers(() -> null);
+    List<?> providers = EfspServer.providers(() -> null, null);
     sf.setProviders(providers);
     server = sf.create();
   }

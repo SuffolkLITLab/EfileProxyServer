@@ -11,17 +11,18 @@ import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import com.webcohesion.enunciate.metadata.rs.ResponseCode;
 import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import edu.suffolk.litlab.efsp.Jurisdiction;
+import edu.suffolk.litlab.efsp.server.auth.EfspSecurityContext;
+import edu.suffolk.litlab.efsp.server.auth.NeedsAuthorization;
+import edu.suffolk.litlab.efsp.server.auth.NullUserCreds;
+import edu.suffolk.litlab.efsp.server.auth.UserNamePassword;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
-import edu.suffolk.litlab.efsp.server.utils.EfspSecurityContext;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
-import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.stdlib.RandomString;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
-import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import edu.suffolk.litlab.efsp.utils.Hasher;
 import jakarta.ws.rs.Consumes;
@@ -146,8 +147,8 @@ public class PaymentsService {
   @NeedsAuthorization
   public Response getGlobalPaymentList(@Context SecurityContext security) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getGlobalPaymentList");
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -162,8 +163,8 @@ public class PaymentsService {
   public Response getGlobalPaymentAccount(
       @Context SecurityContext security, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getGlobalPaymentAccount");
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -190,8 +191,8 @@ public class PaymentsService {
   @NeedsAuthorization
   public Response createGlobalWaiverAccount(@Context SecurityContext security, String accountName) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.createGlobalWaiverAccount");
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -204,8 +205,8 @@ public class PaymentsService {
   public Response updateGlobalPaymentAccount(
       @Context SecurityContext security, @PathParam("account_id") String accountId, String json) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.updateGlobalPaymentAccount");
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -228,8 +229,8 @@ public class PaymentsService {
   public Response removeGlobalPaymentAccount(
       @Context SecurityContext security, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.removeGlobalPaymentAccount");
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -246,8 +247,8 @@ public class PaymentsService {
   public Response getPaymentAccount(
       @Context SecurityContext security, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccount");
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -265,8 +266,8 @@ public class PaymentsService {
   public Response removePaymentAccount(
       @Context SecurityContext security, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.removePaymentAccount");
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -284,8 +285,8 @@ public class PaymentsService {
       @Context SecurityContext security, @DefaultValue("") @QueryParam("court_id") String courtId)
       throws SQLException {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccountList");
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -321,8 +322,8 @@ public class PaymentsService {
   @NeedsAuthorization
   public Response createWaiverAccount(@Context SecurityContext security, String accountName) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.createWaiverAccount");
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -344,8 +345,8 @@ public class PaymentsService {
       @Context SecurityContext security, @PathParam("account_id") String accountId, String json)
       throws JsonMappingException, JsonProcessingException {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.updatePaymentAccount");
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    Optional<TylerFirmClient> firmPort = ServiceHelpers.setupFirmPort(firmFactory, tylerUser);
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    Optional<TylerFirmClient> firmPort = ServiceHelpers.setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -367,8 +368,8 @@ public class PaymentsService {
   @NeedsAuthorization
   public Response getPaymentAccountTypeList(@Context SecurityContext security) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccountTypeList");
-    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
-    Optional<TylerFirmClient> firmPort = ServiceHelpers.setupFirmPort(firmFactory, tylerUser);
+    var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    Optional<TylerFirmClient> firmPort = ServiceHelpers.setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -440,10 +441,10 @@ public class PaymentsService {
       log.error(err);
       return Response.status(422).entity(errorHtml.formatted(err)).build();
     }
-    var maybeCreds = TylerUserNamePassword.userCredsFromAuthorization(tylerInfo);
+    var maybeCreds = UserNamePassword.userCredsFromAuthorization(tylerInfo);
     Optional<TylerFirmClient> firmPort =
-        ServiceHelpers.setupFirmPort(firmFactory, maybeCreds, true);
-    if (firmPort.isEmpty()) {
+        ServiceHelpers.setupFirmPort(firmFactory, maybeCreds.orElse(new NullUserCreds()), true);
+    if (maybeCreds.isEmpty() || firmPort.isEmpty()) {
       String err =
           "Unable to use your login information with Tyler: will not be able to create the payment"
               + " account.";
@@ -574,9 +575,9 @@ public class PaymentsService {
         return Response.status(404).entity(paymentsErrorHtml).build();
       }
       TempAccount tempInfo = tempAccounts.get(resp.transactionId);
-      var maybeCreds = TylerUserNamePassword.userCredsFromAuthorization(tempInfo.loginInfo);
+      var maybeCreds = UserNamePassword.userCredsFromAuthorization(tempInfo.loginInfo);
       Optional<TylerFirmClient> maybeFirmPort =
-          ServiceHelpers.setupFirmPort(firmFactory, maybeCreds, true);
+          ServiceHelpers.setupFirmPort(firmFactory, maybeCreds.orElse(new NullUserCreds()), true);
       if (maybeFirmPort.isEmpty()) {
         log.warn("Couldn't get the firm port for {}", resp.transactionId);
         return Response.status(403).entity(paymentsErrorHtml).build();

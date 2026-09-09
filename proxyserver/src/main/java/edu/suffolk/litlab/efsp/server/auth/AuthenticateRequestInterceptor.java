@@ -1,11 +1,10 @@
-package edu.suffolk.litlab.efsp.server.utils;
+package edu.suffolk.litlab.efsp.server.auth;
 
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
-import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
-import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
+import edu.suffolk.litlab.efsp.stdlib.NonEmptyString;
 import edu.suffolk.litlab.efsp.utils.Hasher;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
@@ -30,9 +29,12 @@ public class AuthenticateRequestInterceptor implements ContainerRequestFilter {
   private static final Logger log = LoggerFactory.getLogger(AuthenticateRequestInterceptor.class);
   public static final String API_KEY_HEADER = "X-API-KEY";
   private final Supplier<LoginDatabase> ldSupplier;
+  private final SecurityHub securityHub;
 
-  public AuthenticateRequestInterceptor(Supplier<LoginDatabase> ldSupplier) {
+  public AuthenticateRequestInterceptor(
+      Supplier<LoginDatabase> ldSupplier, SecurityHub securityHub) {
     this.ldSupplier = ldSupplier;
+    this.securityHub = securityHub;
   }
 
   @Override
@@ -45,11 +47,19 @@ public class AuthenticateRequestInterceptor implements ContainerRequestFilter {
         requestContext.abortWith(Response.status(401).build());
         return;
       }
-      var maybeJurisdiction =
+      Optional<Jurisdiction> maybeJurisdiction =
           getJurisdiction(requestContext.getUriInfo().getAbsolutePath().getPath());
-      var maybeCreds = maybeJurisdiction.flatMap(j -> getCreds(requestContext, j));
+      var maybeCreds =
+          maybeJurisdiction.flatMap(
+              j -> getCreds(securityHub.getTokenHeaderValue(requestContext.getHeaders(), j)));
       var p = maybeCreds.map(creds -> new TylerUserFromServer(creds));
-      var security = new EfspSecurityContext(p, atRest.get(), "");
+      Optional<NonEmptyString> userId =
+          maybeJurisdiction.flatMap(
+              j -> {
+                var headerVal = securityHub.getUserIdHeaderValue(requestContext.getHeaders(), j);
+                return NonEmptyString.create(headerVal);
+              });
+      var security = new EfspSecurityContext(p, userId, atRest.get(), "");
       requestContext.setSecurityContext(security);
     } catch (SQLException ex) {
       log.error("SQL when trying to check API Key / login:", ex);
@@ -81,15 +91,12 @@ public class AuthenticateRequestInterceptor implements ContainerRequestFilter {
    * <p>Based on what the current path of the request is (it needs to be under "jurisdictions/..."
    * to get the right login token).
    */
-  public static Optional<TylerUserNamePassword> getCreds(
-      ContainerRequestContext requestContext, Jurisdiction jurisdiction) {
-    String tylerToken =
-        requestContext.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-    var maybeCreds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
+  public static Optional<UserCreds> getCreds(String token) {
+    var maybeCreds = UserNamePassword.userCredsFromAuthorization(token);
     if (maybeCreds.isPresent()) {
-      MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerToken));
+      MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(token));
     } else {
-      if (tylerToken != null && !tylerToken.isBlank()) {
+      if (token != null && !token.isBlank()) {
         MDC.put(MDCWrappers.USER_ID, "(invalid token)");
       }
     }
