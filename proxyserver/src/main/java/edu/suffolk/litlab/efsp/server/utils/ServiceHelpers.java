@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efsp.server.utils;
 
 import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
 
+import edu.suffolk.litlab.efsp.ServerEnv;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseAPI;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import jakarta.ws.rs.core.Response;
@@ -25,6 +26,7 @@ public class ServiceHelpers {
   public static final String EXTERNAL_URL;
   public static final String SERVICE_URL;
   public static final String REST_CALLBACK_URL;
+  public static final String SENDING_MDE_LOCATION;
 
   static {
     // The 9009 is hard coded (we'll always be running on 9009 inside the docker
@@ -35,6 +37,14 @@ public class ServiceHelpers {
     }
     EXTERNAL_URL = "http://" + EXTERNAL_DOMAIN;
     BASE_LOCAL_URL = "http://0.0.0.0:9009";
+
+    // NOTE: using GetEnv here instead of ServerEnv.fromEnvVar because I don't want the lack of the
+    // variable to crash for tests here. It'll crash in EfspServer instead.
+    SENDING_MDE_LOCATION =
+        switch (GetEnv("SERVER_ENV").map(ServerEnv::parse).orElse(ServerEnv.TEST)) {
+          case ServerEnv.PROD -> "https://efile.suffolklitlab.org";
+          case ServerEnv.TEST -> "https://efile-test.suffolklitlab.org";
+        };
 
     SERVICE_URL = EXTERNAL_URL + ASSEMBLY_PORT;
     REST_CALLBACK_URL = EXTERNAL_URL + "/filingreview/jurisdictions/%s/courts/%s/filing/status";

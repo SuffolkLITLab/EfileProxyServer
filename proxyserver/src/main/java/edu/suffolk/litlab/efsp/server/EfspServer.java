@@ -295,7 +295,7 @@ public class EfspServer {
             .toList();
     for (int idx = 0; idx < tfJurisdictions.size(); idx++) {
       var jurisdiction = tfJurisdictions.get(idx);
-      TrueFilingModuleSetup.create(jurisdiction, codeDs, userDs, sender)
+      TrueFilingModuleSetup.create(jurisdiction, codeDs, userDs, converterMap, sender)
           .ifPresent(mod -> modules.add(mod));
     }
     if (modules.isEmpty()) {
