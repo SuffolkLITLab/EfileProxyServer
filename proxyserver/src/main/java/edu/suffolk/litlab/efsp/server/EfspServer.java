@@ -26,15 +26,16 @@ import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.setup.truefiling.TrueFilingModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.tyler.TylerModuleSetup;
-import edu.suffolk.litlab.efsp.server.utils.EnumExceptionMapper;
-import edu.suffolk.litlab.efsp.server.utils.JsonExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.ObservabilityHeadersInterceptor;
 import edu.suffolk.litlab.efsp.server.utils.ObservabilityResetInterceptor;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
-import edu.suffolk.litlab.efsp.server.utils.ProxyServerExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.SendMessage;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
-import edu.suffolk.litlab.efsp.server.utils.SoapExceptionMapper;
+import edu.suffolk.litlab.efsp.server.utils.exceptionmappers.EnumExceptionMapper;
+import edu.suffolk.litlab.efsp.server.utils.exceptionmappers.JsonExceptionMapper;
+import edu.suffolk.litlab.efsp.server.utils.exceptionmappers.ProxyServerExceptionMapper;
+import edu.suffolk.litlab.efsp.server.utils.exceptionmappers.SoapExceptionMapper;
+import edu.suffolk.litlab.efsp.server.utils.exceptionmappers.SoapFaultExceptionMapper;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
@@ -203,6 +204,7 @@ public class EfspServer {
         new JAXBElementProvider<Object>(),
         new JacksonJsonProvider(objMapper), // TODO(brycew): JAXBJSon?
         new SoapExceptionMapper(),
+        new SoapFaultExceptionMapper(),
         new JsonExceptionMapper(),
         new EnumExceptionMapper(),
         new ProxyServerExceptionMapper(),

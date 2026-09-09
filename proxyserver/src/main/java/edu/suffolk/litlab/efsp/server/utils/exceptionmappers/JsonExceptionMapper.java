@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.server.utils;
+package edu.suffolk.litlab.efsp.server.utils.exceptionmappers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.ws.rs.core.Response;

@@ -1,5 +1,6 @@
-package edu.suffolk.litlab.efsp.server.utils;
+package edu.suffolk.litlab.efsp.server.utils.exceptionmappers;
 
+import edu.suffolk.litlab.efsp.server.utils.ProxyServerException;
 import edu.suffolk.litlab.efsp.server.utils.ProxyServerException.AuthenticationNeeded;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
