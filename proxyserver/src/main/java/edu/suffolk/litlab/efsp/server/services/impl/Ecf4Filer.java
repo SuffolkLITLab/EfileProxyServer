@@ -44,6 +44,7 @@ import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRec
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
 import edu.suffolk.litlab.efsp.Jurisdiction;
+import edu.suffolk.litlab.efsp.ecf4.QueryType;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.model.CaseServiceContact;
@@ -70,7 +71,6 @@ import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import edu.suffolk.litlab.efsp.tyler.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.tyler.ecf4.EcfCourtSpecificSerializer;
 import edu.suffolk.litlab.efsp.tyler.ecf4.PaymentFactory;
-import edu.suffolk.litlab.efsp.tyler.ecf4.QueryType;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;

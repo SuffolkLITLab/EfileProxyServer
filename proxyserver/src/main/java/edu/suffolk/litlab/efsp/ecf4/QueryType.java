@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.tyler.ecf4;
+package edu.suffolk.litlab.efsp.ecf4;
 
 public enum QueryType {
   Service,
