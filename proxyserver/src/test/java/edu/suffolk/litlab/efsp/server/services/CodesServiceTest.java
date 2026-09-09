@@ -11,6 +11,7 @@ import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersionTest;
 import edu.suffolk.litlab.efsp.server.EfspServer;
+import edu.suffolk.litlab.efsp.server.services.impl.TylerCodesService;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import jakarta.ws.rs.core.MediaType;
@@ -78,10 +79,10 @@ public class CodesServiceTest {
       }
     }
     JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
-    sf.setResourceClasses(EcfCodesService.class);
+    sf.setResourceClasses(TylerCodesService.class);
     sf.setResourceProvider(
-        EcfCodesService.class,
-        new SingletonResourceProvider(new EcfCodesService(Jurisdiction.ILLINOIS, cdSupplier)));
+        TylerCodesService.class,
+        new SingletonResourceProvider(new TylerCodesService(Jurisdiction.ILLINOIS, cdSupplier)));
     sf.setAddress(ENDPOINT_ADDRESS);
     Map<Object, Object> extensionMappings =
         Map.of(

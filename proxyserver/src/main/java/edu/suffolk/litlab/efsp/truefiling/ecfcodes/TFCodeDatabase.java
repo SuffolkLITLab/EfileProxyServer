@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +99,11 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
   @Override
   public List<NameAndCode> getFileableSubsequentLocationNames() {
     return List.of(new NameAndCodeType("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+  }
+
+  public List<NameAndCode> getPartyTypeFor(String court) {
+    return List.of(
+        new NameAndCodeType("Petitioner", "PET"), new NameAndCodeType("Respondent", "RESP"));
   }
 
   @Override
@@ -252,6 +258,23 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
         });
   }
 
+  public List<CaseCategory> getCaseCategories(String courtLocationId) {
+    return safetyWrap(
+        () -> {
+          String query = CaseCategory.getCaseCategoriesForLoc();
+          List<CaseCategory> cats = new ArrayList<>();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, jurisStr());
+            st.setString(2, courtLocationId);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              cats.add(new CaseCategory(rs.getString(1), rs.getString(2), rs.getString(3)));
+            }
+          }
+          return cats;
+        });
+  }
+
   @Override
   public List<String> searchCaseType(String searchTerm) {
     return genericSearch(searchTerm, (term) -> CaseType.prepSearchQuery(conn, jurisStr(), term));
@@ -294,6 +317,21 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
           }
           st.close();
           return nacs;
+        });
+  }
+
+  public Optional<CaseType> getCaseTypeWith(String courtLocationId, UUID caseTypeCode) {
+    return safetyWrapOpt(
+        () -> {
+          try (PreparedStatement st =
+              CaseType.prepQueryWithCode(conn, jurisStr(), courtLocationId, caseTypeCode)) {
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+              return Optional.of(new CaseType(rs));
+            } else {
+              return Optional.empty();
+            }
+          }
         });
   }
 

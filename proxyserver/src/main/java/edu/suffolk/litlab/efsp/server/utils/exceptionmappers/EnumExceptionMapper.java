@@ -10,9 +10,11 @@ public class EnumExceptionMapper implements ExceptionMapper<IllegalArgumentExcep
 
   @Override
   public Response toResponse(IllegalArgumentException exception) {
-    if (exception
-        .getMessage()
-        .contains(" edu.suffolk.litlab.efsp.server.services.EcfCodesService.DesiredResult")) {
+    var msg = exception.getMessage();
+    if (msg.contains(
+            " edu.suffolk.litlab.efsp.server.services.impl.TylerCodesService.DesiredResult")
+        || msg.contains(
+            " edu.suffolk.litlab.efsp.server.services.impl.TrueFilingCodesService.DesiredResult")) {
       return Response.status(400)
           .entity("Unknown value for `result` parameter: should be 'NAMES', or 'COURT_COVERAGE'")
           .build();

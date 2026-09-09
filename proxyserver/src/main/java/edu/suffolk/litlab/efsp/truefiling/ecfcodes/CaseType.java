@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public record CaseType(UUID id, String code, String description, String caseCategoryCode) {
@@ -15,6 +16,15 @@ public record CaseType(UUID id, String code, String description, String caseCate
 
   public CaseType(ResultSet rs) throws SQLException {
     this((UUID) rs.getObject(1), rs.getString(2), rs.getString(3), rs.getString(4));
+  }
+
+  /** Turns the object into a map; attributes can be combined with HATEOS endpoints */
+  public Map<String, Object> toMap() {
+    return Map.ofEntries(
+        Map.entry("id", id),
+        Map.entry("code", code),
+        Map.entry("description", description),
+        Map.entry("casecategory", caseCategoryCode));
   }
 
   public static final String TABLE_NAME = "truefiling_casetype";

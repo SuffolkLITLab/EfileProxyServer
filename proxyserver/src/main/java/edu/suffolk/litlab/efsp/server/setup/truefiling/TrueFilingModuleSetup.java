@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efsp.server.setup.truefiling;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.server.services.JurisdictionServiceHandle;
+import edu.suffolk.litlab.efsp.server.services.impl.TrueFilingCodesService;
 import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.setup.tyler.OasisEcfWsCallback;
@@ -66,8 +67,29 @@ public class TrueFilingModuleSetup implements EfmModuleSetup {
 
   @Override
   public JurisdictionServiceHandle getServiceHandle() {
-    // TODO: actually do the rest of the services
-    return null;
+    Supplier<TFCodeDatabase> cdSupplier =
+        () -> {
+          return TFCodeDatabase.fromDS(jurisdiction, this.codeDs);
+        };
+    /*
+    var filingMap = new HashMap<String, EfmFilingInterface>();
+    var callbackMap = new HashMap<String, EfmRestCallbackInterface>();
+
+    PolicyCacher policyCacher = new PolicyCacher();
+    EfmFilingInterface filer = new TrueFilingFiler(jurisdiction, cdSupplier, policyCacher);
+    for (String court : getCourts()) {
+      filingMap.put(court, filer);
+      getCallback().ifPresent(call -> callbackMap.put(court, call));
+    }
+    Supplier<UserDatabase> udSupplier = () -> UserDatabase.fromDS(this.userDs);
+    var filingReview =
+        new FilingReviewService(
+            getJurisdiction(), udSupplier, converterMap, filingMap, callbackMap, this.sender);
+    */
+    var codes = new TrueFilingCodesService(getJurisdiction(), cdSupplier);
+    JurisdictionServiceHandle handle =
+        new JurisdictionServiceHandle(getJurisdiction(), null, codes);
+    return handle;
   }
 
   @Override
