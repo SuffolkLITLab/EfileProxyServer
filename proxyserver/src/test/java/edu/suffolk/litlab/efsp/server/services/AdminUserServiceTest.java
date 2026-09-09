@@ -12,6 +12,7 @@ import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.server.EfspServer;
+import edu.suffolk.litlab.efsp.server.auth.SecurityHub;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
@@ -106,7 +107,8 @@ public class AdminUserServiceTest {
     sf.setAddress(ENDPOINT_ADDRESS);
     Map<Object, Object> extensionMappings = Map.of("json", MediaType.APPLICATION_JSON);
     sf.setExtensionMappings(extensionMappings);
-    List<?> providers = EfspServer.providers(() -> ld);
+    List<?> providers =
+        EfspServer.providers(() -> ld, new SecurityHub(() -> ld, List.of(Jurisdiction.ILLINOIS)));
     sf.setProviders(providers);
     server = sf.create();
 

@@ -5,14 +5,13 @@ import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.db.model.NewTokens;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +29,8 @@ import org.slf4j.LoggerFactory;
 public class SecurityHub {
   private static final Logger log = LoggerFactory.getLogger(SecurityHub.class);
 
-  private final List<LoginInterface> tylerLoginObjs;
-  private final Map<String, Function<JsonNode, Optional<LoginResult>>> loginFunctions;
+  private final Map<String, LoginInterface> loginByKey;
+  private final Map<Jurisdiction, LoginInterface> loginByJurisdiction;
   private final Supplier<LoginDatabase> ldSupplier;
 
   /**
@@ -41,21 +40,33 @@ public class SecurityHub {
    */
   public SecurityHub(Supplier<LoginDatabase> ldSupplier, List<Jurisdiction> jurisdictions) {
     this.ldSupplier = ldSupplier;
-    if (jurisdictions.isEmpty()) {
-      this.tylerLoginObjs = List.of();
-    } else {
-      this.tylerLoginObjs =
-          jurisdictions.stream().map(j -> new TylerLogin(j)).collect(Collectors.toList());
+    this.loginByKey = new HashMap<>();
+    this.loginByJurisdiction = new HashMap<>();
+    for (var jurisdiction : jurisdictions) {
+      var login =
+          switch (jurisdiction.getVendor()) {
+            case Jurisdiction.Vendor.TYLER -> new TylerLogin(jurisdiction);
+            case Jurisdiction.Vendor.TRUE_FILING -> new TrueFilingLogin(jurisdiction);
+          };
+      this.loginByKey.put(login.getLoginName(), login);
+      this.loginByJurisdiction.put(jurisdiction, login);
     }
+  }
 
-    this.loginFunctions = new HashMap<>();
-    this.loginFunctions.put(
-        "jeffnet",
-        info ->
-            Optional.of(new LoginResult(Map.of("JEFFNET-TOKEN", "deprecated"), Optional.empty())));
-    this.loginFunctions.putAll(
-        this.tylerLoginObjs.stream()
-            .collect(Collectors.toMap(lo -> lo.getLoginName(), lo -> (info) -> lo.login(info))));
+  public String getUserIdHeaderValue(
+      MultivaluedMap<String, String> headers, Jurisdiction jurisdiction) {
+    if (!this.loginByJurisdiction.containsKey(jurisdiction)) {
+      return null;
+    }
+    return this.loginByJurisdiction.get(jurisdiction).getUserIdHeaderValue(headers);
+  }
+
+  public String getTokenHeaderValue(
+      MultivaluedMap<String, String> headers, Jurisdiction jurisdiction) {
+    if (!this.loginByJurisdiction.containsKey(jurisdiction)) {
+      return null;
+    }
+    return this.loginByJurisdiction.get(jurisdiction).getTokenHeaderValue(headers);
   }
 
   /**
@@ -99,11 +110,15 @@ public class SecurityHub {
       if (orgName.equalsIgnoreCase("api_key")) {
         continue;
       }
+      if (orgName.equalsIgnoreCase("jeffnet")) {
+        // Backwards compatible
+        newTokens.put("JEFFNET-TOKEN", "deprecated");
+        continue;
+      }
       // TODO(brycew): feels hacky, but we don't want an additional column to the db for each new
       // jurisdiction
-      if (!loginFunctions.containsKey(orgName)) {
-        log.error(
-            "There is no {} to login to: loginFunctions: {}", orgName, loginFunctions.keySet());
+      if (!loginByKey.containsKey(orgName)) {
+        log.error("There is no {} to login to: loginFunctions: {}", orgName, loginByKey.keySet());
         return Optional.empty();
       }
 
@@ -115,7 +130,7 @@ public class SecurityHub {
         log.error("There is no {} to login to: enabled map: {}", permissionsName, atRest.enabled);
         return Optional.empty();
       }
-      Optional<LoginResult> maybeResult = loginFunctions.get(orgName).apply(loginInfo.get(orgName));
+      Optional<LoginResult> maybeResult = loginByKey.get(orgName).login(loginInfo.get(orgName));
       if (maybeResult.isEmpty()) {
         log.warn("Couldn't login to {}", orgName);
         return Optional.empty();

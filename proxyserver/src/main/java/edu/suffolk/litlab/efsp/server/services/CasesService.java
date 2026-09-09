@@ -26,20 +26,19 @@ import ecf4.latest.tyler.ecf.extensions.serviceinformationhistoryresponsemessage
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.model.Name;
-import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
+import edu.suffolk.litlab.efsp.server.auth.EfspSecurityContext;
+import edu.suffolk.litlab.efsp.server.auth.NeedsAuthorization;
+import edu.suffolk.litlab.efsp.server.auth.UserCreds;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
-import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.FileableCourtType;
 import edu.suffolk.litlab.efsp.tyler.Ecf4Helper;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
-import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.DataFieldRow;
-import edu.suffolk.litlab.efsp.utils.Hasher;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -49,6 +48,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.ws.BindingProvider;
 import java.lang.reflect.Method;
@@ -84,11 +84,9 @@ public class CasesService {
           new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4
               .ObjectFactory();
   private final Supplier<CodeDatabase> cdSupplier;
-  private final Jurisdiction jurisdiction;
   private final EndpointReflection ef;
 
   public CasesService(Jurisdiction jurisdiction, Supplier<CodeDatabase> cdSupplier) {
-    this.jurisdiction = jurisdiction;
     Optional<CourtRecordMDEService> maybeRecords =
         SoapClientChooser.getCourtRecordFactory(jurisdiction);
     if (maybeRecords.isEmpty()) {
@@ -148,7 +146,7 @@ public class CasesService {
   @Path("/courts/{court_id}/cases")
   @NeedsAuthorization
   public Response getCaseList(
-      @Context HttpHeaders httpHeaders,
+      @Context SecurityContext security,
       @PathParam("court_id") String courtId,
       @QueryParam("docket_number") String docketId,
       @QueryParam("business_name") String businessName,
@@ -157,7 +155,8 @@ public class CasesService {
       @QueryParam("last_name") String lastName)
       throws JsonProcessingException {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getCaseList");
-    Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
+    EfspSecurityContext efspSecurity = (EfspSecurityContext) security;
+    Optional<CourtRecordMDEPort> maybePort = setupRecordPort(efspSecurity.getUserCreds());
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -253,11 +252,12 @@ public class CasesService {
   @Path("/courts/{court_id}/cases/{case_tracking_id}")
   @NeedsAuthorization
   public Response getCase(
-      @Context HttpHeaders httpHeaders,
+      @Context SecurityContext security,
       @PathParam("court_id") String courtId,
       @PathParam("case_tracking_id") String caseId) {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getCase");
-    Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
+    EfspSecurityContext efspSecurity = (EfspSecurityContext) security;
+    Optional<CourtRecordMDEPort> maybePort = setupRecordPort(efspSecurity.getUserCreds());
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -340,11 +340,12 @@ public class CasesService {
   @Path("/courts/{court_id}/service-contacts/{service_contact_id}/cases")
   @NeedsAuthorization
   public Response getServiceAttachCaseList(
-      @Context HttpHeaders httpHeaders,
+      @Context SecurityContext security,
       @PathParam("court_id") String courtId,
       @PathParam("service_contact_id") String serviceId) {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getServiceAttachCaseList");
-    Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
+    EfspSecurityContext efspSecurity = (EfspSecurityContext) security;
+    Optional<CourtRecordMDEPort> maybePort = setupRecordPort(efspSecurity.getUserCreds());
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -368,11 +369,12 @@ public class CasesService {
   @Path("/courts/{court_id}/cases/{case_tracking_id}/service-information")
   @NeedsAuthorization
   public Response getServiceInformation(
-      @Context HttpHeaders httpHeaders,
+      @Context SecurityContext security,
       @PathParam("court_id") String courtId,
       @PathParam("case_tracking_id") String caseId) {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getServiceInformation");
-    Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
+    EfspSecurityContext efspSecurity = (EfspSecurityContext) security;
+    Optional<CourtRecordMDEPort> maybePort = setupRecordPort(efspSecurity.getUserCreds());
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -397,11 +399,12 @@ public class CasesService {
   @Path("/courts/{court_id}/cases/{case_tracking_id}/service-information-history")
   @NeedsAuthorization
   public Response getServiceInformationHistory(
-      @Context HttpHeaders httpHeaders,
+      @Context SecurityContext security,
       @PathParam("court_id") String courtId,
       @PathParam("case_tracking_id") String caseId) {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getServiceInformationHistory");
-    Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
+    EfspSecurityContext efspSecurity = (EfspSecurityContext) security;
+    Optional<CourtRecordMDEPort> maybePort = setupRecordPort(efspSecurity.getUserCreds());
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -429,13 +432,8 @@ public class CasesService {
             && !resp.getError().get(0).getErrorCode().getValue().equals("0"));
   }
 
-  private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
-    String tylerToken =
-        httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-    MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerToken));
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
-    if (creds.isEmpty()) {
+  private Optional<CourtRecordMDEPort> setupRecordPort(UserCreds userCreds) {
+    if (userCreds.toHeaders().isEmpty()) {
       log.warn("No creds?");
       return Optional.empty();
     }
@@ -450,7 +448,7 @@ public class CasesService {
     httpClientPolicy.setReceiveTimeout(180_000);
     http.setClient(httpClientPolicy);
 
-    ServiceHelpers.setupServicePort((BindingProvider) port, creds.get());
+    ServiceHelpers.setupServicePort((BindingProvider) port, userCreds);
     return Optional.of(port);
   }
 }

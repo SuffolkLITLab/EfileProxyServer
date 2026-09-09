@@ -6,6 +6,7 @@ import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -80,8 +81,8 @@ public class TylerLogin implements LoginInterface {
   }
 
   @Override
-  public String getHeaderKey() {
-    return getHeaderKeyFromJurisdiction(this.jurisdiction);
+  public String getTokenHeaderValue(MultivaluedMap<String, String> headers) {
+    return headers.getFirst(getHeaderKey());
   }
 
   @Override
@@ -89,7 +90,16 @@ public class TylerLogin implements LoginInterface {
     return "tyler-" + this.jurisdiction.getName();
   }
 
-  public static String getHeaderId(Jurisdiction jurisdiction) {
+  @Override
+  public String getUserIdHeaderValue(MultivaluedMap<String, String> headers) {
+    return headers.getFirst(getHeaderId(this.jurisdiction));
+  }
+
+  private String getHeaderKey() {
+    return getHeaderKeyFromJurisdiction(this.jurisdiction);
+  }
+
+  private static String getHeaderId(Jurisdiction jurisdiction) {
     return "TYLER-ID-" + jurisdiction.getName().toUpperCase();
   }
 }

@@ -5,7 +5,8 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.FilingResult;
-import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
+import edu.suffolk.litlab.efsp.server.auth.UserCreds;
+import edu.suffolk.litlab.efsp.stdlib.NonEmptyString;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import jakarta.ws.rs.core.Response;
@@ -29,19 +30,17 @@ public interface EfmFilingInterface {
    *     the callbacks. If it's > 1, should be the same number as the FilingDocs in info
    */
   public Result<FilingResult, FilingError> sendFiling(
-      FilingInformation info, TylerUserNamePassword creds, String userUuid, ApiChoice choice);
+      FilingInformation info, UserCreds creds, Optional<NonEmptyString> userUuid, ApiChoice choice);
 
   public Result<NullValue, FilingError> checkFiling(
       FilingInformation info,
-      TylerUserNamePassword creds,
-      String userUuid,
+      UserCreds creds,
+      Optional<NonEmptyString> userUuid,
       InfoCollector collector);
 
-  public Result<Response, FilingError> getFilingFees(
-      FilingInformation info, TylerUserNamePassword creds);
+  public Result<Response, FilingError> getFilingFees(FilingInformation info, UserCreds creds);
 
-  public Result<Response, FilingError> getServiceTypes(
-      FilingInformation info, TylerUserNamePassword creds);
+  public Result<Response, FilingError> getServiceTypes(FilingInformation info, UserCreds creds);
 
   // TODO(brycew-later): make this a little more independent of HTTP
   public Response getFilingList(
@@ -49,20 +48,20 @@ public interface EfmFilingInterface {
       String submitterId,
       LocalDate startDate,
       LocalDate beforeDate,
-      TylerUserNamePassword creds);
+      UserCreds creds);
 
-  public Response getFilingStatus(String courtId, String filingId, TylerUserNamePassword creds);
+  public Response getFilingStatus(String courtId, String filingId, UserCreds creds);
 
-  public Response getFilingDetails(String courtId, String filingId, TylerUserNamePassword creds);
+  public Response getFilingDetails(String courtId, String filingId, UserCreds creds);
 
   public Response getFilingService(
-      String courtId, String filingId, String contactId, TylerUserNamePassword creds);
+      String courtId, String filingId, String contactId, UserCreds creds);
 
-  public Response getPolicy(String courtId, TylerUserNamePassword creds);
+  public Response getPolicy(String courtId, UserCreds creds);
 
-  public Response cancelFiling(String courtId, String filingId, TylerUserNamePassword creds);
+  public Response cancelFiling(String courtId, String filingId, UserCreds creds);
 
-  public Optional<CodesParser> getParser(String courtId, TylerUserNamePassword creds);
+  public Optional<CodesParser> getParser(String courtId, UserCreds creds);
 
   /**
    * TYLER ONLY at the moment: returns a list of disclaimers that must be shown to the user before
@@ -76,7 +75,4 @@ public interface EfmFilingInterface {
 
   /** Used to properly verify with the SecurityHub. */
   public String getOrgName();
-
-  /** Used to get the proper header that contains the right token. */
-  public String getHeaderKey();
 }

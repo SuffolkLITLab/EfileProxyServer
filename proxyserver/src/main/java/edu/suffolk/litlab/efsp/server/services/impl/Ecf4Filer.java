@@ -52,14 +52,16 @@ import edu.suffolk.litlab.efsp.model.FilingResult;
 import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
-import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
+import edu.suffolk.litlab.efsp.server.auth.UserCreds;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCourtSpecificSerializer;
 import edu.suffolk.litlab.efsp.server.ecf4.PaymentFactory;
 import edu.suffolk.litlab.efsp.server.ecf4.PolicyCacher;
 import edu.suffolk.litlab.efsp.server.ecf4.QueryType;
 import edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper;
+import edu.suffolk.litlab.efsp.server.utils.ProxyServerException;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.stdlib.NonEmptyString;
 import edu.suffolk.litlab.efsp.tyler.Ecf4Helper;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerAdminUserUtils;
@@ -67,7 +69,6 @@ import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
-import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
@@ -111,7 +112,6 @@ import org.slf4j.LoggerFactory;
 public class Ecf4Filer extends EfmCheckableFilingInterface {
   private static Logger log = LoggerFactory.getLogger(Ecf4Filer.class);
   private final Supplier<CodeDatabase> cdSupplier;
-  private final String headerKey;
   private final ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd
           .filingstatusquerymessage_4.ObjectFactory
       statusObjFac;
@@ -138,8 +138,6 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       Jurisdiction jurisdiction, Supplier<CodeDatabase> cdSupplier, PolicyCacher policyCacher) {
     this.jurisdiction = jurisdiction;
     this.cdSupplier = cdSupplier;
-    TylerLogin login = new TylerLogin(jurisdiction);
-    this.headerKey = login.getHeaderKey();
     statusObjFac =
         new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4
             .ObjectFactory();
@@ -188,20 +186,14 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     }
   }
 
-  @Override
-  public String getHeaderKey() {
-    return this.headerKey;
-  }
-
-  public Optional<CodesParser> getParser(String courtId, TylerUserNamePassword creds) {
+  public Optional<CodesParser> getParser(String courtId, UserCreds creds) {
     CodeDatabase cd = cdSupplier.get();
     return getParser(cd, courtId, creds);
   }
 
-  private Optional<CodesParser> getParser(
-      CodeDatabase cd, String courtId, TylerUserNamePassword creds) {
+  private Optional<CodesParser> getParser(CodeDatabase cd, String courtId, UserCreds creds) {
     var filingPort = setupFilingPort(creds);
-    boolean isIndividual = getIsIndividual(firmFactory, Optional.of(creds));
+    boolean isIndividual = getIsIndividual(firmFactory, creds);
     var policy =
         policyCacher.getPolicyFor(filingPort, courtId).getDevelopmentPolicyParameters().getValue();
     return TylerCodesParser.makeParser(cd, policy, courtId, isIndividual);
@@ -216,7 +208,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   private CoreMessageAndNames prepareFiling(
       FilingInformation info,
       InfoCollector collector,
-      TylerUserNamePassword creds,
+      UserCreds creds,
       FilingReviewMDEPort filingPort,
       CourtRecordMDEPort recordPort,
       QueryType queryType)
@@ -514,8 +506,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       CoreFilingMessageType cfm,
       FilingInformation info,
       InfoCollector collector,
-      TylerUserNamePassword creds,
-      String userUuid) {
+      UserCreds creds,
+      Optional<NonEmptyString> userUuid) {
     ServiceMDEPort port = setupServicePort(creds);
     ServiceReceiptMessageType receipt = port.serveFiling(cfm);
     StringBuilder sb = new StringBuilder();
@@ -551,8 +543,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   public Result<FilingResult, FilingError> submitFilingIfReady(
       FilingInformation info,
       InfoCollector collector,
-      TylerUserNamePassword creds,
-      String userUuid,
+      UserCreds creds,
+      Optional<NonEmptyString> userUuid,
       ApiChoice choice) {
     FilingReviewMDEPort filingPort;
     CoreFilingMessageType cfm;
@@ -657,14 +649,14 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   public Person repairLeadContact(
-      Optional<Person> maybeLeadContact, TylerUserNamePassword creds, String userUuid) {
+      Optional<Person> maybeLeadContact, UserCreds creds, Optional<NonEmptyString> userUuid) {
     Supplier<Person> userInfo =
         () -> {
-          TylerUserClient userPort = setupUserPort(creds);
-          if (userUuid == null || userUuid.isBlank()) {
+          if (userUuid.isEmpty()) {
             return Person.TestPerson(new Name(""), "", false);
           }
-          return TylerAdminUserUtils.getUser(userPort, userUuid);
+          TylerUserClient userPort = setupUserPort(creds);
+          return TylerAdminUserUtils.getUser(userPort, userUuid.get().get());
         };
     Person leadContact = maybeLeadContact.orElseGet(userInfo);
     if (leadContact.getContactInfo().getEmail().isEmpty()
@@ -675,8 +667,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   @Override
-  public Result<Response, FilingError> getFilingFees(
-      FilingInformation info, TylerUserNamePassword creds) {
+  public Result<Response, FilingError> getFilingFees(FilingInformation info, UserCreds creds) {
     FailFastCollector collector = new FailFastCollector();
     CoreFilingMessageType cfm;
     FilingReviewMDEPort filingPort = setupFilingPort(creds);
@@ -748,8 +739,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   @Override
-  public Result<Response, FilingError> getServiceTypes(
-      FilingInformation info, TylerUserNamePassword creds) {
+  public Result<Response, FilingError> getServiceTypes(FilingInformation info, UserCreds creds) {
     Optional<CourtLocationInfo> court = getCourtInfo(info);
     if (court.isEmpty()) {
       return Result.ok(Response.status(404).entity("No court " + info.getCourtLocation()).build());
@@ -789,7 +779,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       String submitterId,
       java.time.LocalDate startDate,
       java.time.LocalDate beforeDate,
-      TylerUserNamePassword creds) {
+      UserCreds creds) {
     try {
       List<String> courtIds = getAllLocations();
       if (courtId != null && !courtId.equals("0") && !courtIds.contains(courtId)) {
@@ -870,7 +860,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   @Override
-  public Response getFilingStatus(String courtId, String filingId, TylerUserNamePassword creds) {
+  public Response getFilingStatus(String courtId, String filingId, UserCreds creds) {
     try {
       List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
@@ -891,7 +881,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
 
   @Override
   public Response getFilingService(
-      String courtId, String filingId, String contactId, TylerUserNamePassword creds) {
+      String courtId, String filingId, String contactId, UserCreds creds) {
     FilingReviewMDEPort port = setupFilingPort(creds);
     FilingServiceQueryMessageType req = new FilingServiceQueryMessageType();
     ServiceContactIdentificationType id = new ServiceContactIdentificationType();
@@ -904,7 +894,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   @Override
-  public Response getFilingDetails(String courtId, String filingId, TylerUserNamePassword creds) {
+  public Response getFilingDetails(String courtId, String filingId, UserCreds creds) {
     try {
       List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
@@ -923,7 +913,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   @Override
-  public Response getPolicy(String courtId, TylerUserNamePassword creds) {
+  public Response getPolicy(String courtId, UserCreds creds) {
     try {
       List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
@@ -939,7 +929,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   @Override
-  public Response cancelFiling(String courtId, String filingId, TylerUserNamePassword creds) {
+  public Response cancelFiling(String courtId, String filingId, UserCreds creds) {
     try {
       List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
@@ -977,7 +967,13 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     return TylerEcf4Helper.prep(newMsg, courtId);
   }
 
-  private FilingReviewMDEPort setupFilingPort(TylerUserNamePassword creds) {
+  private FilingReviewMDEPort setupFilingPort(UserCreds creds) {
+    List<Header> headersList = creds.toHeaders();
+    if (headersList.isEmpty()) {
+      // We know we're in Tyler, which needs Headers. If it's actually a NullUserCred, need to stop
+      // here.
+      throw new ProxyServerException.AuthenticationNeeded();
+    }
     FilingReviewMDEPort port = makeFilingPort();
     Client client = ClientProxy.getClient(port);
     HTTPConduit http = (HTTPConduit) client.getConduit();
@@ -986,35 +982,35 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     httpClientPolicy.setReceiveTimeout(180_000);
     http.setClient(httpClientPolicy);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.toHeader());
+
     ctx.put(Header.HEADER_LIST, headersList);
     return port;
   }
 
-  private ServiceMDEPort setupServicePort(TylerUserNamePassword creds) {
+  private ServiceMDEPort setupServicePort(UserCreds creds) {
     ServiceMDEPort port = makeServicePort();
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.toHeader());
+    List<Header> headersList = creds.toHeaders();
     ctx.put(Header.HEADER_LIST, headersList);
     return port;
   }
 
-  private CourtRecordMDEPort setupRecordPort(TylerUserNamePassword creds) {
+  private CourtRecordMDEPort setupRecordPort(UserCreds creds) {
     CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
     ServiceHelpers.setupServicePort((BindingProvider) port);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.toHeader());
+    List<Header> headersList = creds.toHeaders();
     ctx.put(Header.HEADER_LIST, headersList);
     return port;
   }
 
-  private TylerUserClient setupUserPort(TylerUserNamePassword creds) {
+  private TylerUserClient setupUserPort(UserCreds creds) {
     Consumer<BindingProvider> setup =
         (BindingProvider bp) -> {
           ServiceHelpers.setupServicePort(bp);
           ServiceHelpers.changeTimeout(bp, 180_000);
           Map<String, Object> ctx = bp.getRequestContext();
-          List<Header> headersList = List.of(creds.toHeader());
+          List<Header> headersList = creds.toHeaders();
           ctx.put(Header.HEADER_LIST, headersList);
         };
     return userFactory.makeUserClient(setup);
