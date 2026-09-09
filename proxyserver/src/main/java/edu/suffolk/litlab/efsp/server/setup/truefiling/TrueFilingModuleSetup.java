@@ -2,41 +2,59 @@ package edu.suffolk.litlab.efsp.server.setup.truefiling;
 
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.UserDatabase;
+import edu.suffolk.litlab.efsp.server.services.FilingReviewService;
 import edu.suffolk.litlab.efsp.server.services.JurisdictionServiceHandle;
+import edu.suffolk.litlab.efsp.server.services.api.EfmFilingInterface;
 import edu.suffolk.litlab.efsp.server.services.impl.TrueFilingCodesService;
+import edu.suffolk.litlab.efsp.server.services.impl.TrueFilingFiler;
 import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.setup.tyler.OasisEcfWsCallback;
+import edu.suffolk.litlab.efsp.server.truefiling.PolicyCacher;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.truefiling.ecfcodes.TFCodeDatabase;
 import edu.suffolk.litlab.efsp.truefiling.ecfcodes.TrueFilingCodeUpdater;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
+import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 import javax.sql.DataSource;
-import org.apache.cxf.jaxws.EndpointImpl;
 
 public class TrueFilingModuleSetup implements EfmModuleSetup {
 
   private final Jurisdiction jurisdiction;
   private final DataSource codeDs;
   private final DataSource userDs;
+  private final Map<String, InterviewToFilingInformationConverter> converterMap;
 
-  private OrgMessageSender sender;
+  private final OrgMessageSender sender;
 
   public static Optional<TrueFilingModuleSetup> create(
-      Jurisdiction jurisdiction, DataSource codeDs, DataSource userDs, OrgMessageSender sender) {
-    return Optional.of(new TrueFilingModuleSetup(jurisdiction, codeDs, userDs, sender));
+      Jurisdiction jurisdiction,
+      DataSource codeDs,
+      DataSource userDs,
+      Map<String, InterviewToFilingInformationConverter> converterMap,
+      OrgMessageSender sender) {
+    return Optional.of(
+        new TrueFilingModuleSetup(jurisdiction, codeDs, userDs, converterMap, sender));
   }
 
   private TrueFilingModuleSetup(
-      Jurisdiction jurisdiction, DataSource codeDs, DataSource userDs, OrgMessageSender sender) {
+      Jurisdiction jurisdiction,
+      DataSource codeDs,
+      DataSource userDs,
+      Map<String, InterviewToFilingInformationConverter> converterMap,
+      OrgMessageSender sender) {
     this.jurisdiction = jurisdiction;
     this.codeDs = codeDs;
     this.userDs = userDs;
+    this.converterMap = converterMap;
     this.sender = sender;
   }
 
@@ -65,15 +83,18 @@ public class TrueFilingModuleSetup implements EfmModuleSetup {
     return;
   }
 
+  public Set<String> getCourts() {
+    return Set.of("55da5b11-2bc4-4881-abd1-b0dfdb506bb1");
+  }
+
   @Override
   public JurisdictionServiceHandle getServiceHandle() {
+    var filingMap = new HashMap<String, EfmFilingInterface>();
+    var callbackMap = new HashMap<String, EfmRestCallbackInterface>();
     Supplier<TFCodeDatabase> cdSupplier =
         () -> {
           return TFCodeDatabase.fromDS(jurisdiction, this.codeDs);
         };
-    /*
-    var filingMap = new HashMap<String, EfmFilingInterface>();
-    var callbackMap = new HashMap<String, EfmRestCallbackInterface>();
 
     PolicyCacher policyCacher = new PolicyCacher();
     EfmFilingInterface filer = new TrueFilingFiler(jurisdiction, cdSupplier, policyCacher);
@@ -85,10 +106,9 @@ public class TrueFilingModuleSetup implements EfmModuleSetup {
     var filingReview =
         new FilingReviewService(
             getJurisdiction(), udSupplier, converterMap, filingMap, callbackMap, this.sender);
-    */
     var codes = new TrueFilingCodesService(getJurisdiction(), cdSupplier);
     JurisdictionServiceHandle handle =
-        new JurisdictionServiceHandle(getJurisdiction(), null, codes);
+        new JurisdictionServiceHandle(getJurisdiction(), filingReview, codes);
     return handle;
   }
 
@@ -113,8 +133,8 @@ public class TrueFilingModuleSetup implements EfmModuleSetup {
             + "/jurisdictions/"
             + jurisdiction.getName()
             + ServiceHelpers.ASSEMBLY_PORT;
-    EndpointImpl jaxWsEndpoint =
-        (EndpointImpl) jakarta.xml.ws.Endpoint.publish(address, implementor);
+    // EndpointImpl jaxWsEndpoint =
+    jakarta.xml.ws.Endpoint.publish(address, implementor);
     return;
   }
 

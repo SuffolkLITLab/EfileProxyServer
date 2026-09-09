@@ -97,7 +97,7 @@ public class TFCodeDatabaseTest {
   @Test
   public void testDocumentType() throws Exception {
     cd.updateTable(DOCUMENT_TYPE_TABLE, COURT_LOCATION, loadFromXml("document_type_test.gc.xml"));
-    assertThat(cd.getDocumentTypes(COURT_LOCATION, "1e17822a-9cef-4613-9b26-059fcf845f66"))
+    assertThat(cd.getDocumentTypes(COURT_LOCATION, "AU1AG"))
         .contains(
             new NameAndCodeType(
                 "Agreement, Consent, or Waiver", "af0e891c-8bcb-4a22-9ec1-b1475d41d408"),

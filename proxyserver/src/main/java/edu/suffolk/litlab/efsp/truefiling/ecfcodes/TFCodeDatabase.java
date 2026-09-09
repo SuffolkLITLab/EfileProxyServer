@@ -374,10 +374,10 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
         });
   }
 
-  public List<NameAndCode> getDocumentTypes(String location, String caseTypeId) {
+  public List<NameAndCode> getDocumentTypes(String location, String caseTypeCode) {
     return safetyWrap(
         () -> {
-          PreparedStatement st = DocumentType.prepQuery(conn, jurisStr(), location, caseTypeId);
+          PreparedStatement st = DocumentType.prepQuery(conn, jurisStr(), location, caseTypeCode);
           ResultSet rs = st.executeQuery();
           List<NameAndCode> nacs = new ArrayList<>();
           while (rs.next()) {

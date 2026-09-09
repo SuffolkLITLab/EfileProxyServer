@@ -8,6 +8,7 @@ import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.MeasureType;
 import gov.niem.niem.niem_core._2.TextType;
+import gov.niem.niem.proxy.xsd._2.Date;
 import gov.niem.niem.proxy.xsd._2.Decimal;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
@@ -25,6 +26,7 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaidDateType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
@@ -37,6 +39,8 @@ public class Ecf4Helper {
   static final gov.niem.niem.proxy.xsd._2.ObjectFactory niemProxyObjFac;
   static final gov.niem.niem.niem_core._2.ObjectFactory niemCoreObjFac;
   static final gov.niem.niem.domains.jxdm._4.ObjectFactory jxObjFac;
+  static final oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ObjectFactory
+      oasisObjFac;
   static final DatatypeFactory datatypeFac;
 
   /**
@@ -50,6 +54,8 @@ public class Ecf4Helper {
     niemProxyObjFac = new gov.niem.niem.proxy.xsd._2.ObjectFactory();
     niemCoreObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
     jxObjFac = new gov.niem.niem.domains.jxdm._4.ObjectFactory();
+    oasisObjFac =
+        new oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ObjectFactory();
     try {
       datatypeFac = DatatypeFactory.newInstance();
     } catch (DatatypeConfigurationException e) {
@@ -71,6 +77,35 @@ public class Ecf4Helper {
 
     DateType dt = niemCoreObjFac.createDateType();
     dt.setDateRepresentation(niemCoreObjFac.createDate(d));
+    return dt;
+  }
+
+  /** Creates a date from a java date. Doesn't have time associated with it. */
+  public static PaidDateType convertPaidDate(LocalDate date) {
+    GregorianCalendar cal = new GregorianCalendar();
+    // TODO(#47): DEFAULT TIMEZONE IS WRONG: how should LocalDate +
+    // GregorianCalendar operate?
+    cal.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), 0, 0, 0);
+
+    XMLGregorianCalendar x = datatypeFac.newXMLGregorianCalendar(cal);
+    x.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+
+    var dt = oasisObjFac.createPaidDateType();
+    dt.setValue(x);
+    return dt;
+  }
+
+  public static Date convertSimpleDate(LocalDate date) {
+    GregorianCalendar cal = new GregorianCalendar();
+    // TODO(#47): DEFAULT TIMEZONE IS WRONG: how should LocalDate +
+    // GregorianCalendar operate?
+    cal.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), 0, 0, 0);
+
+    XMLGregorianCalendar x = datatypeFac.newXMLGregorianCalendar(cal);
+    x.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+
+    var dt = niemProxyObjFac.createDate();
+    dt.setValue(x);
     return dt;
   }
 
@@ -147,6 +182,20 @@ public class Ecf4Helper {
   public static gov.niem.niem.niem_core._2.IdentificationType convertId(String idStr) {
     var id = niemCoreObjFac.createIdentificationType();
     id.setIdentificationID(convertString(idStr));
+    return id;
+  }
+
+  public static oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IDType
+      convertEcfId(String idStr) {
+    var id = oasisObjFac.createIDType();
+    id.setValue(idStr);
+    return id;
+  }
+
+  public static oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.InstructionIDType
+      convertInstructionId(String idStr) {
+    var id = oasisObjFac.createInstructionIDType();
+    id.setValue(idStr);
     return id;
   }
 

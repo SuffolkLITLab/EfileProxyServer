@@ -62,17 +62,17 @@ public record DocumentType(
       """;
 
   public static PreparedStatement prepQuery(
-      Connection conn, String jurisStr, String location, String casetypeid) throws SQLException {
+      Connection conn, String jurisStr, String location, String casetypecode) throws SQLException {
     String query =
         """
       SELECT id, casetypeid, casetypecode, formlink, description, filingservicetype, courtuseonly
       FROM truefiling_documenttype
-      WHERE jurisdiction=? AND location=? AND casetypeid=?
+      WHERE jurisdiction=? AND location=? AND casetypecode=?
       """;
     PreparedStatement st = conn.prepareStatement(query);
     st.setString(1, jurisStr);
     st.setString(2, location);
-    st.setString(3, casetypeid);
+    st.setString(3, casetypecode);
     return st;
   }
 }
