@@ -56,6 +56,8 @@ public class ServiceHelpers {
     NONE
   };
 
+  public record EcfError(String code, String text) {}
+
   /**
    * Helper for getting all of the valid courts that can be passed to a particular endpoint,
    *

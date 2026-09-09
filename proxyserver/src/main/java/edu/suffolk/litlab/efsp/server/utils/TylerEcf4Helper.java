@@ -4,6 +4,7 @@ import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
 import edu.suffolk.litlab.efsp.server.auth.UserCreds;
+import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.EcfError;
 import edu.suffolk.litlab.efsp.tyler.Ecf4Helper;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
@@ -40,11 +41,10 @@ public class TylerEcf4Helper {
 
   public static Response makeResponse(
       QueryResponseMessageType resp, Supplier<Response> defaultRespFunc) {
-    return mapTylerCodesToHttp(Ecf4Helper.checkErrors(resp.getError()), defaultRespFunc);
+    return mapTylerCodesToHttp(checkErrors(resp.getError()), defaultRespFunc);
   }
 
-  public static Response mapTylerCodesToHttp(
-      List<Ecf4Helper.Error> err, Supplier<Response> defaultResp) {
+  public static Response mapTylerCodesToHttp(List<EcfError> err, Supplier<Response> defaultResp) {
     if (!err.isEmpty()) {
       var mainErr = err.getFirst();
       if (TylerErrorCodes.tylerToHttp.containsKey(mainErr.code())) {
@@ -128,5 +128,25 @@ public class TylerEcf4Helper {
     } else {
       return Optional.of(firmFactory.makeFirmClient(TylerEcf4Helper::setupServicePort));
     }
+  }
+
+  /**
+   * Returns the error type on errors from the ECF side of the API. They work the same as the Tyler
+   * ones.
+   */
+  public static Optional<EcfError> checkError(
+      ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType error) {
+    var errCode = error.getErrorCode();
+    if (errCode != null && !errCode.getValue().equals("0")) {
+      log.error("Error!: {}: {}", errCode.getValue(), error.getErrorText().getValue());
+      return Optional.of(new EcfError(errCode.getValue(), error.getErrorText().getValue()));
+    }
+    return Optional.empty();
+  }
+
+  public static List<EcfError> checkErrors(
+      List<ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType>
+          errors) {
+    return errors.stream().flatMap(err -> checkError(err).stream()).toList();
   }
 }

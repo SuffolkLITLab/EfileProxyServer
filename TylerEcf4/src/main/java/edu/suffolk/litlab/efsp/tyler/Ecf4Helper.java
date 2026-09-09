@@ -20,19 +20,14 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Optional;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Ecf4Helper {
-  private static final Logger log = LoggerFactory.getLogger(Ecf4Helper.class);
-
   static final ecf4.latest.gov.niem.niem.proxy.xsd._2.ObjectFactory niemProxyObjFac;
   static final ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory niemCoreObjFac;
   static final ecf4.latest.gov.niem.niem.domains.jxdm._4.ObjectFactory jxObjFac;
@@ -304,28 +299,6 @@ public class Ecf4Helper {
     newMsg.setSendingMDELocationID(Ecf4Helper.convertId(locationId));
     newMsg.setSendingMDEProfileCode(MDE_PROFILE_CODE);
     return newMsg;
-  }
-
-  public record Error(String code, String text) {}
-
-  /**
-   * Returns the error type on errors from the ECF side of the API. They work the same as the Tyler
-   * ones.
-   */
-  public static Optional<Error> checkError(
-      ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType error) {
-    var errCode = error.getErrorCode();
-    if (errCode != null && !errCode.getValue().equals("0")) {
-      log.error("Error!: {}: {}", errCode.getValue(), error.getErrorText().getValue());
-      return Optional.of(new Error(errCode.getValue(), error.getErrorText().getValue()));
-    }
-    return Optional.empty();
-  }
-
-  public static List<Error> checkErrors(
-      List<ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType>
-          errors) {
-    return errors.stream().flatMap(err -> checkError(err).stream()).toList();
   }
 
   public static void setupReplys(CaseFilingType reply, String locationId) {

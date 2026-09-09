@@ -59,6 +59,7 @@ import edu.suffolk.litlab.efsp.server.services.api.EfmCheckableFilingInterface;
 import edu.suffolk.litlab.efsp.server.utils.PolicyCacher;
 import edu.suffolk.litlab.efsp.server.utils.ProxyServerException;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.EcfError;
 import edu.suffolk.litlab.efsp.server.utils.TylerEcf4Helper;
 import edu.suffolk.litlab.efsp.stdlib.NonEmptyString;
 import edu.suffolk.litlab.efsp.tyler.Ecf4Helper;
@@ -598,7 +599,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         .log();
     MessageReceiptMessageType mrmt = filingPort.reviewFiling(rfrm);
     if (mrmt.getError().size() > 0) {
-      var err = Ecf4Helper.checkErrors(mrmt.getError());
+      var err = TylerEcf4Helper.checkErrors(mrmt.getError());
       logTylerErrorsWithContext(err, info);
     }
     BiFunction<IdentificationType, String, Boolean> filterId =
@@ -684,7 +685,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     query.setCoreFilingMessage(cfm);
     var resp = filingPort.getFeesCalculation(query);
 
-    var err = Ecf4Helper.checkErrors(resp.getError());
+    var err = TylerEcf4Helper.checkErrors(resp.getError());
     logTylerErrorsWithContext(err, info);
 
     Response httpResponse =
@@ -692,7 +693,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     return Result.ok(httpResponse);
   }
 
-  private void logTylerErrorsWithContext(List<Ecf4Helper.Error> errs, FilingInformation info) {
+  private void logTylerErrorsWithContext(List<EcfError> errs, FilingInformation info) {
     errs.forEach(
         error -> {
           String errContext =
