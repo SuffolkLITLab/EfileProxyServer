@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efsp.truefiling.ecfcodes;
 
 import edu.suffolk.litlab.efsp.ecf4.EcfCaseTypes;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseUtils.Column;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -16,7 +17,8 @@ public record CaseCategory(
     /* Description to show user*/
     String description,
     /* which ECF Case Type to make for this Case Category */
-    EcfCaseTypes ecfCaseType) {
+    EcfCaseTypes ecfCaseType)
+    implements NameAndCode {
 
   public CaseCategory(String code, String description, String ecfCaseType) {
     this(code, description, EcfCaseTypes.valueOf(ecfCaseType));
@@ -24,6 +26,14 @@ public record CaseCategory(
 
   public CaseCategory(ResultSet rs) throws SQLException {
     this(rs.getString(2), rs.getString(3), EcfCaseTypes.valueOf(rs.getString(4)));
+  }
+
+  public String name() {
+    return description;
+  }
+
+  public String code() {
+    return code;
   }
 
   public static final String TABLE_NAME = "truefiling_casecategory";

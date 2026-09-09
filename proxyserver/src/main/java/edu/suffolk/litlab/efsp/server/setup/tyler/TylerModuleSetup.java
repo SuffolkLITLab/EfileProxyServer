@@ -10,7 +10,6 @@ import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.services.AdminUserService;
 import edu.suffolk.litlab.efsp.server.services.CasesService;
 import edu.suffolk.litlab.efsp.server.services.CourtSchedulingService;
-import edu.suffolk.litlab.efsp.server.services.EcfCodesService;
 import edu.suffolk.litlab.efsp.server.services.FilingReviewService;
 import edu.suffolk.litlab.efsp.server.services.FirmAttorneyAndServiceService;
 import edu.suffolk.litlab.efsp.server.services.JurisdictionServiceHandle;
@@ -18,6 +17,7 @@ import edu.suffolk.litlab.efsp.server.services.PaymentsService;
 import edu.suffolk.litlab.efsp.server.services.api.EfmFilingInterface;
 import edu.suffolk.litlab.efsp.server.services.impl.Ecf4Filer;
 import edu.suffolk.litlab.efsp.server.services.impl.TylerCaseSearch;
+import edu.suffolk.litlab.efsp.server.services.impl.TylerCodesService;
 import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.utils.CodesSanityCheckJob;
@@ -73,7 +73,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   // Payments Stuff
   private final String togaKey;
   private final String togaUrl;
-  private OrgMessageSender sender;
+  private final OrgMessageSender sender;
   private Scheduler scheduler;
 
   public static class CreationArgs {
@@ -346,7 +346,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     var adminUser = new AdminUserService(jurisdiction, cdSupplier, passwordChecker);
     var caseSearch = new TylerCaseSearch(jurisdiction, cdSupplier);
     var cases = new CasesService(jurisdiction, caseSearch);
-    var codes = new EcfCodesService(jurisdiction, cdSupplier);
+    var codes = new TylerCodesService(jurisdiction, cdSupplier);
     Optional<CourtSchedulingService> courtScheduler = Optional.empty();
     if (jurisdiction == Jurisdiction.ILLINOIS) {
       courtScheduler =
