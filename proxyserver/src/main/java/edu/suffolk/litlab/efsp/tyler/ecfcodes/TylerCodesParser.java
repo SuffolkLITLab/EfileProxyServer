@@ -505,7 +505,7 @@ public class TylerCodesParser implements CodesParser {
    * @param collector
    * @return
    */
-  public Result<NameAndCode, CodeError> vetFilingComponent(
+  public Result<Optional<NameAndCode>, CodeError> vetFilingComponent(
       String filingComponent, ArrayList<NameAndCode> components) {
     if (components.isEmpty()) {
       log.error("Filing Components are empty! There are no other documents that can be added!");
@@ -523,7 +523,7 @@ public class TylerCodesParser implements CodesParser {
     if (!((FilingComponent) filt).allowmultiple) {
       components.remove(filt);
     }
-    return Result.ok(filt);
+    return Result.ok(Optional.of(filt));
   }
 
   // TODO(brycew): should add helptext / validationmessage from DataField?
