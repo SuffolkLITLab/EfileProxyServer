@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efsp.server.services;
 
-import static edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.getIsIndividual;
+import static edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper.getIsIndividual;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.isNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -612,7 +612,7 @@ public class CourtSchedulingService {
       return Optional.empty();
     }
     CourtSchedulingMDE serv = schedFactory.getCourtSchedulingMDEPort();
-    ServiceHelpers.setupServicePort((BindingProvider) serv);
+    TylerEcf4Helper.setupServicePort((BindingProvider) serv);
     Map<String, Object> ctx = ((BindingProvider) serv).getRequestContext();
     List<Header> headersList = creds.get().toHeaders();
     ctx.put(Header.HEADER_LIST, headersList);
@@ -621,7 +621,7 @@ public class CourtSchedulingService {
 
   private Optional<CourtRecordMDEPort> setupRecordPort(UserCreds userCreds) {
     CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
-    ServiceHelpers.setupServicePort((BindingProvider) port);
+    TylerEcf4Helper.setupServicePort((BindingProvider) port);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
     List<Header> headersList = userCreds.toHeaders();
     ctx.put(Header.HEADER_LIST, headersList);
@@ -655,7 +655,7 @@ public class CourtSchedulingService {
 
   private FilingReviewMDEPort makeFilingPort() {
     FilingReviewMDEPort port = filingFactory.getFilingReviewMDEPort();
-    ServiceHelpers.setupServicePort((BindingProvider) port);
+    TylerEcf4Helper.setupServicePort((BindingProvider) port);
     return port;
   }
 }

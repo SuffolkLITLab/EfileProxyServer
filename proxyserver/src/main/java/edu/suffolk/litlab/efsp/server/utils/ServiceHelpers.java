@@ -2,30 +2,18 @@ package edu.suffolk.litlab.efsp.server.utils;
 
 import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
 
+import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseAPI;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
-import edu.suffolk.litlab.efsp.server.auth.UserCreds;
-import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
-import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
-import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.ws.BindingProvider;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.headers.Header;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ServiceHelpers {
-  private static final Logger log = LoggerFactory.getLogger(ServiceHelpers.class);
-
   public static final String MDE_PROFILE_CODE_5 =
       "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-5.0";
 
@@ -49,34 +37,6 @@ public class ServiceHelpers {
 
     SERVICE_URL = EXTERNAL_URL + ASSEMBLY_PORT;
     REST_CALLBACK_URL = EXTERNAL_URL + "/filingreview/jurisdictions/%s/courts/%s/filing/status";
-  }
-
-  /**
-   * Sets up a connection to Tyler's SOAP API WITHOUT any Auth headers, but does handle the X.509
-   * certificate and signing parameters.
-   *
-   * <p>Can be used to make an Auth request, or can have the header inserted later.
-   */
-  public static void setupServicePort(BindingProvider bp) {
-    Map<String, Object> ctx = bp.getRequestContext();
-    ctx.put("security.username", "bwilley@suffolk.edu");
-    ctx.put("security.password", "can-be-anything?");
-    ctx.put("security.signature.properties", "client_sign.properties");
-    ctx.put("security.callback-handler", SoapX509CallbackHandler.class.getName());
-    ctx.put("security.signature.username", "1");
-
-    // This will stop errors from occuring on other versions
-    ctx.put("set-jaxb-validation-event-handler", "false");
-  }
-
-  public static void setupServicePort(BindingProvider bp, UserCreds creds) {
-    setupServicePort(bp, creds.toHeaders());
-  }
-
-  public static void setupServicePort(BindingProvider bp, List<Header> headerList) {
-    Map<String, Object> ctx = bp.getRequestContext();
-    ctx.put(Header.HEADER_LIST, headerList);
-    setupServicePort(bp);
   }
 
   public static void changeTimeout(BindingProvider bp, int timeoutMs) {
@@ -104,7 +64,7 @@ public class ServiceHelpers {
    * @return
    */
   public static Response.ResponseBuilder getCourts(
-      CodeDatabase cd, FileableCourtType fileableOnly, boolean withNames) {
+      CodeDatabaseAPI cd, FileableCourtType fileableOnly, boolean withNames) {
     Stream<NameAndCode> locs;
     // 0 and 1 are special "system" courts that have defaults for all courts.
     // They aren't available for filing, so filter out of either query here
@@ -130,43 +90,4 @@ public class ServiceHelpers {
     }
   }
 
-  public static boolean getIsIndividual(TylerFirmFactory firmFactory, UserCreds userCreds) {
-    Optional<TylerFirmClient> firmClient = setupFirmPort(firmFactory, userCreds, true);
-    boolean isIndividual =
-        firmClient
-            .map(
-                port -> {
-                  try {
-                    var resp = port.getFirm();
-                    if (TylerErrorCodes.hasError(resp)) {
-                      log.warn(
-                          "GetFirm returned an error: {}, {}",
-                          resp.getError().getErrorCode(),
-                          resp.getError().getErrorText());
-                    }
-                    return resp.getFirm().isIsIndividual();
-                  } catch (Exception ex) {
-                    log.warn("Exception when getting firm info for individual?:", ex);
-                    return true;
-                  }
-                })
-            .orElse(true);
-    return isIndividual;
-  }
-
-  public static Optional<TylerFirmClient> setupFirmPort(
-      TylerFirmFactory firmFactory, UserCreds userCreds) {
-    return setupFirmPort(firmFactory, userCreds, true);
-  }
-
-  public static Optional<TylerFirmClient> setupFirmPort(
-      TylerFirmFactory firmFactory, UserCreds creds, boolean needsSoapHeader) {
-    if (needsSoapHeader) {
-      return Optional.of(
-          firmFactory.makeFirmClient(
-              (port) -> ServiceHelpers.setupServicePort(port, creds.toHeaders())));
-    } else {
-      return Optional.of(firmFactory.makeFirmClient(ServiceHelpers::setupServicePort));
-    }
-  }
 }

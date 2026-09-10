@@ -30,6 +30,7 @@ import edu.suffolk.litlab.efsp.server.auth.EfspSecurityContext;
 import edu.suffolk.litlab.efsp.server.auth.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.auth.UserCreds;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
+import edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
@@ -448,7 +449,7 @@ public class CasesService {
     httpClientPolicy.setReceiveTimeout(180_000);
     http.setClient(httpClientPolicy);
 
-    ServiceHelpers.setupServicePort((BindingProvider) port, userCreds);
+    TylerEcf4Helper.setupServicePort((BindingProvider) port, userCreds);
     return Optional.of(port);
   }
 }

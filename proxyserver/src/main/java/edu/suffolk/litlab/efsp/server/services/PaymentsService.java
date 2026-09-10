@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efsp.server.services;
 
-import static edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.setupFirmPort;
+import static edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper.setupFirmPort;
 import static edu.suffolk.litlab.efsp.tyler.TylerErrorCodes.makeResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,6 +15,7 @@ import edu.suffolk.litlab.efsp.server.auth.EfspSecurityContext;
 import edu.suffolk.litlab.efsp.server.auth.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.auth.NullUserCreds;
 import edu.suffolk.litlab.efsp.server.auth.UserNamePassword;
+import edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
@@ -346,7 +347,7 @@ public class PaymentsService {
       throws JsonMappingException, JsonProcessingException {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.updatePaymentAccount");
     var userCreds = ((EfspSecurityContext) security).getUserCreds();
-    Optional<TylerFirmClient> firmPort = ServiceHelpers.setupFirmPort(firmFactory, userCreds);
+    Optional<TylerFirmClient> firmPort = TylerEcf4Helper.setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -369,7 +370,7 @@ public class PaymentsService {
   public Response getPaymentAccountTypeList(@Context SecurityContext security) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccountTypeList");
     var userCreds = ((EfspSecurityContext) security).getUserCreds();
-    Optional<TylerFirmClient> firmPort = ServiceHelpers.setupFirmPort(firmFactory, userCreds);
+    Optional<TylerFirmClient> firmPort = TylerEcf4Helper.setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -443,7 +444,7 @@ public class PaymentsService {
     }
     var maybeCreds = UserNamePassword.userCredsFromAuthorization(tylerInfo);
     Optional<TylerFirmClient> firmPort =
-        ServiceHelpers.setupFirmPort(firmFactory, maybeCreds.orElse(new NullUserCreds()), true);
+        TylerEcf4Helper.setupFirmPort(firmFactory, maybeCreds.orElse(new NullUserCreds()), true);
     if (maybeCreds.isEmpty() || firmPort.isEmpty()) {
       String err =
           "Unable to use your login information with Tyler: will not be able to create the payment"
@@ -577,7 +578,7 @@ public class PaymentsService {
       TempAccount tempInfo = tempAccounts.get(resp.transactionId);
       var maybeCreds = UserNamePassword.userCredsFromAuthorization(tempInfo.loginInfo);
       Optional<TylerFirmClient> maybeFirmPort =
-          ServiceHelpers.setupFirmPort(firmFactory, maybeCreds.orElse(new NullUserCreds()), true);
+          TylerEcf4Helper.setupFirmPort(firmFactory, maybeCreds.orElse(new NullUserCreds()), true);
       if (maybeFirmPort.isEmpty()) {
         log.warn("Couldn't get the firm port for {}", resp.transactionId);
         return Response.status(403).entity(paymentsErrorHtml).build();
