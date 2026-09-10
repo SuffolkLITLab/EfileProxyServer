@@ -16,7 +16,7 @@ RUN mvn --no-transfer-progress -f /app/pom.xml -DskipTests package -PnoDockerTes
 COPY config /app/
 # The `[]` is an optional COPY: doesn't copy if those files aren't there (https://stackoverflow.com/a/46801962/11416267)
 # They are needed for Tyler API usage
-COPY LICENSE extract-tls-secrets-4.0.0.ja[r] jacocoagent.ja[r] /app/
+COPY LICENSE extract-tls-secrets-5.0.0.ja[r] jacocoagent.ja[r] /app/
 COPY Docker/docker_run_dev.sh /app/
 
 EXPOSE 9000
