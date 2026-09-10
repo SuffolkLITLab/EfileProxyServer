@@ -2,7 +2,7 @@ package edu.suffolk.litlab.efsp.server.auth;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efsp.Jurisdiction;
-import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
@@ -56,7 +56,7 @@ public class TylerLogin implements LoginInterface {
       return Optional.empty();
     }
     TylerUserClient userClient =
-        userServiceFactory.makeUserClient(ServiceHelpers::setupServicePort);
+        userServiceFactory.makeUserClient(TylerEcf4Helper::setupServicePort);
     AuthenticateResponseType authRes = userClient.authenticateUser(authReq);
     if (!authRes.getError().getErrorCode().equals("0")) {
       log.warn(

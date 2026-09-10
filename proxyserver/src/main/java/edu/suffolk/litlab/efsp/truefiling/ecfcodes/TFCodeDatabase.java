@@ -80,6 +80,26 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
   }
 
   @Override
+  public List<NameAndCode> getLocationNames() {
+    return List.of(new NameAndCode("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+  }
+
+  @Override
+  public List<NameAndCode> getFileableLocationNames() {
+    return List.of(new NameAndCode("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+  }
+
+  @Override
+  public List<NameAndCode> getFileableInitialLocationNames() {
+    return List.of(new NameAndCode("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+  }
+
+  @Override
+  public List<NameAndCode> getFileableSubsequentLocationNames() {
+    return List.of(new NameAndCode("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+  }
+
+  @Override
   public void updateTable(String tableName, String courtName, InputStream is)
       throws SQLException, CodeDocException {
     if (conn == null) {
@@ -361,4 +381,5 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
   public void createTablesIfAbsent() throws SQLException {
     createTableIfAbsent(CaseCategory.TABLE_NAME);
   }
+
 }

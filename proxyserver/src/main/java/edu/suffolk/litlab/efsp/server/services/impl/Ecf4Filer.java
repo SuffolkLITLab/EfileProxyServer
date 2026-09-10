@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efsp.server.services.impl;
 
-import static edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.getIsIndividual;
+import static edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper.getIsIndividual;
 import static edu.suffolk.litlab.efsp.stdlib.StdLib.exists;
 
 import com.hubspot.algebra.Result;
@@ -997,7 +997,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
 
   private CourtRecordMDEPort setupRecordPort(UserCreds creds) {
     CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
-    ServiceHelpers.setupServicePort((BindingProvider) port);
+    TylerEcf4Helper.setupServicePort((BindingProvider) port);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
     List<Header> headersList = creds.toHeaders();
     ctx.put(Header.HEADER_LIST, headersList);
@@ -1007,7 +1007,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   private TylerUserClient setupUserPort(UserCreds creds) {
     Consumer<BindingProvider> setup =
         (BindingProvider bp) -> {
-          ServiceHelpers.setupServicePort(bp);
+          TylerEcf4Helper.setupServicePort(bp);
           ServiceHelpers.changeTimeout(bp, 180_000);
           Map<String, Object> ctx = bp.getRequestContext();
           List<Header> headersList = creds.toHeaders();
@@ -1018,13 +1018,13 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
 
   private FilingReviewMDEPort makeFilingPort() {
     FilingReviewMDEPort port = filingFactory.getFilingReviewMDEPort();
-    ServiceHelpers.setupServicePort((BindingProvider) port);
+    TylerEcf4Helper.setupServicePort((BindingProvider) port);
     return port;
   }
 
   private ServiceMDEPort makeServicePort() {
     ServiceMDEPort port = serviceFactory.getServiceMDEPort();
-    ServiceHelpers.setupServicePort((BindingProvider) port);
+    TylerEcf4Helper.setupServicePort((BindingProvider) port);
     return port;
   }
 }

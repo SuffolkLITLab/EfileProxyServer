@@ -59,14 +59,14 @@ public class TylerCodeUpdater {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in Soap Chooser for filing review factory");
     }
-    TylerUserClient userPort = userFactory.get().makeUserClient(ServiceHelpers::setupServicePort);
+    TylerUserClient userPort = userFactory.get().makeUserClient(TylerEcf4Helper::setupServicePort);
     AuthenticateRequestType authReq = new AuthenticateRequestType();
     authReq.setEmail(userEmail);
     authReq.setPassword(userPassword);
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
     List<Header> headersList = UserNamePassword.makeHeaderList(authRes);
     FilingReviewMDEPort filingPort = filingFactory.get().getFilingReviewMDEPort();
-    ServiceHelpers.setupServicePort((BindingProvider) filingPort);
+    TylerEcf4Helper.setupServicePort((BindingProvider) filingPort);
     Map<String, Object> ctx = ((BindingProvider) filingPort).getRequestContext();
     ctx.put(Header.HEADER_LIST, headersList);
     return filingPort;

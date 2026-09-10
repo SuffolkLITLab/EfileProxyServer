@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efsp.server.services;
 
-import static edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.setupFirmPort;
+import static edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper.setupFirmPort;
 import static edu.suffolk.litlab.efsp.tyler.TylerErrorCodes.makeResponse;
 
 import com.hubspot.algebra.NullValue;
@@ -13,6 +13,7 @@ import edu.suffolk.litlab.efsp.server.auth.EfspSecurityContext;
 import edu.suffolk.litlab.efsp.server.auth.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.auth.NullUserCreds;
 import edu.suffolk.litlab.efsp.server.auth.UserCreds;
+import edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
@@ -774,7 +775,7 @@ public class AdminUserService {
       }
       Consumer<BindingProvider> setup =
           (BindingProvider bp) -> {
-            ServiceHelpers.setupServicePort(bp);
+            TylerEcf4Helper.setupServicePort(bp);
             Client client = ClientProxy.getClient(bp);
             HTTPConduit http = (HTTPConduit) client.getConduit();
             HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
@@ -789,7 +790,7 @@ public class AdminUserService {
       // Creates a connection to Tyler's SOAP API WITHOUT any Auth headers. Can be used to make an
       // Auth
       // request, or can have the header inserted later.
-      return Optional.of(userFactory.makeUserClient(ServiceHelpers::setupServicePort));
+      return Optional.of(userFactory.makeUserClient(TylerEcf4Helper::setupServicePort));
     }
   }
 }
