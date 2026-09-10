@@ -5,8 +5,8 @@ cd /app
 if [ -f jacocoagent.jar ]; then
   JACOCO_ARG="-javaagent:jacocoagent.jar=destfile=/tmp/jacoco/jacoco.exec"
 fi
-if [ -f extract-tls-secrets-4.0.0.jar ]; then
-  TLS_SECRETS_ARG="-javaagent:extract-tls-secrets-4.0.0.jar=/tmp/secrets/secrets.log"
+if [ -f extract-tls-secrets-5.0.0.jar ]; then
+  TLS_SECRETS_ARG="-javaagent:extract-tls-secrets-5.0.0.jar=/tmp/secrets/secrets.log"
 fi
 java \
     $JACOCO_ARG \
