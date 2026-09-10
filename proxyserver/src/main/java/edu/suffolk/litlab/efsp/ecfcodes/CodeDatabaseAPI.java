@@ -50,9 +50,13 @@ public abstract class CodeDatabaseAPI extends Database {
    * @return a list of all valid CLIs for this jurisdiction
    */
   public abstract List<String> getAllLocations();
+
   public abstract List<NameAndCode> getLocationNames();
+
   public abstract List<NameAndCode> getFileableLocationNames();
+
   public abstract List<NameAndCode> getFileableInitialLocationNames();
+
   public abstract List<NameAndCode> getFileableSubsequentLocationNames();
 
   public abstract void updateTable(String tableName, String courtName, InputStream is)

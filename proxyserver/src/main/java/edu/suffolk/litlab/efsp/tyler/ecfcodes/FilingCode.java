@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
-public class FilingCode {
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
+
+public class FilingCode implements NameAndCode {
 
   public final String code;
   public final String name;
@@ -59,6 +61,14 @@ public class FilingCode {
           rs.getBoolean(12), 
           rs.getString(13),
           rs.getString(14));
+  }
+
+  public String name() {
+    return name;
+  }
+
+  public String code() {
+    return code;
   }
 
   public Map<String, Object> toMap() {

@@ -1,24 +1,19 @@
-package edu.suffolk.litlab.efsp.server.ecf4;
+package edu.suffolk.litlab.efsp.server.utils;
 
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
 import edu.suffolk.litlab.efsp.server.auth.UserCreds;
-import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
-import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efsp.tyler.Ecf4Helper;
-// import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.ws.BindingProvider;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
-
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,8 +124,7 @@ public class TylerEcf4Helper {
       TylerFirmFactory firmFactory, UserCreds creds, boolean needsSoapHeader) {
     if (needsSoapHeader) {
       return Optional.of(
-          firmFactory.makeFirmClient(
-              (port) -> setupServicePort(port, creds.toHeaders())));
+          firmFactory.makeFirmClient((port) -> setupServicePort(port, creds.toHeaders())));
     } else {
       return Optional.of(firmFactory.makeFirmClient(TylerEcf4Helper::setupServicePort));
     }

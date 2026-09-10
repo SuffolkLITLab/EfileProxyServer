@@ -429,7 +429,7 @@ public class FilingReviewService {
           filingIds,
           security.getServerId(),
           userCreds.toString(),
-          info.getCaseTypeCode().code,
+          info.getCaseTypeCode().code(),
           courtId,
           ts,
           info.getEmailTemplates(),

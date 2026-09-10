@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efsp.server.services;
 
-import static edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper.getIsIndividual;
+import static edu.suffolk.litlab.efsp.server.utils.TylerEcf4Helper.getIsIndividual;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.isNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,25 +37,26 @@ import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRec
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.server.auth.EfspSecurityContext;
 import edu.suffolk.litlab.efsp.server.auth.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.auth.UserCreds;
-import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
-import edu.suffolk.litlab.efsp.server.ecf4.EcfCourtSpecificSerializer;
-import edu.suffolk.litlab.efsp.server.ecf4.Ecfv5CaseTypeFactory;
-import edu.suffolk.litlab.efsp.server.ecf4.PolicyCacher;
-import edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
-import edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
+import edu.suffolk.litlab.efsp.server.utils.PolicyCacher;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.server.utils.TylerEcf4Helper;
 import edu.suffolk.litlab.efsp.tyler.Ecf4Helper;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
+import edu.suffolk.litlab.efsp.tyler.ecf4.EcfCaseTypeFactory;
+import edu.suffolk.litlab.efsp.tyler.ecf4.EcfCourtSpecificSerializer;
+import edu.suffolk.litlab.efsp.tyler.ecf4.Ecfv5CaseTypeFactory;
+import edu.suffolk.litlab.efsp.tyler.ecf4.Ecfv5XmlHelper;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.ComboCaseCodes;
@@ -339,7 +340,7 @@ public class CourtSchedulingService {
             // Foundational error: Category is sorely needed
             throw FilingError.wrongValue(variable);
           }
-          CaseCategory catCode = catRes.expect("");
+          NameAndCode catCode = catRes.expect("");
           String typeStr =
               EcfCaseTypeFactory.getCaseAugmentation(resp.getCase().getValue())
                   .get()
@@ -354,7 +355,7 @@ public class CourtSchedulingService {
                     .name("case type (fom tyler)")
                     .description("(shouldn't be wrong)"));
           }
-          edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType typeCode = typeRes.expect("");
+          NameAndCode typeCode = typeRes.expect("");
           existingParties = EcfCaseTypeFactory.getCaseParticipants(resp.getCase().getValue());
           if (existingParties.isEmpty()) {
             log.info("Couldn't get exsting parties?");
@@ -362,7 +363,7 @@ public class CourtSchedulingService {
                 "Couldn't get existing parties for case " + info.getPreviousCaseId().get());
           }
           List<FilingCode> filingCodes =
-              info.getFilings().stream().map(f -> f.getFilingCode()).toList();
+              info.getFilings().stream().map(f -> (FilingCode) f.getFilingCode()).toList();
           var existingPartyList = existingParties.get().values();
           var partyTypesRes =
               parser.vetPartyTypes(newParties, existingPartyList, typeCode, isFirstIndexedFiling);
@@ -375,7 +376,12 @@ public class CourtSchedulingService {
           }
           var partyTypes = partyTypesRes.expect("");
           log.info("Existing cat, type, and filings: {}, {}, {}", catCode, typeCode, filingCodes);
-          allCodes = new ComboCaseCodes(catCode, typeCode, filingCodes, partyTypes);
+          allCodes =
+              new ComboCaseCodes(
+                  (CaseCategory) catCode,
+                  (edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType) typeCode,
+                  filingCodes,
+                  partyTypes);
         } else {
           var partyTypesRes =
               parser.vetPartyTypes(

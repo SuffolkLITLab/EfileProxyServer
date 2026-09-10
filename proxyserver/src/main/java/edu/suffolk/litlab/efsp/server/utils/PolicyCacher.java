@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.server.ecf4;
+package edu.suffolk.litlab.efsp.server.utils;
 
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtPolicyResponseMessageType;

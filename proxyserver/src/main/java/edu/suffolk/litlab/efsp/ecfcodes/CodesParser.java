@@ -9,13 +9,6 @@ import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.PartyInfo;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.model.Person.Gender;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.DocumentTypeTableRow;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.FileType;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilerType;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingCode;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingComponent;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -62,7 +55,7 @@ public interface CodesParser extends AutoCloseable {
   public record InvalidFilingAction(String reason) {}
 
   public sealed interface FileNameError {}
-  public record FileExtensionNotAllowed(String given, List<FileType> allowed) implements FileNameError {}
+  public record FileExtensionNotAllowed(String given, List<NameAndCode> allowed) implements FileNameError {}
   public record FileNameTextError(TextVarError err) implements FileNameError {}
 
   public sealed interface FilingDocError {}
@@ -72,19 +65,19 @@ public interface CodesParser extends AutoCloseable {
 
   // Methods
 
-  public Result<CaseCategory, CodeError> vetCaseCat(String caseCategoryCode);
+  public Result<NameAndCode, CodeError> vetCaseCat(String caseCategoryCode);
 
-  public Result<CaseType, CodeError> vetCaseType(
-      String caseTypeCode, CaseCategory caseCategory, boolean isInitialFiling);
+  public Result<NameAndCode, CodeError> vetCaseType(
+      String caseTypeCode, NameAndCode caseCategory, boolean isInitialFiling);
 
   public Result<Optional<NameAndCode>, NoMatchingCode> vetSubType(
-      String subtypeCode, CaseType caseType);
+      String subtypeCode, NameAndCode caseType);
 
-  public Result<List<FilingCode>, BadCode> retrieveFilingOptions(
-      CaseCategory caseCategory, CaseType type, boolean isInitialFiling);
+  public Result<List<NameAndCode>, BadCode> retrieveFilingOptions(
+      NameAndCode caseCategory, NameAndCode type, boolean isInitialFiling);
 
-  public Result<FilingCode, CodeError> vetFilingType(
-      Optional<String> filingCode, List<FilingCode> filingOptions);
+  public Result<NameAndCode, CodeError> vetFilingType(
+      Optional<String> filingCode, List<NameAndCode> filingOptions);
 
   public Result<String, CodeError> vetSuffix(Optional<String> suffix);
 
@@ -93,40 +86,39 @@ public interface CodesParser extends AutoCloseable {
   public Result<String, CodeError> vetStateCode(String state, String countryString);
 
   public Result<Map<String, String>, CrossReferenceError> getCrossRefIds(
-      Map<String, String> crossRefs, CaseType caseType);
+      Map<String, String> crossRefs, NameAndCode caseType);
 
   public Result<Map<PartyId, PartyInfo>, CodeError> vetPartyTypes(
       Collection<Person> existingParties,
       Collection<Person> newParties,
-      CaseType type,
+      NameAndCode type,
       boolean isFirstIndexedFiling);
 
   public Result<List<PartyId>, ThingRequired> vetFilingParties(List<PartyId> filingParties);
 
   public Result<Optional<NameAndCode>, CodeError> vetMotionCode(
-      Optional<String> motionCode, FilingCode filing);
+      Optional<String> motionCode, NameAndCode filing);
 
   public record InputOptionalService(
       String code, Optional<Integer> multiplier, Optional<BigDecimal> feeAmount) {}
 
   public Result<List<OptionalService>, List<CodeError>> vetOptionalServices(
-      List<InputOptionalService> servs, FilingCode filing);
+      List<InputOptionalService> servs, NameAndCode filing);
 
-  public List<FilingComponent> retrieveFilingComponents(FilingCode filingCode);
+  public List<NameAndCode> retrieveFilingComponents(NameAndCode filingCode);
 
-  public Result<FilingComponent, CodeError> vetFilingComponent(
-      String filingComponent, ArrayList<FilingComponent> components);
+  public Result<NameAndCode, CodeError> vetFilingComponent(
+      String filingComponent, ArrayList<NameAndCode> components);
 
-  public Result<Optional<FilerType>, CodeError> vetFilerType(Optional<String> maybeFilerType);
+  public Result<Optional<NameAndCode>, CodeError> vetFilerType(Optional<String> maybeFilerType);
 
-  public Result<Optional<DocumentTypeTableRow>, CodeError> vetDocType(
-      String docTypeStr, FilingCode filing);
+  public Result<Optional<NameAndCode>, CodeError> vetDocType(String docTypeStr, NameAndCode filing);
 
   public Result<Optional<NameAndCode>, CodeError> vetDamageAmount(
-      boolean initial, CaseCategory cat, Optional<String> maybeDamageAmount);
+      boolean initial, NameAndCode cat, Optional<String> maybeDamageAmount);
 
   public Result<Optional<NameAndCode>, CodeError> vetProcedureRemedy(
-      Optional<String> maybeProRem, boolean initial, CaseCategory cat);
+      Optional<String> maybeProRem, boolean initial, NameAndCode cat);
 
   public Result<Optional<Map<PartyId, List<String>>>, AttorneyError> vetPartyAttorneyMap(
       Map<PartyId, List<String>> partyAttyMap,
@@ -154,20 +146,20 @@ public interface CodesParser extends AutoCloseable {
   public Result<Optional<String>, TextVarError> vetComment(Optional<String> comment);
 
   public Result<Optional<LocalDate>, DueDateRequired> vetDueDate(
-      Optional<LocalDate> dueDate, FilingCode filing);
+      Optional<LocalDate> dueDate, NameAndCode filing);
 
   public Result<Optional<FilingAction>, InvalidFilingAction> vetFilingAction(
       Optional<FilingAction> filingAction, boolean isInitialFiling, boolean hasServiceContacts);
 
   public Optional<String> getDocumentDescription(
-      String description, String firstFileName, FilingCode filing);
+      String description, String firstFileName, NameAndCode filing);
 
   public Result<String, FileNameError> vetFileName(String fileName);
 
   public Result<NullValue, FilingDocError> vetFilingDocSize(List<FilingDoc> docs);
 
   public Result<Optional<BigDecimal>, ThingRequired> vetAmountInControversy(
-      Optional<BigDecimal> amt, List<FilingCode> filings);
+      Optional<BigDecimal> amt, List<NameAndCode> filings);
 
   public Optional<BigDecimal> vetMaxAmount(Optional<BigDecimal> maxAmount);
 

@@ -1,23 +1,22 @@
 package edu.suffolk.litlab.efsp.ecfcodes;
 
-public record NameAndCode(String name, String code) implements Comparable<NameAndCode> {
+/**
+ * The most generic wrapper for genericodes that we can make (a human readable part, and a machine
+ * readable part).
+ */
+public interface NameAndCode {
 
-  public String getName() {
-    return name;
+  public String name();
+
+  public String code();
+
+  /** Should be deprecated and removed eventually. */
+  public default String getCode() {
+    return code();
   }
 
-  public String getCode() {
-    return code;
-  }
-
-  @Override
-  // < 0 is means this is before arg0, > means after
-  public int compareTo(NameAndCode arg0) {
-    int val = name.compareTo(arg0.name);
-    if (val != 0) {
-      return val;
-    } else {
-      return code.compareTo(arg0.code);
-    }
+  /** Should be deprecated and removed eventually. */
+  public default String getName() {
+    return name();
   }
 }

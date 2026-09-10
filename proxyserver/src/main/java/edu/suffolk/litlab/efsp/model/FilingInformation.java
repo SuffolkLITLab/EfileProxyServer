@@ -1,9 +1,6 @@
 package edu.suffolk.litlab.efsp.model;
 
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilerType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -55,8 +52,8 @@ public class FilingInformation {
   /** Existing docket number, NOT from EFM system. For subsequent filing into non-indexed cases. */
   private Optional<String> caseDocketNumber = Optional.empty();
 
-  private CaseCategory caseCategoryCode;
-  private CaseType caseTypeCode;
+  private NameAndCode caseCategoryCode;
+  private NameAndCode caseTypeCode;
   private Optional<NameAndCode> caseSubtypeCode = Optional.empty();
   private Optional<NameAndCode> procedureRemedy = Optional.empty();
   private Optional<NameAndCode> damageAmount = Optional.empty();
@@ -70,7 +67,7 @@ public class FilingInformation {
 
   private Optional<Person> leadContact = Optional.empty();
 
-  private Optional<FilerType> filerType;
+  private Optional<NameAndCode> filerType;
 
   private Optional<BigDecimal> amountInControversy = Optional.empty();
   private Optional<BigDecimal> maxFeeAmount = Optional.empty();
@@ -153,11 +150,11 @@ public class FilingInformation {
     return parties;
   }
 
-  public CaseCategory getCaseCategoryCode() {
+  public NameAndCode getCaseCategoryCode() {
     return caseCategoryCode;
   }
 
-  public CaseType getCaseTypeCode() {
+  public NameAndCode getCaseTypeCode() {
     return caseTypeCode;
   }
 
@@ -201,7 +198,7 @@ public class FilingInformation {
     return returnDate;
   }
 
-  public Optional<FilerType> getFilerType() {
+  public Optional<NameAndCode> getFilerType() {
     return filerType;
   }
 
@@ -253,7 +250,7 @@ public class FilingInformation {
     this.serviceContacts = serviceContacts;
   }
 
-  public void setCaseCategoryCode(CaseCategory caseCategoryCode) {
+  public void setCaseCategoryCode(NameAndCode caseCategoryCode) {
     this.caseCategoryCode = caseCategoryCode;
   }
 
@@ -265,7 +262,7 @@ public class FilingInformation {
     this.caseDocketNumber = Optional.ofNullable(num);
   }
 
-  public void setCaseTypeCode(CaseType caseTypeCode) {
+  public void setCaseTypeCode(NameAndCode caseTypeCode) {
     this.caseTypeCode = caseTypeCode;
   }
 
@@ -301,7 +298,7 @@ public class FilingInformation {
     this.returnDate = returnDate;
   }
 
-  public void setFilerType(Optional<FilerType> filerType) {
+  public void setFilerType(Optional<NameAndCode> filerType) {
     this.filerType = filerType;
   }
 

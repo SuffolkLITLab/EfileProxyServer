@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,7 +9,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 
-public class CaseType {
+public class CaseType implements NameAndCode {
   public final String code;
   public final String name;
   public final String casecategory;
@@ -70,6 +71,14 @@ public class CaseType {
         Map.entry("willfileddate", willfileddate),
         Map.entry("efspcode", efspcode),
         Map.entry("location", location));
+  }
+
+  public String name() {
+    return name;
+  }
+
+  public String code() {
+    return code;
   }
 
   // HACK(brycew): here for when CaseType isn't present, but we have AllWrong collector

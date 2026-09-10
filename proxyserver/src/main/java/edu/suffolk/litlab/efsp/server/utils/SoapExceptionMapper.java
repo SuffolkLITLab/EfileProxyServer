@@ -1,6 +1,5 @@
 package edu.suffolk.litlab.efsp.server.utils;
 
-import edu.suffolk.litlab.efsp.server.services.AdminUserService;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
@@ -10,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 @Provider
 public class SoapExceptionMapper implements ExceptionMapper<Fault> {
-  private static final Logger log = LoggerFactory.getLogger(AdminUserService.class);
+  private static final Logger log = LoggerFactory.getLogger(SoapExceptionMapper.class);
 
   @Override
   public Response toResponse(Fault exception) {

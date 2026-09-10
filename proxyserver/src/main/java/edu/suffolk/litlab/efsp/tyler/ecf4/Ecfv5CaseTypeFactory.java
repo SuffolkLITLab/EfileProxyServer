@@ -1,11 +1,11 @@
-package edu.suffolk.litlab.efsp.server.ecf4;
+package edu.suffolk.litlab.efsp.tyler.ecf4;
 
-import static edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper.convertBool;
-import static edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper.convertDateTime;
-import static edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper.convertId;
-import static edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper.convertNormalized;
-import static edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper.convertString;
-import static edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper.convertText;
+import static edu.suffolk.litlab.efsp.tyler.ecf4.Ecfv5XmlHelper.convertBool;
+import static edu.suffolk.litlab.efsp.tyler.ecf4.Ecfv5XmlHelper.convertDateTime;
+import static edu.suffolk.litlab.efsp.tyler.ecf4.Ecfv5XmlHelper.convertId;
+import static edu.suffolk.litlab.efsp.tyler.ecf4.Ecfv5XmlHelper.convertNormalized;
+import static edu.suffolk.litlab.efsp.tyler.ecf4.Ecfv5XmlHelper.convertString;
+import static edu.suffolk.litlab.efsp.tyler.ecf4.Ecfv5XmlHelper.convertText;
 
 import com.hubspot.algebra.Result;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType;
@@ -26,6 +26,7 @@ import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.Pe
 import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingAttorneyEntityType;
 import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingPartyEntityType;
 import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.PartyId;
@@ -273,7 +274,7 @@ public class Ecfv5CaseTypeFactory {
       List<PartyType> partyTypes,
       Map<PartyId, EntityType> idToCaseParty)
       throws FilingError {
-    PartyType matchingType = partyInfo.type();
+    NameAndCode matchingType = partyInfo.type();
     EntityType ent = niemObjFac.createEntityType();
     ent.setId(per.getIdString());
 
@@ -281,7 +282,7 @@ public class Ecfv5CaseTypeFactory {
     if (per.isOrg()) {
       OrganizationType orgType = niemObjFac.createOrganizationType();
       OrganizationAugmentationType orgAug = oasisObjFac.createOrganizationAugmentationType();
-      orgAug.getCaseParticipantRoleCode().add(convertText(matchingType.code));
+      orgAug.getCaseParticipantRoleCode().add(convertText(matchingType.code()));
       if (!info.getPartyAttorneyMap().containsKey(key)
           || info.getPartyAttorneyMap().get(key).isEmpty()) {
         orgAug.setParticipantID(convertId("SRL"));
@@ -295,7 +296,7 @@ public class Ecfv5CaseTypeFactory {
     } else {
       PersonType perType = niemObjFac.createPersonType();
       PersonAugmentationType pat = oasisObjFac.createPersonAugmentationType();
-      pat.getCaseParticipantRoleCode().add(convertText(matchingType.code));
+      pat.getCaseParticipantRoleCode().add(convertText(matchingType.code()));
       if (!info.getPartyAttorneyMap().containsKey(key)
           || info.getPartyAttorneyMap().get(key).isEmpty()) {
         pat.setParticipantID(convertId("SRL"));

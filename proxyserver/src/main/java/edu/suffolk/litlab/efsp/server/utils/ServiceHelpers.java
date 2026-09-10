@@ -89,5 +89,4 @@ public class ServiceHelpers {
       return Response.ok(locs.map(c -> c.getCode()).sorted().collect(Collectors.toList()));
     }
   }
-
 }

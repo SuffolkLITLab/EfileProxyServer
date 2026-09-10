@@ -15,6 +15,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser.AttorneyError;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser.NoMultipleAttorneys;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser.RequiredAttorneys;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.model.CaseServiceContact;
 import edu.suffolk.litlab.efsp.model.EmailTemplates;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
@@ -23,7 +24,6 @@ import edu.suffolk.litlab.efsp.model.LowerCourtInfo;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingCode;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
@@ -412,7 +412,8 @@ public class FilingInformationDocassembleJacksonDeserializer
       var filerTypeBuilder = collector.varBuilder().name("filer_type");
       collector.addCodeError(filerTypeRes.expectErr(""), filerTypeBuilder);
     } else {
-      entities.setFilerType(filerTypeRes.expect(""));
+      var filerType = filerTypeRes.expect("");
+      entities.setFilerType(filerType);
     }
 
     var maybeAmt = getNumberMember(node, "amount_in_controversy");
@@ -567,7 +568,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       JsonNode bundle,
       JsonNode clerkComments,
       Map<String, PartyId> varToPartyId,
-      List<FilingCode> filingOptions,
+      List<NameAndCode> filingOptions,
       boolean isInitialFiling,
       boolean hasServiceContacts,
       CodesParser parser,

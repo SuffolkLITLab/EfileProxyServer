@@ -8,6 +8,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseUtils.UnsupportedTableExcept
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDocException;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDocIterator;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCodeType;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -290,7 +291,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
             st.setString(2, courtLocationId);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
-              nacs.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+              nacs.add(new NameAndCodeType(rs.getString(2), rs.getString(1)));
             }
           }
           return nacs;
@@ -400,7 +401,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
           // TODO(bryce): can be more efficient, just grabbing the name and code and not all of the
           // other data.
           while (rs.next()) {
-            nacs.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+            nacs.add(new NameAndCodeType(rs.getString(2), rs.getString(1)));
           }
           st.close();
           return nacs;
@@ -455,7 +456,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
             st.setString(3, caseType);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
-              subtypes.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+              subtypes.add(new NameAndCodeType(rs.getString(2), rs.getString(1)));
             }
           }
           return subtypes;
@@ -523,7 +524,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
           while (rs.next()) {
             var code = rs.getString(1);
             if (!codesInList.contains(code)) {
-              dataFields.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+              dataFields.add(new NameAndCodeType(rs.getString(2), rs.getString(1)));
               codesInList.add(rs.getString(1));
             }
           }
@@ -594,7 +595,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       ResultSet rs = st.executeQuery();
       List<NameAndCode> names = new ArrayList<>();
       while (rs.next()) {
-        names.add(new NameAndCode(rs.getString(1), rs.getString(2)));
+        names.add(new NameAndCodeType(rs.getString(1), rs.getString(2)));
       }
       return names;
     } catch (SQLException ex) {
@@ -711,7 +712,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
             st.setString(3, caseCategory);
             try (ResultSet rs = st.executeQuery()) {
               while (rs.next()) {
-                amounts.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+                amounts.add(new NameAndCodeType(rs.getString(2), rs.getString(1)));
               }
             }
           }
@@ -907,7 +908,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       ResultSet rs = st.executeQuery();
       var motions = new ArrayList<NameAndCode>();
       while (rs.next()) {
-        motions.add(new NameAndCode(rs.getString(1), rs.getString(2)));
+        motions.add(new NameAndCodeType(rs.getString(1), rs.getString(2)));
       }
       return motions;
     } catch (SQLException ex) {
@@ -929,7 +930,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       ResultSet rs = st.executeQuery();
       var motions = new ArrayList<NameAndCode>();
       while (rs.next()) {
-        motions.add(new NameAndCode(rs.getString(1), rs.getString(2)));
+        motions.add(new NameAndCodeType(rs.getString(1), rs.getString(2)));
       }
       return motions;
     } catch (SQLException ex) {
@@ -1042,7 +1043,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       ResultSet rs = st.executeQuery();
       List<NameAndCode> names = new ArrayList<>();
       while (rs.next()) {
-        names.add(new NameAndCode(rs.getString(1), rs.getString(2)));
+        names.add(new NameAndCodeType(rs.getString(1), rs.getString(2)));
       }
       return names;
     } catch (SQLException ex) {
@@ -1133,7 +1134,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
             ResultSet rs = st.executeQuery();
             List<NameAndCode> languages = new ArrayList<>();
             while (rs.next()) {
-              languages.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+              languages.add(new NameAndCodeType(rs.getString(2), rs.getString(1)));
             }
             return languages;
           }
@@ -1253,7 +1254,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
             ResultSet rs = st.executeQuery();
             var names = new ArrayList<NameAndCode>();
             while (rs.next()) {
-              names.add(new NameAndCode(rs.getString(1), rs.getString(2)));
+              names.add(new NameAndCodeType(rs.getString(1), rs.getString(2)));
             }
             return names;
           }
@@ -1268,7 +1269,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
             ResultSet rs = st.executeQuery();
             var codes = new ArrayList<NameAndCode>();
             while (rs.next()) {
-              codes.add(new NameAndCode(rs.getString(1), rs.getString(2)));
+              codes.add(new NameAndCodeType(rs.getString(1), rs.getString(2)));
             }
             return codes;
           }
@@ -1284,7 +1285,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
             ResultSet rs = st.executeQuery();
             var codes = new ArrayList<NameAndCode>();
             while (rs.next()) {
-              codes.add(new NameAndCode(rs.getString(1), rs.getString(2)));
+              codes.add(new NameAndCodeType(rs.getString(1), rs.getString(2)));
             }
             return codes;
           }
@@ -1300,7 +1301,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
             ResultSet rs = st.executeQuery();
             var codes = new ArrayList<NameAndCode>();
             while (rs.next()) {
-              codes.add(new NameAndCode(rs.getString(1), rs.getString(2)));
+              codes.add(new NameAndCodeType(rs.getString(1), rs.getString(2)));
             }
             return codes;
           }

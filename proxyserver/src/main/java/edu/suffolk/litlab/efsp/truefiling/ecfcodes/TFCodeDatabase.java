@@ -7,6 +7,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseUtils;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDocException;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDocIterator;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCodeType;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -81,22 +82,22 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
 
   @Override
   public List<NameAndCode> getLocationNames() {
-    return List.of(new NameAndCode("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+    return List.of(new NameAndCodeType("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
   }
 
   @Override
   public List<NameAndCode> getFileableLocationNames() {
-    return List.of(new NameAndCode("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+    return List.of(new NameAndCodeType("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
   }
 
   @Override
   public List<NameAndCode> getFileableInitialLocationNames() {
-    return List.of(new NameAndCode("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+    return List.of(new NameAndCodeType("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
   }
 
   @Override
   public List<NameAndCode> getFileableSubsequentLocationNames() {
-    return List.of(new NameAndCode("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+    return List.of(new NameAndCodeType("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
   }
 
   @Override
@@ -243,7 +244,7 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
             st.setString(2, courtLocationId);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
-              cats.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+              cats.add(new NameAndCodeType(rs.getString(2), rs.getString(1)));
             }
           }
           log.info("all cats: {}", cats);
@@ -289,7 +290,7 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
           // TODO(bryce): can be more efficient, just grabbing the name and code and not all of the
           // other data.
           while (rs.next()) {
-            nacs.add(new NameAndCode(rs.getString(3), rs.getString(2)));
+            nacs.add(new NameAndCodeType(rs.getString(3), rs.getString(2)));
           }
           st.close();
           return nacs;
@@ -299,12 +300,12 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
   public List<NameAndCode> getCauseOfActionCodes() {
     // From a spreadsheet that i3v gave us.
     return List.of(
-        new NameAndCode("Sexual Assault: Long-Term", "CIV750LT"),
-        new NameAndCode("Sexual Assault: Short-Term", "CIV750ST"),
-        new NameAndCode("Stalking: Long-Term", "CIV752SL"),
-        new NameAndCode("Stalking: Short-Term", "CIV752SE"),
-        new NameAndCode("Domestic Violence: Long-Term", "DV100LT"),
-        new NameAndCode("Domestic Violence: Short-Term", "DV100ST"));
+        new NameAndCodeType("Sexual Assault: Long-Term", "CIV750LT"),
+        new NameAndCodeType("Sexual Assault: Short-Term", "CIV750ST"),
+        new NameAndCodeType("Stalking: Long-Term", "CIV752SL"),
+        new NameAndCodeType("Stalking: Short-Term", "CIV752SE"),
+        new NameAndCodeType("Domestic Violence: Long-Term", "DV100LT"),
+        new NameAndCodeType("Domestic Violence: Short-Term", "DV100ST"));
   }
 
   public List<NameAndCode> getBundleStatuses(String location) {
@@ -314,7 +315,7 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
           ResultSet rs = st.executeQuery();
           List<NameAndCode> nacs = new ArrayList<>();
           while (rs.next()) {
-            nacs.add(new NameAndCode(rs.getString(1), rs.getString(1)));
+            nacs.add(new NameAndCodeType(rs.getString(1), rs.getString(1)));
           }
           st.close();
           return nacs;
@@ -328,7 +329,7 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
           ResultSet rs = st.executeQuery();
           List<NameAndCode> nacs = new ArrayList<>();
           while (rs.next()) {
-            nacs.add(new NameAndCode(rs.getString(1), rs.getString(1)));
+            nacs.add(new NameAndCodeType(rs.getString(1), rs.getString(1)));
           }
           st.close();
           return nacs;
@@ -342,7 +343,7 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
           ResultSet rs = st.executeQuery();
           List<NameAndCode> nacs = new ArrayList<>();
           while (rs.next()) {
-            nacs.add(new NameAndCode(rs.getString(5), rs.getString(1)));
+            nacs.add(new NameAndCodeType(rs.getString(5), rs.getString(1)));
           }
           st.close();
           return nacs;
@@ -356,7 +357,7 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
           ResultSet rs = st.executeQuery();
           List<NameAndCode> nacs = new ArrayList<>();
           while (rs.next()) {
-            nacs.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+            nacs.add(new NameAndCodeType(rs.getString(2), rs.getString(1)));
           }
           st.close();
           return nacs;
@@ -370,7 +371,7 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
           ResultSet rs = st.executeQuery();
           List<NameAndCode> nacs = new ArrayList<>();
           while (rs.next()) {
-            nacs.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+            nacs.add(new NameAndCodeType(rs.getString(2), rs.getString(1)));
           }
           st.close();
           return nacs;
@@ -381,5 +382,4 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
   public void createTablesIfAbsent() throws SQLException {
     createTableIfAbsent(CaseCategory.TABLE_NAME);
   }
-
 }
