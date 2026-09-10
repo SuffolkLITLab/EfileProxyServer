@@ -1,11 +1,12 @@
 package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CaseCategory {
+public class CaseCategory implements NameAndCode {
   /** The Tyler specific code for this case category. E.g.: 183528 */
   public final String code;
 
@@ -71,7 +72,11 @@ public class CaseCategory {
         rs.getString(7));
   }
 
-  public String getCode() {
+  public String name() {
+    return name;
+  }
+
+  public String code() {
     return code;
   }
 

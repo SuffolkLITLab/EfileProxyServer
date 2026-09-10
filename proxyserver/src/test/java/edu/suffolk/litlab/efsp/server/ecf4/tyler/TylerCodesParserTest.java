@@ -14,6 +14,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.CodesParser.RequiredCodeNotPresent;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser.TooLongVar;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser.WrongRefVal;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCodeType;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
@@ -84,7 +85,7 @@ public class TylerCodesParserTest {
     when(cd.getCaseTypesFor("01", "123987", Optional.empty()))
         .thenReturn(List.of(exampleCaseType, exampleCaseType2));
     when(cd.getCaseSubtypesFor("01", "456098"))
-        .thenReturn(List.of(new NameAndCode("SubType code", "998877")));
+        .thenReturn(List.of(new NameAndCodeType("SubType code", "998877")));
     when(cd.getFilingType("01", exampleCategory.code, exampleCaseType.code, true))
         .thenReturn(List.of(filingCode));
     dataFields = mock(DataFields.class);
@@ -110,7 +111,7 @@ public class TylerCodesParserTest {
   public void testVetCaseTypeSuccess() {
     var res = parser.vetCaseType("456098", exampleCategory, true);
     assertThat(res).isOk();
-    var ex = res.unwrapOrElseThrow();
+    var ex = (CaseType) res.unwrapOrElseThrow();
     // TODO(brycew): discovered that normal equals doesn't exist, even though
     // all attributes match. Equals isn't set right somehow, but don't
     // want to break anything if it's already working for some reason.
@@ -155,7 +156,7 @@ public class TylerCodesParserTest {
     when(dataFields.getFieldRow("CaseInformationCaseSubType"))
         .thenReturn(new DataFieldRow("CaseInformationCaseSubType", "Sub type", true, false, "01"));
     var res = parser.vetSubType("998877", exampleCaseType);
-    assertThat(res).containsOk(Optional.of(new NameAndCode("SubType code", "998877")));
+    assertThat(res).containsOk(Optional.of(new NameAndCodeType("SubType code", "998877")));
   }
 
   @Test
@@ -206,7 +207,7 @@ public class TylerCodesParserTest {
   public void testSuffixVisibleAndPresent() {
     when(dataFields.getFieldRow("PartyNameSuffix"))
         .thenReturn(new DataFieldRow("PartyNameSuffix", "suffix", true, true, "01"));
-    when(cd.getNameSuffixes("01")).thenReturn(List.of(new NameAndCode("MD", "MD")));
+    when(cd.getNameSuffixes("01")).thenReturn(List.of(new NameAndCodeType("MD", "MD")));
     var res = parser.vetSuffix(Optional.of("md"));
     assertThat(res).containsOk("MD");
   }
@@ -346,9 +347,9 @@ public class TylerCodesParserTest {
       when(dataFields.getFieldRow("FilingMotionType"))
           .thenReturn(new DataFieldRow("FilingMotionType", "", true, false, "01"));
       when(cd.getMotionTypes("01", filingCode.code))
-          .thenReturn(List.of(new NameAndCode("idk", "1234")));
+          .thenReturn(List.of(new NameAndCodeType("idk", "1234")));
       var res = parser.vetMotionCode(Optional.of("1234"), filingCode);
-      assertThat(res).containsOk(Optional.of(new NameAndCode("idk", "1234")));
+      assertThat(res).containsOk(Optional.of(new NameAndCodeType("idk", "1234")));
     }
   }
 
@@ -462,7 +463,7 @@ public class TylerCodesParserTest {
 
   @Test
   public void testFilingComponents() {
-    var components = new ArrayList<FilingComponent>();
+    var components = new ArrayList<NameAndCode>();
     components.add(component);
     var res = parser.vetFilingComponent("333", components);
     assertThat(res).containsOk(component);
@@ -511,7 +512,7 @@ public class TylerCodesParserTest {
 
     @Test
     public void testProcedureRemedyType() {
-      var procRem = new NameAndCode("Proc Rem Example", "2244");
+      var procRem = new NameAndCodeType("Proc Rem Example", "2244");
       when(dataFields.getFieldRow("CivilCaseProcedureViewInitial"))
           .thenReturn(new DataFieldRow("CivilCaseProcedureViewInitial", "proc", true, false, "01"));
       when(cd.getProcedureOrRemedy("01", exampleCatProcRem.code)).thenReturn(List.of(procRem));

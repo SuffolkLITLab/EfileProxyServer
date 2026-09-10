@@ -1,9 +1,10 @@
 package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class FileType {
+public class FileType implements NameAndCode {
 
   public final String name;
   public final String code;
@@ -19,6 +20,14 @@ public class FileType {
 
   public FileType(ResultSet rs) throws SQLException {
     this(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4));
+  }
+
+  public String name() {
+    return name;
+  }
+
+  public String code() {
+    return code;
   }
 
   public boolean matchesFile(String file) {

@@ -4,7 +4,6 @@ import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseUtils.UnsupportedTableException;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import jakarta.xml.bind.JAXBException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,7 +41,7 @@ import org.slf4j.MDC;
  * the court itself, the table that you are downloading. Currently, we take the input stream and
  * divert it directly to the XMLStream reader, so we don't need to write out to a file. 3. updating
  * the Postgres codes database - this takes the XMLStreamReader, unmarshalls it into a java object,
- * and uses that to populate the code database. Most code for that is in {@link CodeDatabase}.
+ * and uses that to populate the code database. Most code for that is in tyler.CodeDatabase.
  *
  * <p>We parallelize this as much as possible, which means steps 1 and 2 are done in batch, and each
  * court / court-table item is done in parallel. Step 3, however, can't seem to be parallelized, due

@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.server.ecf4;
+package edu.suffolk.litlab.efsp.tyler.ecf4;
 
 import ecf4.latest.gov.niem.niem.iso_4217._2.CurrencyCodeSimpleType;
 import ecf4.latest.gov.niem.niem.niem_core._2.AmountType;
@@ -396,7 +396,7 @@ public class EcfCaseTypeFactory {
       CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plaintiff, pInfo);
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
       partyIdToRefObj.put(plaintiff.getIdString(), cp.getEntityRepresentation().getValue());
-      presentPartyTypes.add(pInfo.type().code);
+      presentPartyTypes.add(pInfo.type().code());
     }
 
     for (Person defendant : info.getNewDefendants()) {
@@ -404,7 +404,7 @@ public class EcfCaseTypeFactory {
       CaseParticipantType cp = serializer.serializeEcfCaseParticipant(defendant, pInfo);
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
       partyIdToRefObj.put(defendant.getIdString(), cp.getEntityRepresentation().getValue());
-      presentPartyTypes.add(pInfo.type().code);
+      presentPartyTypes.add(pInfo.type().code());
     }
 
     int attorneyCount = 1;
@@ -483,7 +483,7 @@ public class EcfCaseTypeFactory {
           partyIdToRefObj.put(partyId.getIdString(), pt);
         }
         if (pInfo != null && pInfo.type() != null) {
-          cpt.setCaseParticipantRoleCode(Ecf4Helper.convertText(pInfo.type().code));
+          cpt.setCaseParticipantRoleCode(Ecf4Helper.convertText(pInfo.type().code()));
         } else {
           cpt.setCaseParticipantRoleCode(
               Ecf4Helper.convertText("")); // Will likely cause an error, but what can we do now?
@@ -567,7 +567,7 @@ public class EcfCaseTypeFactory {
     info.getFilerType()
         .ifPresent(
             filerType -> {
-              ecfAug.setFilerTypeText(Ecf4Helper.convertText(filerType.code));
+              ecfAug.setFilerTypeText(Ecf4Helper.convertText(filerType.code()));
             });
 
     if (courtLocation.allowreturndate && info.getReturnDate().isPresent()) {

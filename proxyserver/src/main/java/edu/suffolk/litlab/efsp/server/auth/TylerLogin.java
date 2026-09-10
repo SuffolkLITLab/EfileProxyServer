@@ -2,7 +2,7 @@ package edu.suffolk.litlab.efsp.server.auth;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efsp.Jurisdiction;
-import edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper;
+import edu.suffolk.litlab.efsp.server.utils.TylerEcf4Helper;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;

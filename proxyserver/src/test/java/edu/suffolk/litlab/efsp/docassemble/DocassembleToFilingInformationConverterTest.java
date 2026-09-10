@@ -193,8 +193,8 @@ public class DocassembleToFilingInformationConverterTest {
     assertThat(maybeEntities).isOk();
     FilingInformation entities = maybeEntities.unwrapOrElseThrow();
     assertNotNull(entities.getCaseCategoryCode());
-    assertEquals("123987", entities.getCaseCategoryCode().code);
-    assertEquals("456098", entities.getCaseTypeCode().code);
+    assertEquals("123987", entities.getCaseCategoryCode().code());
+    assertEquals("456098", entities.getCaseTypeCode().code());
     assertEquals(Optional.empty(), entities.getCaseSubtypeCode());
 
     List<FilingDoc> filingDocs = entities.getFilings();

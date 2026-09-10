@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efsp.server.services;
 
-import static edu.suffolk.litlab.efsp.server.ecf4.TylerEcf4Helper.setupFirmPort;
+import static edu.suffolk.litlab.efsp.server.utils.TylerEcf4Helper.setupFirmPort;
 import static edu.suffolk.litlab.efsp.tyler.TylerErrorCodes.makeResponse;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 

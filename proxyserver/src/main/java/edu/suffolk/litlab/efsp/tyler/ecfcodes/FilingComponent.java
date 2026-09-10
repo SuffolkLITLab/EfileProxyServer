@@ -1,9 +1,10 @@
 package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class FilingComponent {
+public class FilingComponent implements NameAndCode {
 
   public final String code;
   public final String name;
@@ -43,6 +44,14 @@ public class FilingComponent {
     this.displayorder = displayorder;
     this.efspcode = efspcode;
     this.location = location;
+  }
+
+  public String name() {
+    return name;
+  }
+
+  public String code() {
+    return code;
   }
 
   public static String getFilingComponents() {

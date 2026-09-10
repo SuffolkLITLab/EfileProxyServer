@@ -21,6 +21,7 @@ import edu.suffolk.litlab.efsp.model.PartyInfo;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.tyler.Ecf4Helper;
+import edu.suffolk.litlab.efsp.tyler.ecf4.EcfCourtSpecificSerializer;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;

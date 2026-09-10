@@ -1,9 +1,10 @@
 package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class DocumentTypeTableRow {
+public class DocumentTypeTableRow implements NameAndCode {
   public final String code;
   public final String name;
   public final String filingcodeid;
@@ -38,6 +39,14 @@ public class DocumentTypeTableRow {
     this.isdefault = Boolean.parseBoolean(isdefault);
     this.efspcode = efspcode;
     this.location = location;
+  }
+
+  public String name() {
+    return name;
+  }
+
+  public String code() {
+    return code;
   }
 
   public static String getDocumentTypeWithFilingCode() {

@@ -6,6 +6,7 @@ import ecf4.latest.gov.niem.niem.niem_core._2.MeasureType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.DevelopmentPolicyParametersType;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCodeType;
 import edu.suffolk.litlab.efsp.model.FilingAction;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.OptionalService;
@@ -85,7 +86,7 @@ public class TylerCodesParser implements CodesParser {
 
   /////////////////// Methods that access the codes database.
 
-  public Result<CaseCategory, CodeError> vetCaseCat(String caseCategoryCode) {
+  public Result<NameAndCode, CodeError> vetCaseCat(String caseCategoryCode) {
     Optional<CaseCategory> maybeCaseCat =
         cd.getCaseCategoryWithCode(this.court.code, caseCategoryCode);
     if (maybeCaseCat.isEmpty()) {
@@ -96,13 +97,14 @@ public class TylerCodesParser implements CodesParser {
     return Result.ok(maybeCaseCat.get());
   }
 
-  public Result<CaseType, CodeError> vetCaseType(
-      String caseTypeCode, CaseCategory caseCategory, boolean isInitialFiling) {
-    List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code, Optional.empty());
+  public Result<NameAndCode, CodeError> vetCaseType(
+      String caseTypeCode, NameAndCode caseCategory, boolean isInitialFiling) {
+    List<CaseType> caseTypes =
+        cd.getCaseTypesFor(court.code, caseCategory.code(), Optional.empty());
     if (caseTypes.isEmpty()) {
       var err =
           FilingError.serverError(
-              "There are no caseTypes for " + court.code + " and " + caseCategory.code);
+              "There are no caseTypes for " + court.code + " and " + caseCategory.code());
       return Result.err(new BadCode(err));
     }
 
@@ -133,10 +135,10 @@ public class TylerCodesParser implements CodesParser {
   }
 
   public Result<Optional<NameAndCode>, NoMatchingCode> vetSubType(
-      String subtypeCode, CaseType caseType) {
+      String subtypeCode, NameAndCode caseType) {
     DataFieldRow subTypeConfig = allDataFields.getFieldRow("CaseInformationCaseSubType");
     if (subTypeConfig.isvisible) {
-      List<NameAndCode> subTypes = cd.getCaseSubtypesFor(this.court.code, caseType.code);
+      List<NameAndCode> subTypes = cd.getCaseSubtypesFor(this.court.code, caseType.code());
       Optional<NameAndCode> maybeSubtype =
           subTypes.stream().filter(type -> type.getCode().equals(subtypeCode)).findFirst();
 
@@ -149,10 +151,10 @@ public class TylerCodesParser implements CodesParser {
     return Result.ok(Optional.empty());
   }
 
-  public Result<List<FilingCode>, BadCode> retrieveFilingOptions(
-      CaseCategory caseCategory, CaseType type, boolean isInitialFiling) {
+  public Result<List<NameAndCode>, BadCode> retrieveFilingOptions(
+      NameAndCode caseCategory, NameAndCode type, boolean isInitialFiling) {
     List<FilingCode> filingOptions =
-        cd.getFilingType(court.code, caseCategory.code, type.code, isInitialFiling);
+        cd.getFilingType(court.code, caseCategory.code(), type.code(), isInitialFiling);
     if (filingOptions.isEmpty()) {
       return Result.err(
           new BadCode(
@@ -163,25 +165,25 @@ public class TylerCodesParser implements CodesParser {
                       + type
                       + " are restricted")));
     }
-    return Result.ok(filingOptions);
+    return Result.ok(filingOptions.stream().map(fc -> (NameAndCode) fc).toList());
   }
 
-  public Result<FilingCode, CodeError> vetFilingType(
+  public Result<NameAndCode, CodeError> vetFilingType(
       Optional<String> filingStr,
       /** Pass in so we only need to make 1 expensive DB query */
-      List<FilingCode> filingOptions) {
+      List<NameAndCode> filingOptions) {
     if (filingStr.isEmpty()) {
       return Result.err(
-          new RequiredCodeNotPresent(filingOptions.stream().map(f -> f.code).toList()));
+          new RequiredCodeNotPresent(filingOptions.stream().map(f -> f.code()).toList()));
     }
-    Optional<FilingCode> maybeCode =
-        filingOptions.stream().filter(fil -> fil.code.equals(filingStr.get())).findFirst();
+    Optional<NameAndCode> maybeCode =
+        filingOptions.stream().filter(fil -> fil.code().equals(filingStr.get())).findFirst();
     return maybeCode
-        .map(c -> Result.<FilingCode, CodeError>ok(c))
+        .map(c -> Result.<NameAndCode, CodeError>ok(c))
         .orElseGet(
             () -> {
               log.error("Nothing matches filing `{}` in the info!", filingStr);
-              List<String> options = filingOptions.stream().map(f -> f.code).toList();
+              List<String> options = filingOptions.stream().map(f -> f.code()).toList();
               return Result.err(new NoMatchingCode(filingStr.get(), options));
             });
   }
@@ -251,8 +253,8 @@ public class TylerCodesParser implements CodesParser {
   }
 
   public Result<Map<String, String>, CrossReferenceError> getCrossRefIds(
-      Map<String, String> crossRefs, CaseType caseType) {
-    List<CrossReference> refs = cd.getCrossReference(court.code, caseType.code);
+      Map<String, String> crossRefs, NameAndCode caseType) {
+    List<CrossReference> refs = cd.getCrossReference(court.code, caseType.code());
     var refMap = refs.stream().collect(Collectors.toMap(r -> r.code, r -> r));
     Set<String> usedCodes = new HashSet<>();
     Map<String, String> ids = new HashMap<>();
@@ -296,9 +298,9 @@ public class TylerCodesParser implements CodesParser {
   public Result<Map<PartyId, PartyInfo>, CodeError> vetPartyTypes(
       Collection<Person> existingParties,
       Collection<Person> newParties,
-      CaseType type,
+      NameAndCode type,
       boolean isFirstIndexedFiling) {
-    List<PartyType> pTypesForCase = cd.getPartyTypeFor(court.code, type.code);
+    List<PartyType> pTypesForCase = cd.getPartyTypeFor(court.code, type.code());
     Map<String, PartyType> codeToPartyType =
         pTypesForCase.stream().collect(Collectors.toMap(pt -> pt.code, pt -> pt));
     Set<String> requiredTypes =
@@ -348,7 +350,7 @@ public class TylerCodesParser implements CodesParser {
         }
       }
       partyInfos.put(party.getPartyId(), partyInfo);
-      presentPartyTypes.add(partyInfo.type().code);
+      presentPartyTypes.add(partyInfo.type().code());
     }
     for (Person party : newParties) {
       var key = party.getPartyId();
@@ -363,7 +365,7 @@ public class TylerCodesParser implements CodesParser {
       } else {
         log.warn("New party " + key + "'s role (" + party.getRole() + ") isn't a code?");
         if (codeToAllPartyType.isEmpty()) {
-          var allForCourt = cd.getPartyTypeFor(court.code, type.code);
+          var allForCourt = cd.getPartyTypeFor(court.code, type.code());
           codeToAllPartyType =
               allForCourt.stream().collect(Collectors.toMap(pt -> pt.code, pt -> pt));
         }
@@ -373,13 +375,13 @@ public class TylerCodesParser implements CodesParser {
         } else {
           partyInfo =
               new PartyInfo(
-                  PartyType.MissingType(role, type.code, court.code),
+                  PartyType.MissingType(role, type.code(), court.code),
                   party.getPartyId(),
                   party.isOrg());
         }
       }
       partyInfos.put(party.getPartyId(), partyInfo);
-      presentPartyTypes.add(partyInfo.type().code);
+      presentPartyTypes.add(partyInfo.type().code());
     }
 
     // We need to make sure the initial filing handles all required parties: subsequents we can
@@ -410,7 +412,7 @@ public class TylerCodesParser implements CodesParser {
 
   // TODO: do good tests here
   public Result<Optional<NameAndCode>, CodeError> vetMotionCode(
-      Optional<String> motionCode, FilingCode filing) {
+      Optional<String> motionCode, NameAndCode filing) {
     DataFieldRow motionRow = allDataFields.getFieldRow("FilingMotionType");
     if (!motionRow.isvisible) {
       return Result.ok(Optional.empty());
@@ -418,7 +420,7 @@ public class TylerCodesParser implements CodesParser {
     if (!motionRow.isrequired && motionCode.isEmpty()) {
       return Result.ok(Optional.empty());
     }
-    List<NameAndCode> motionTypes = cd.getMotionTypes(this.court.code, filing.code);
+    List<NameAndCode> motionTypes = cd.getMotionTypes(this.court.code, filing.code());
     if (motionCode.isPresent()) {
       String mt = motionCode.get();
       Optional<NameAndCode> matchedMotion =
@@ -444,12 +446,12 @@ public class TylerCodesParser implements CodesParser {
    * doesn't have the selected multiplier / fee amount.
    */
   public Result<List<OptionalService>, List<CodeError>> vetOptionalServices(
-      List<InputOptionalService> servs, FilingCode filing) {
+      List<InputOptionalService> servs, NameAndCode filing) {
     if (servs.isEmpty()) {
       return Result.ok(List.of());
     }
 
-    List<OptionalServiceCode> codes = cd.getOptionalServices(this.court.code, filing.code);
+    List<OptionalServiceCode> codes = cd.getOptionalServices(this.court.code, filing.code());
     Map<String, OptionalServiceCode> codeMap =
         codes.stream().collect(Collectors.toMap(sv -> sv.code, sv -> sv));
     List<CodeError> errs = new ArrayList<>();
@@ -488,8 +490,10 @@ public class TylerCodesParser implements CodesParser {
     return Result.err(errs);
   }
 
-  public List<FilingComponent> retrieveFilingComponents(FilingCode filingCode) {
-    return cd.getFilingComponents(this.court.code, filingCode.code);
+  public List<NameAndCode> retrieveFilingComponents(NameAndCode filingCode) {
+    return cd.getFilingComponents(this.court.code, filingCode.code()).stream()
+        .map(f -> (NameAndCode) f)
+        .toList();
   }
 
   /**
@@ -500,35 +504,35 @@ public class TylerCodesParser implements CodesParser {
    * @param collector
    * @return
    */
-  public Result<FilingComponent, CodeError> vetFilingComponent(
-      String filingComponent, ArrayList<FilingComponent> components) {
+  public Result<NameAndCode, CodeError> vetFilingComponent(
+      String filingComponent, ArrayList<NameAndCode> components) {
     if (components.isEmpty()) {
       log.error("Filing Components are empty! There are no other documents that can be added!");
       return Result.err(new NoMatchingCode(filingComponent, List.of()));
     }
 
-    Optional<FilingComponent> filtered =
-        components.stream().filter(c -> c.code.equalsIgnoreCase(filingComponent)).findFirst();
+    Optional<NameAndCode> filtered =
+        components.stream().filter(c -> c.code().equalsIgnoreCase(filingComponent)).findFirst();
     if (filtered.isEmpty()) {
       log.error("Filing Components (" + components + ") don't match \"" + filingComponent + "\".");
       return Result.err(
-          new NoMatchingCode(filingComponent, components.stream().map(c -> c.code).toList()));
+          new NoMatchingCode(filingComponent, components.stream().map(c -> c.code()).toList()));
     }
     var filt = filtered.get();
-    if (!filt.allowmultiple) {
+    if (!((FilingComponent) filt).allowmultiple) {
       components.remove(filt);
     }
     return Result.ok(filt);
   }
 
   // TODO(brycew): should add helptext / validationmessage from DataField?
-  public Result<Optional<DocumentTypeTableRow>, CodeError> vetDocType(
-      String docTypeStr, FilingCode filing) {
+  public Result<Optional<NameAndCode>, CodeError> vetDocType(
+      String docTypeStr, NameAndCode filing) {
     // Literally should just be if it's confidential or not. (or "Hot fix" or public).
     // Search options in "documenttype" table with location
     DataFieldRow documentType = allDataFields.getFieldRow("DocumentType");
     if (documentType.isvisible) {
-      List<DocumentTypeTableRow> docTypes = cd.getDocumentTypes(court.code, filing.code);
+      List<DocumentTypeTableRow> docTypes = cd.getDocumentTypes(court.code, filing.code());
       if (documentType.isrequired && docTypeStr.isBlank()) {
         return Result.err(new RequiredCodeNotPresent(docTypes.stream().map(d -> d.code).toList()));
       }
@@ -536,7 +540,7 @@ public class TylerCodesParser implements CodesParser {
       Optional<DocumentTypeTableRow> code =
           docTypes.stream().filter(d -> d.code.equals(docTypeStr)).findFirst();
       if (code.isPresent()) {
-        return Result.ok(code);
+        return Result.ok(code.map(d -> (NameAndCode) d));
       }
       return Result.err(
           new NoMatchingCode(docTypeStr, docTypes.stream().map(d -> d.code).toList()));
@@ -544,7 +548,7 @@ public class TylerCodesParser implements CodesParser {
     return Result.ok(Optional.empty());
   }
 
-  public Result<Optional<FilerType>, CodeError> vetFilerType(Optional<String> maybeFilerType) {
+  public Result<Optional<NameAndCode>, CodeError> vetFilerType(Optional<String> maybeFilerType) {
     DataFieldRow filertype = allDataFields.getFieldRow("FilingFilerType");
     if (filertype.isvisible) {
       List<FilerType> allTypes = cd.getFilerTypes(this.court.code);
@@ -557,12 +561,12 @@ public class TylerCodesParser implements CodesParser {
           return Result.err(
               new NoMatchingCode(filerType, allTypes.stream().map(t -> t.code).toList()));
         }
-        return Result.ok(typeInfo);
+        return Result.ok(typeInfo.map(ti -> new NameAndCodeType(ti.name, ti.code)));
       } else {
         // Choose a default, if there's one present.
         Optional<FilerType> defaultType = allTypes.stream().filter(t -> t.isDefault).findFirst();
         if (defaultType.isPresent()) {
-          return Result.ok(defaultType);
+          return Result.ok(defaultType.map(dt -> new NameAndCodeType(dt.name, dt.code)));
         } else if (filertype.isrequired) {
           return Result.err(
               new RequiredCodeNotPresent(allTypes.stream().map(t -> t.code).toList()));
@@ -576,7 +580,8 @@ public class TylerCodesParser implements CodesParser {
   // sense,
   // and Tyler's docs only refer to the code in the singular. So only returning one here.
   public Result<Optional<NameAndCode>, CodeError> vetProcedureRemedy(
-      Optional<String> maybeProRem, boolean initial, CaseCategory cat) {
+      Optional<String> maybeProRem, boolean initial, NameAndCode catNameAndCode) {
+    CaseCategory cat = (CaseCategory) catNameAndCode;
     List<NameAndCode> procedureRemedies = cd.getProcedureOrRemedy(this.court.code, cat.getCode());
     String procedureViewName = "CivilCaseProcedureView" + ((initial) ? "Initial" : "Subsequent");
     DataFieldRow procedureView = DataFieldRow.MissingDataField(procedureViewName);
@@ -613,7 +618,8 @@ public class TylerCodesParser implements CodesParser {
   }
 
   public Result<Optional<NameAndCode>, CodeError> vetDamageAmount(
-      boolean initial, CaseCategory cat, Optional<String> maybeDamageAmount) {
+      boolean initial, NameAndCode catNameAndCode, Optional<String> maybeDamageAmount) {
+    CaseCategory cat = (CaseCategory) catNameAndCode;
     String courtLocationId = this.court.code;
     DataFieldRow damageConfig = allDataFields.getFieldRow("DamageAmount");
     String damgBehavior = (initial) ? cat.damageamountinitial : cat.damageamountsubsequent;
@@ -901,9 +907,10 @@ public class TylerCodesParser implements CodesParser {
   }
 
   public Result<Optional<LocalDate>, DueDateRequired> vetDueDate(
-      Optional<LocalDate> dueDate, FilingCode filing) {
+      Optional<LocalDate> dueDate, NameAndCode filing) {
     DataFieldRow dueDateRow = allDataFields.getFieldRow("DueDateAvailableForFilers");
-    if (filing.useduedate && dueDateRow.isvisible) {
+    FilingCode fc = (FilingCode) filing;
+    if (fc.useduedate && dueDateRow.isvisible) {
       if (dueDate.isEmpty() && dueDateRow.isrequired) {
         return Result.err(new DueDateRequired());
       }
@@ -940,7 +947,7 @@ public class TylerCodesParser implements CodesParser {
   }
 
   public Optional<String> getDocumentDescription(
-      String description, String firstFileName, FilingCode filing) {
+      String description, String firstFileName, NameAndCode filing) {
     DataFieldRow row = allDataFields.getFieldRow("DocumentDescription");
     if (!row.isvisible) {
       return Optional.empty();
@@ -949,11 +956,11 @@ public class TylerCodesParser implements CodesParser {
       return Optional.of(description);
     } else {
       if (this.court.defaultdocumentdescription.equals("1")) {
-        return Optional.of(filing.name);
+        return Optional.of(filing.name());
       } else if (this.court.defaultdocumentdescription.equals("2")) {
         return Optional.of(firstFileName);
       } else if (row.defaultvalueexpression.equals("{{FilingCodeDescription}}")) {
-        return Optional.of(filing.name);
+        return Optional.of(filing.name());
       } else if (row.defaultvalueexpression.equals("{{FileName}}")) {
         return Optional.of(firstFileName);
       } else if (row.isrequired) {
@@ -970,7 +977,9 @@ public class TylerCodesParser implements CodesParser {
   public Result<String, FileNameError> vetFileName(String fileName) {
     List<FileType> allowedFileTypes = cd.getAllowedFileTypes(this.court.code);
     if (allowedFileTypes.stream().noneMatch(t -> t.matchesFile(fileName))) {
-      return Result.err(new FileExtensionNotAllowed(fileName, allowedFileTypes));
+      return Result.err(
+          new FileExtensionNotAllowed(
+              fileName, allowedFileTypes.stream().map(t -> (NameAndCode) t).toList()));
     }
     DataFieldRow originalName = allDataFields.getFieldRow("OriginalFileName");
     if (!originalName.matchRegex(fileName)) {
@@ -1004,9 +1013,10 @@ public class TylerCodesParser implements CodesParser {
   }
 
   public Result<Optional<BigDecimal>, ThingRequired> vetAmountInControversy(
-      Optional<BigDecimal> amt, List<FilingCode> filings) {
+      Optional<BigDecimal> amt, List<NameAndCode> filings) {
     boolean anyAmountInControversy =
-        filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"));
+        filings.stream()
+            .anyMatch(f -> ((FilingCode) f).amountincontroversy.equalsIgnoreCase("Required"));
     if (anyAmountInControversy) {
       if (amt.isPresent()) {
         return Result.ok(amt);

@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.server.ecf4;
+package edu.suffolk.litlab.efsp.tyler.ecf4;
 
 import ecf4.latest.gov.niem.niem.fbi._2.SEXCodeSimpleType;
 import ecf4.latest.gov.niem.niem.fbi._2.SEXCodeType;
@@ -31,6 +31,7 @@ import ecf4.latest.tyler.ecf.extensions.common.CapabilityType;
 import ecf4.latest.tyler.ecf.extensions.common.DocumentOptionalServiceType;
 import ecf4.latest.tyler.ecf.extensions.common.DocumentType;
 import ecf4.latest.tyler.ecf.extensions.common.FilingTypeType;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.model.Address;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
 import edu.suffolk.litlab.efsp.model.FilingAction;
@@ -47,7 +48,6 @@ import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.ComboCaseCodes;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingCode;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingComponent;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import jakarta.xml.bind.JAXBElement;
@@ -85,9 +85,10 @@ public class EcfCourtSpecificSerializer {
       InfoCollector collector,
       boolean isInitialFiling)
       throws FilingError {
-    CaseCategory caseCategory = info.getCaseCategoryCode();
-    CaseType type = info.getCaseTypeCode();
-    List<FilingCode> filingCodes = info.getFilings().stream().map(f -> f.getFilingCode()).toList();
+    CaseCategory caseCategory = (CaseCategory) info.getCaseCategoryCode();
+    CaseType type = (CaseType) info.getCaseTypeCode();
+    List<FilingCode> filingCodes =
+        info.getFilings().stream().map(f -> (FilingCode) f.getFilingCode()).toList();
 
     if (!type.initial && info.getCaseDocketNumber().isEmpty()) {
       FilingError err =
@@ -180,7 +181,7 @@ public class EcfCourtSpecificSerializer {
     }
 
     TextType tt = niemObjFac.createTextType();
-    tt.setValue(info.type().code);
+    tt.setValue(info.type().code());
     cpt.setCaseParticipantRoleCode(tt);
     return cpt;
   }
@@ -390,16 +391,16 @@ public class EcfCourtSpecificSerializer {
     // TODO(brycew-later): what should this actually be? Very unclear
     DocumentAttachmentType attachment = ecfOf.createDocumentAttachmentType();
     attachment.setBinaryDescriptionText(Ecf4Helper.convertText(fa.documentDescription()));
-    FilingComponent filt = fa.filingComponentCode();
+    NameAndCode filt = fa.filingComponentCode();
 
-    attachment.setBinaryCategoryText(Ecf4Helper.convertText(filt.code));
+    attachment.setBinaryCategoryText(Ecf4Helper.convertText(filt.code()));
 
     // Literally should just be if it's confidential or not. (or "Hot fix" or public).
     // Search options in "documenttype" table with location
     fa.documentTypeFormatStandardName()
         .ifPresent(
             code -> {
-              attachment.setBinaryFormatStandardName(Ecf4Helper.convertText(code.code));
+              attachment.setBinaryFormatStandardName(Ecf4Helper.convertText(code.code()));
             });
 
     // log.info("Filing code: {} {}: {}///////{}", filing.code, filing.name, docType, attachment);

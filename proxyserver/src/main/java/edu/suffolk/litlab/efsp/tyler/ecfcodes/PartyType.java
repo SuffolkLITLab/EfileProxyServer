@@ -1,10 +1,11 @@
 package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class PartyType {
+public class PartyType implements NameAndCode {
   public final String code;
   public final String name;
   // NOTE: "Indicates whether a case can have more than one party with this party type." NOT that
@@ -74,6 +75,14 @@ public class PartyType {
         rs.getString(10),
         rs.getString(11),
         rs.getString(12));
+  }
+
+  public String name() {
+    return name;
+  }
+
+  public String code() {
+    return code;
   }
 
   public static String searchPartyType() {

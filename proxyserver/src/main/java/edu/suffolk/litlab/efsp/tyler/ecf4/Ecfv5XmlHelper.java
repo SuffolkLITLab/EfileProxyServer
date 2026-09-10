@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.server.utils;
+package edu.suffolk.litlab.efsp.tyler.ecf4;
 
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.CourtType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.DateType;

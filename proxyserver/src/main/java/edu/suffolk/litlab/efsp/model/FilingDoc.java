@@ -2,7 +2,6 @@ package edu.suffolk.litlab.efsp.model;
 
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.stdlib.NonEmptyString;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingCode;
 import fj.data.NonEmptyList;
 import java.time.LocalDate;
 import java.util.List;
@@ -22,7 +21,7 @@ public class FilingDoc {
   private final Optional<LocalDate> dueDate;
   // A valid filing code (complaint, motion, Appearance, Motion, etc.)
   // Sets the RegActionDesc attribute
-  private final FilingCode filingCode;
+  private final NameAndCode filingCode;
   private final UUID id;
 
   // Required to at least have one
@@ -44,7 +43,7 @@ public class FilingDoc {
   private final int sequenceNum;
 
   public FilingDoc(
-      FilingCode filingCode,
+      NameAndCode filingCode,
       List<PartyId> filingPartyIds,
       NonEmptyList<FilingAttachment> filingAttachments,
       int sequenceNum) {
@@ -68,7 +67,7 @@ public class FilingDoc {
 
   /** Full constructor, in all it's mess. */
   public FilingDoc(
-      FilingCode filingCode,
+      NameAndCode filingCode,
       String userProvidedDescription,
       Optional<String> descriptionFromSpec,
       Optional<String> filingReferenceNum,
@@ -171,7 +170,7 @@ public class FilingDoc {
     return optServices;
   }
 
-  public FilingCode getFilingCode() {
+  public NameAndCode getFilingCode() {
     return filingCode;
   }
 

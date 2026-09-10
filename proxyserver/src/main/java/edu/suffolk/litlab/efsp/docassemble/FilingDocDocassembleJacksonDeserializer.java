@@ -16,13 +16,12 @@ import edu.suffolk.litlab.efsp.ecfcodes.CodesParser.FileExtensionNotAllowed;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser.FileNameTextError;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser.InputOptionalService;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser.TextVarError;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.model.FilingAction;
 import edu.suffolk.litlab.efsp.model.FilingAttachment;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingCode;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingComponent;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
@@ -58,7 +57,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       JsonNode node,
       Map<String, PartyId> varToPartyId,
       int sequenceNum,
-      List<FilingCode> filingOptions,
+      List<NameAndCode> filingOptions,
       boolean isInitialFiling,
       boolean hasServiceContacts,
       CodesParser parser,
@@ -201,7 +200,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       fullParties = partiesRes.expect("");
     }
 
-    var components = new ArrayList<FilingComponent>(parser.retrieveFilingComponents(filingType));
+    var components = new ArrayList<NameAndCode>(parser.retrieveFilingComponents(filingType));
     fj.data.List<FilingAttachment> attachments = fj.data.List.nil();
     if (node.has("tyler_merge_attachments")
         && node.get("tyler_merge_attachments").asBoolean(false)) {
@@ -270,8 +269,8 @@ public class FilingDocDocassembleJacksonDeserializer {
 
   private static Optional<FilingAttachment> getAttachment(
       JsonNode node,
-      ArrayList<FilingComponent> components,
-      FilingCode filingCode,
+      ArrayList<NameAndCode> components,
+      NameAndCode filingCode,
       CodesParser parser,
       InfoCollector collector)
       throws FilingError {
@@ -380,7 +379,7 @@ public class FilingDocDocassembleJacksonDeserializer {
               documentDescription,
               fileName,
               (inStream != null) ? inStream.readAllBytes() : new byte[0],
-              documentType,
+              documentType.map(d -> (NameAndCode) d),
               pageCount));
     } catch (MalformedURLException ex) {
       FilingError err =

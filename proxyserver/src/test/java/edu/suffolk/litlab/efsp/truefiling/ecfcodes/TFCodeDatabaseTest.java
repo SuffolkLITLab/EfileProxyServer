@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersionTest;
-import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCodeType;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -66,7 +66,8 @@ public class TFCodeDatabaseTest {
   public void testCaseCategory() throws Exception {
     cd.updateTable(CASE_CATEGORY_TABLE, COURT_LOCATION, loadFromXml("case_category_test.gc.xml"));
     assertThat(cd.getCaseCategoryNames(COURT_LOCATION))
-        .contains(new NameAndCode("Bankruptcy", "bankruptcy"), new NameAndCode("Civil", "civil"));
+        .contains(
+            new NameAndCodeType("Bankruptcy", "bankruptcy"), new NameAndCodeType("Civil", "civil"));
   }
 
   @Test
@@ -74,15 +75,15 @@ public class TFCodeDatabaseTest {
     cd.updateTable(CASE_TYPE_TABLE, COURT_LOCATION, loadFromXml("case_type_test.gc.xml"));
     assertThat(cd.getCaseTypeNamesFor(COURT_LOCATION, "criminal", Optional.empty()))
         .contains(
-            new NameAndCode("Minor Offense", "MO1AG"),
-            new NameAndCode("Crim Dist Ct Felony", "CRDF1HA"));
+            new NameAndCodeType("Minor Offense", "MO1AG"),
+            new NameAndCodeType("Crim Dist Ct Felony", "CRDF1HA"));
   }
 
   @Test
   public void testBundleStatus() throws Exception {
     cd.updateTable(BUNDLE_STATUS_TABLE, COURT_LOCATION, loadFromXml("bundle_status_test.gc.xml"));
     assertThat(cd.getBundleStatuses(COURT_LOCATION))
-        .contains(new NameAndCode("Filed", "Filed"), new NameAndCode("Paid", "Paid"));
+        .contains(new NameAndCodeType("Filed", "Filed"), new NameAndCodeType("Paid", "Paid"));
   }
 
   @Test
@@ -90,7 +91,7 @@ public class TFCodeDatabaseTest {
     cd.updateTable(
         DOCUMENT_STATUS_TABLE, COURT_LOCATION, loadFromXml("document_status_test.gc.xml"));
     assertThat(cd.getDocumentStatuses(COURT_LOCATION))
-        .contains(new NameAndCode("Accepted", "Accepted"), new NameAndCode("New", "New"));
+        .contains(new NameAndCodeType("Accepted", "Accepted"), new NameAndCodeType("New", "New"));
   }
 
   @Test
@@ -98,9 +99,9 @@ public class TFCodeDatabaseTest {
     cd.updateTable(DOCUMENT_TYPE_TABLE, COURT_LOCATION, loadFromXml("document_type_test.gc.xml"));
     assertThat(cd.getDocumentTypes(COURT_LOCATION, "1e17822a-9cef-4613-9b26-059fcf845f66"))
         .contains(
-            new NameAndCode(
+            new NameAndCodeType(
                 "Agreement, Consent, or Waiver", "af0e891c-8bcb-4a22-9ec1-b1475d41d408"),
-            new NameAndCode(
+            new NameAndCodeType(
                 "Application for Change of Plea Hearing (Form CR-316)",
                 "4f2dfa01-eb4f-4b9a-aba6-197d67187388"));
   }
@@ -110,8 +111,8 @@ public class TFCodeDatabaseTest {
     cd.updateTable(ERROR_CODES_TABLE, COURT_LOCATION, loadFromXml("error_codes.gc.xml"));
     assertThat(cd.getErrorCodes(COURT_LOCATION))
         .contains(
-            new NameAndCode("XML Validation Error", "1000"),
-            new NameAndCode("CourtId undefined", "1001"));
+            new NameAndCodeType("XML Validation Error", "1000"),
+            new NameAndCodeType("CourtId undefined", "1001"));
   }
 
   @Test

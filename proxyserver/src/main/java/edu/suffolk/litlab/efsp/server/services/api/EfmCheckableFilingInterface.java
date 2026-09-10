@@ -1,11 +1,10 @@
-package edu.suffolk.litlab.efsp.server.services.impl;
+package edu.suffolk.litlab.efsp.server.services.api;
 
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.FilingResult;
 import edu.suffolk.litlab.efsp.server.auth.UserCreds;
-import edu.suffolk.litlab.efsp.server.services.api.EfmFilingInterface;
 import edu.suffolk.litlab.efsp.stdlib.NonEmptyString;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;

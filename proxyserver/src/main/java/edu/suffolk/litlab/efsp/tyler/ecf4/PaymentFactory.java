@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.server.ecf4;
+package edu.suffolk.litlab.efsp.tyler.ecf4;
 
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentMeansType;
