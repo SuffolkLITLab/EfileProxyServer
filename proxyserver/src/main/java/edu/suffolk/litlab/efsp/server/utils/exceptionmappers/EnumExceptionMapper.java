@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.server.utils;
+package edu.suffolk.litlab.efsp.server.utils.exceptionmappers;
 
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;

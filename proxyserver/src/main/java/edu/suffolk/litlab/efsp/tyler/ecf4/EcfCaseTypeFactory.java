@@ -21,6 +21,7 @@ import ecf4.latest.tyler.ecf.extensions.common.OrganizationIdentificationType;
 import ecf4.latest.tyler.ecf.extensions.common.ProcedureRemedyType;
 import ecf4.latest.tyler.ecf.extensions.common.ServicePartyDataType;
 import edu.suffolk.litlab.efsp.Jurisdiction;
+import edu.suffolk.litlab.efsp.ecf4.QueryType;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.model.CaseServiceContact;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
