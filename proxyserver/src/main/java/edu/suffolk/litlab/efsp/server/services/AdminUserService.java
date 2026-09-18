@@ -15,6 +15,7 @@ import edu.suffolk.litlab.efsp.server.auth.NullUserCreds;
 import edu.suffolk.litlab.efsp.server.auth.UserCreds;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
+import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.TylerEcf4Helper;
 import edu.suffolk.litlab.efsp.stdlib.NonEmptyString;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
@@ -48,11 +49,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.headers.Header;
-import org.apache.cxf.transport.http.HTTPConduit;
-import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -775,12 +772,7 @@ public class AdminUserService {
       Consumer<BindingProvider> setup =
           (BindingProvider bp) -> {
             TylerEcf4Helper.setupServicePort(bp);
-            Client client = ClientProxy.getClient(bp);
-            HTTPConduit http = (HTTPConduit) client.getConduit();
-            HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
-            httpClientPolicy.setConnectionTimeout(180_000);
-            httpClientPolicy.setReceiveTimeout(180_000);
-            http.setClient(httpClientPolicy);
+            ServiceHelpers.changeTimeout(bp, 180_000);
             Map<String, Object> ctx = bp.getRequestContext();
             ctx.put(Header.HEADER_LIST, headersList);
           };
