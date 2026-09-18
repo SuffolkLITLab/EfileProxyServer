@@ -89,7 +89,9 @@ public class EcfCaseTypeFactoryTest {
   public void shouldUnpackTylerCaseCorrectly()
       throws FileNotFoundException, JAXBException, XMLStreamException {
     var myCase =
-        readFromFile(this.getClass().getResourceAsStream("/case_resp.xml")).getCase().getValue();
+        readFromFile(this.getClass().getResourceAsStream("/cases/case_resp.xml"))
+            .getCase()
+            .getValue();
     System.out.println(
         Ecf4Helper.objectToXmlStrOrError(
             myCase, ecf4.latest.gov.niem.niem.niem_core._2.CaseType.class));
@@ -100,21 +102,21 @@ public class EcfCaseTypeFactoryTest {
     assertTrue(participants.get().containsKey(abcKey));
     Person abcFromData = participants.get().get(abcKey);
     assertTrue(abcFromData.isOrg());
-    assertEquals(abcFromData.getName().getFullName(), "ABC CORP");
+    assertEquals(abcFromData.getName().makeFullName(), "ABC CORP");
     assertEquals(abcFromData.getRole().get(), "20646");
 
     PartyId xyzKey = PartyId.Already("e56ed9ec-b473-41cc-bfb6-fec4129422bb");
     assertTrue(participants.get().containsKey(xyzKey));
     Person xyzFromData = participants.get().get(xyzKey);
     assertTrue(xyzFromData.isOrg());
-    assertEquals(xyzFromData.getName().getFullName(), "ORG XYZ");
+    assertEquals(xyzFromData.getName().makeFullName(), "ORG XYZ");
     assertEquals(xyzFromData.getRole().get(), "20641");
   }
 
   @Test
   public void shouldMatchExistingPartyPersonOrOrgXmlWrappers() throws Exception {
     // ecf4.latest.gov.niem.niem.niem_core._2.CaseType myCase =
-    // readFromFile(this.getClass().getResourceAsStream("/case_resp.xml")).getCase().getValue();
+    // readFromFile(this.getClass().getResourceAsStream("cases/case_resp.xml")).getCase().getValue();
     // EcfCaseTypeFactory caseFactory = new EcfCaseTypeFactory(cd, "illinois");
     EcfCaseTypeFactory.getCriteria();
     InterviewToFilingInformationConverter converter =

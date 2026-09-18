@@ -667,7 +667,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       collector.pushAttributeStack("judge");
       judgeName =
           NameDocassembleDeserializer.fromNode(jsonLowerCase.get("judge"), false, parser, collector)
-              .getFullName();
+              .makeFullName();
       collector.popAttributeStack();
     }
     Optional<String> title = JsonHelpers.getStringMember(jsonLowerCase, "title");

@@ -422,7 +422,7 @@ public class FilingReviewService {
       // Court",
       // the filer Object should return the full name of the court if possible, not the id
       ud.addToTable(
-          user.getName().getFullName(),
+          user.getName().makeFullName(),
           user.getId(),
           phoneNumber,
           user.getContactInfo().getEmail().orElse(""),
@@ -439,7 +439,7 @@ public class FilingReviewService {
     } catch (SQLException ex) {
       log.error(
           "Couldn't add info to the database! Logging here for posterity: {}, {}, {}, {}, {}, {}, {}",
-          user.getName().getFullName(),
+          user.getName().makeFullName(),
           user.getId(),
           phoneNumber,
           user.getContactInfo().getEmail(),
@@ -453,7 +453,7 @@ public class FilingReviewService {
         user.getContactInfo().getEmail().orElse(""),
         info.getEmailTemplates(),
         security.getServerId(),
-        user.getName().getFullName(),
+        user.getName().makeFullName(),
         filingResult.courtName,
         filingIds,
         filingResult.caseCategoryName,

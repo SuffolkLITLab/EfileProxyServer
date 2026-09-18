@@ -3,7 +3,9 @@ package edu.suffolk.litlab.efsp.server;
 import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efsp.ConfigurationLoader;
 import edu.suffolk.litlab.efsp.Jurisdiction;
@@ -199,7 +201,10 @@ public class EfspServer {
   }
 
   public static List<?> providers(Supplier<LoginDatabase> ldSupplier, SecurityHub security) {
-    var objMapper = new ObjectMapper().registerModule(new Jdk8Module());
+    var objMapper =
+        (new ObjectMapper())
+            .registerModules(new Jdk8Module(), new JavaTimeModule())
+            .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     return List.of(
         new JAXBElementProvider<Object>(),
         new JacksonJsonProvider(objMapper), // TODO(brycew): JAXBJSon?

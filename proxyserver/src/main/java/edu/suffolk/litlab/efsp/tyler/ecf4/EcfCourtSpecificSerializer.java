@@ -112,7 +112,7 @@ public class EcfCourtSpecificSerializer {
       OrganizationAugmentationType aug = ecfOf.createOrganizationAugmentationType();
       aug.getContactInformation().add(cit);
       OrganizationType ot = ecfOf.createOrganizationType();
-      ot.setOrganizationName(Ecf4Helper.convertText(per.getName().getFullName()));
+      ot.setOrganizationName(Ecf4Helper.convertText(per.getName().makeFullName()));
       ot.setId(per.getIdString());
       ot.getRest().add(ecfOf.createOrganizationAugmentation(aug));
       cpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
