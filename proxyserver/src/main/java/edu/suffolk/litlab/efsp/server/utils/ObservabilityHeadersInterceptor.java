@@ -53,8 +53,8 @@ public class ObservabilityHeadersInterceptor implements ContainerRequestFilter {
     }
   }
 
-  private static final Pattern safeIdRegex = Pattern.compile("^[A-Za-z0-9\\-]{0,36}$");
-  private static final Pattern safeNameRegex = Pattern.compile("^[A-Za-z0-9\\-]{0,72}$");
+  private static final Pattern safeIdRegex = Pattern.compile("^[A-Za-z0-9_\\-]{0,36}$");
+  private static final Pattern safeNameRegex = Pattern.compile("^[A-Za-z0-9_\\-]{0,72}$");
 
   private String handleHeaderString(
       Map<String, List<String>> headers, String headerKey, Pattern safeRegex) {
@@ -65,7 +65,7 @@ public class ObservabilityHeadersInterceptor implements ContainerRequestFilter {
     String val = headerList.getFirst();
     if (!safeRegex.matcher(val).matches()) {
       log.warn(
-          "Not adding the {} header to MDC, as it's not safe (numbers, letters, dashes only)",
+          "Not adding the {} header to MDC, as it's not safe (numbers, letters, dashes, underscores only)",
           headerKey);
       // We only want to put safe strings into our logs; this one doesn't look safe.
       return null;

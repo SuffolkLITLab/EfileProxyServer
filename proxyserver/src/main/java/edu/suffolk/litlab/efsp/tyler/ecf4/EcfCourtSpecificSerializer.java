@@ -66,8 +66,6 @@ public class EcfCourtSpecificSerializer {
       new ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory();
   private static final ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory coreObjFac =
       new ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory();
-  private static final ecf4.latest.gov.niem.niem.iso_639_3._2.ObjectFactory iso639Fac =
-      new ecf4.latest.gov.niem.niem.iso_639_3._2.ObjectFactory();
   private static final ecf4.latest.tyler.ecf.extensions.common.ObjectFactory tylerObjFac =
       new ecf4.latest.tyler.ecf.extensions.common.ObjectFactory();
   private static final ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4

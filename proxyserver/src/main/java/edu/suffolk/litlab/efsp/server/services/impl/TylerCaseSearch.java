@@ -41,10 +41,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.transport.http.HTTPConduit;
-import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -333,13 +329,7 @@ public class TylerCaseSearch implements CaseSearchAPI {
     CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
 
     // Sometimes, getCases takes an incredibly long time. Bump timeout to 3 minutes
-    Client client = ClientProxy.getClient(port);
-    HTTPConduit http = (HTTPConduit) client.getConduit();
-    HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
-    httpClientPolicy.setConnectionTimeout(180_000);
-    httpClientPolicy.setReceiveTimeout(180_000);
-    http.setClient(httpClientPolicy);
-
+    ServiceHelpers.changeTimeout((BindingProvider) port, 180_000);
     TylerEcf4Helper.setupServicePort((BindingProvider) port, userCreds);
     return Optional.of(port);
   }
