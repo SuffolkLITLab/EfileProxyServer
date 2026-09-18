@@ -17,8 +17,9 @@ public class ServiceHelpers {
   public static final String MDE_PROFILE_CODE_5 =
       "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-5.0";
 
-  public static String ASSEMBLY_PORT = "/filingassembly/callbacks/FilingAssemblyMDEPort";
-  public static String ASSEMBLY_PORT_V5 = "/filingassembly/callbacks/FilingAssemblyMDEPortEcfv5";
+  public static final String ASSEMBLY_PORT = "/filingassembly/callbacks/FilingAssemblyMDEPort";
+  public static final String ASSEMBLY_PORT_V5 =
+      "/filingassembly/callbacks/FilingAssemblyMDEPortEcfv5";
   private static String EXTERNAL_DOMAIN = GetEnv("EXTERNAL_DOMAIN").orElse("filingassemblymde.com");
   public static final String BASE_LOCAL_URL;
   public static final String EXTERNAL_URL;

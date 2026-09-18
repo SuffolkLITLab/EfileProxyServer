@@ -328,15 +328,14 @@ public class TylerModuleSetup implements EfmModuleSetup {
           } catch (SQLException e) {
             log.error("Couldn't get connection to Codes db:", e);
           }
-          if (globalPasswordRow.isvisible
-              && globalPasswordRow.isrequired
-              && password != null
+          if (globalPasswordRow.isvisible()
+              && globalPasswordRow.isrequired()
               && password != null
               && !password.isEmpty()) {
             if (globalPasswordRow.matchRegex(password)) {
               return Result.nullOk();
             } else {
-              return Result.err(globalPasswordRow.validationmessage);
+              return Result.err(globalPasswordRow.validationmessage());
             }
           }
           return Result.nullOk();

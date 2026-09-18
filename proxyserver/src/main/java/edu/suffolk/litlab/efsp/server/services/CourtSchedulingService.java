@@ -269,7 +269,7 @@ public class CourtSchedulingService {
       if (locationInfo.isEmpty()) {
         return Response.status(404).entity("No court: " + courtId).build();
       }
-      if (!locationInfo.get().allowreturndate) {
+      if (!locationInfo.get().allowreturndate()) {
         return Response.status(400)
             .entity("Court " + courtId + " doesn't allow handling return dates")
             .build();
@@ -286,7 +286,7 @@ public class CourtSchedulingService {
       if (filingPort.isEmpty()) {
         return Response.status(401).entity("Not logged in to file with " + courtId).build();
       }
-      var policy = policyCacher.getPolicyFor(filingPort.get(), locationInfo.get().code);
+      var policy = policyCacher.getPolicyFor(filingPort.get(), locationInfo.get().code());
       CodesParser parser =
           new TylerCodesParser(
               cd,
@@ -510,7 +510,7 @@ public class CourtSchedulingService {
     if (locationInfo.isEmpty()) {
       return Response.status(404).entity("No court: " + courtId).build();
     }
-    if (!locationInfo.get().allowhearing) {
+    if (!locationInfo.get().allowhearing()) {
       return Response.status(400)
           .entity("Court " + courtId + " doesn't allow reserving dates")
           .build();

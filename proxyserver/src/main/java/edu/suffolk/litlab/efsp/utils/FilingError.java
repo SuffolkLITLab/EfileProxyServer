@@ -119,7 +119,7 @@ public class FilingError extends Exception {
     return bd.append(type).append(description).append(missingVariable).build();
   }
 
-  private Type type;
-  private String description;
-  private Optional<InterviewVariable> missingVariable;
+  private final Type type;
+  private final String description;
+  private final Optional<InterviewVariable> missingVariable;
 }

@@ -1,20 +1,22 @@
 package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CrossReference {
-  public final String code;
-  public final String name;
-  public final String casetypeid;
-  public final boolean isdefault;
-  public final boolean isrequired;
-  public final Pattern validationregex;
-  public final String customvalidationfailuremessage;
-  public final String efspcode;
-  public final String location;
+public record CrossReference(
+    String code,
+    String name,
+    String casetypeid,
+    boolean isdefault,
+    boolean isrequired,
+    Pattern validationregex,
+    String customvalidationfailuremessage,
+    String efspcode,
+    String location)
+    implements NameAndCode {
 
   public CrossReference(
       String code,
@@ -26,19 +28,18 @@ public class CrossReference {
       String customvalidationfailuremessage,
       String efspcode,
       String location) {
-    this.code = code;
-    this.name = name;
-    this.casetypeid = casetypeid;
-    this.isdefault = Boolean.parseBoolean(isdefault);
-    this.isrequired = Boolean.parseBoolean(isrequired);
-    if (validationregex == null || validationregex.isEmpty()) {
-      this.validationregex = null;
-    } else {
-      this.validationregex = Pattern.compile(validationregex);
-    }
-    this.customvalidationfailuremessage = customvalidationfailuremessage;
-    this.efspcode = efspcode;
-    this.location = location;
+    this(
+        code,
+        name,
+        casetypeid,
+        Boolean.parseBoolean(isdefault),
+        Boolean.parseBoolean(isrequired),
+        (validationregex == null || validationregex.isEmpty())
+            ? null
+            : Pattern.compile(validationregex),
+        customvalidationfailuremessage,
+        efspcode,
+        location);
   }
 
   public CrossReference(ResultSet rs) throws SQLException {

@@ -199,12 +199,12 @@ public class OrgMessageSender {
       String envelopeId) {
     MessageInfo msgSettings = getSettings(serverId);
     String emailTemplate = tmpls.confirmationTemplate();
-    if (tmpls == null || emailTemplate == null || emailTemplate.isBlank()) {
+    if (emailTemplate == null || emailTemplate.isBlank()) {
       log.warn("given email template was blank ({}), using default", emailTemplate);
       emailTemplate = msgSettings.emailConfirmation;
     }
     String emailSubject = tmpls.confirmationSubject();
-    if (tmpls == null || emailSubject == null || emailSubject.isBlank()) {
+    if (emailSubject == null || emailSubject.isBlank()) {
       emailSubject = msgSettings.subjectLine;
     }
     String ids = transactionIds.stream().map(t -> t.toString()).collect(Collectors.joining(", "));

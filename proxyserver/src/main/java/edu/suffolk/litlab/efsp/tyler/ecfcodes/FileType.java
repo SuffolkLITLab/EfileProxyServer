@@ -4,12 +4,8 @@ import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class FileType implements NameAndCode {
-
-  public final String name;
-  public final String code;
-  public final String extension;
-  public final String location;
+public record FileType(String name, String code, String extension, String location)
+    implements NameAndCode {
 
   public FileType(String name, String code, String extension, String location) {
     this.name = name;

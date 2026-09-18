@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author litlab
  */
-public class SecurityHub {
+public final class SecurityHub {
   private static final Logger log = LoggerFactory.getLogger(SecurityHub.class);
 
   private final Map<String, LoginInterface> loginByKey;

@@ -98,7 +98,9 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     var policy = new DevelopmentPolicyParametersType();
     policy.setMaximumAllowedAttachmentSize(maxMeasure);
     policy.setMaximumAllowedMessageSize(maxMeasure);
-    parser = new TylerCodesParser(cd, policy, new CourtLocationInfo("adams"), dataFields, true);
+    parser =
+        new TylerCodesParser(
+            cd, policy, new CourtLocationInfo("adams", false, false), dataFields, true);
   }
 
   @Test

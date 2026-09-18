@@ -569,7 +569,7 @@ public class EcfCodesService extends CodesService {
       }
       List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, null);
       for (PartyType pt : partyTypes) {
-        if (pt.code.equals(partyTypeId)) {
+        if (pt.code().equals(partyTypeId)) {
           return cors(Response.ok(pt));
         }
       }
@@ -600,7 +600,7 @@ public class EcfCodesService extends CodesService {
 
       List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, caseTypeId);
       for (PartyType pt : partyTypes) {
-        if (pt.code.equals(partyTypeId)) {
+        if (pt.code().equals(partyTypeId)) {
           return cors(Response.ok(pt));
         }
       }

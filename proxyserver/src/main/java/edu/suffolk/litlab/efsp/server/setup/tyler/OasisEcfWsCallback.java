@@ -132,7 +132,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
 
       var maybeRejectText = Ecf4Helper.getNonEmptyText(tylerDoc.getRejectReasonText());
       if (maybeRejectText.isPresent()) {
-        if (courtInfo.showreturnonreject) {
+        if (courtInfo.showreturnonreject()) {
           docText.append(", was returned for the following reason: ");
         } else {
           docText.append(", was rejected for the following reason: ");
@@ -355,7 +355,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       }
     } catch (SQLException ex) {
       log.error("In ECF v4 callback, couldn't get codes db", ex);
-      courtInfo = Optional.of(new CourtLocationInfo(courtId));
+      courtInfo = Optional.of(new CourtLocationInfo(courtId, false, false));
     }
 
     reply.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
@@ -368,10 +368,10 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
         status,
         statusText,
         messageText,
-        courtInfo.get().name);
+        courtInfo.get().name());
     boolean success =
         msgSender.sendMessage(
-            trans, status, statusText, messageText, null, courtInfo.get().name, caseName);
+            trans, status, statusText, messageText, null, courtInfo.get().name(), caseName);
     if (!success) {
       log.error("Couldn't properly send message for transaction ID {}!", trans.transactionId);
     }

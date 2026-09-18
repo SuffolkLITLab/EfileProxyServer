@@ -5,21 +5,22 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class PartyType implements NameAndCode {
-  public final String code;
-  public final String name;
-  // NOTE: "Indicates whether a case can have more than one party with this party type." NOT that
-  // it's only for new parties. Jesus
-  public final boolean isAvailableForNewParties;
-  public final String casetypeid;
-  public final boolean isrequired;
-  public final BigDecimal amount;
-  public final String numberofpartiestoignore;
-  public final String sendforredaction;
-  public final String dateofdeath;
-  public final int displayorder;
-  public final String efspcode;
-  public final String location;
+public final record PartyType(
+    String code,
+    String name,
+    // NOTE: "Indicates whether a case can have more than one party with this party type." NOT that
+    // it's only for new parties. Jesus
+    boolean isAvailableForNewParties,
+    String casetypeid,
+    boolean isrequired,
+    BigDecimal amount,
+    String numberofpartiestoignore,
+    String sendforredaction,
+    String dateofdeath,
+    int displayorder,
+    String efspcode,
+    String location)
+    implements NameAndCode {
 
   public static PartyType TestObj(String code, String name, String location) {
     return new PartyType(code, name, true, "123", true, "386.53", "0", "", "", "", "", location);
@@ -43,22 +44,20 @@ public class PartyType implements NameAndCode {
       String displayorder,
       String efspcode,
       String location) {
-    this.code = code;
-    this.name = name;
-    this.isAvailableForNewParties = isAvailable;
-    this.casetypeid = casetypeid;
-    this.isrequired = isrequired;
-    this.amount = new BigDecimal(Double.parseDouble(fee));
-    this.numberofpartiestoignore = numberofpartiestoignore;
-    this.sendforredaction = sendforredaction;
-    this.dateofdeath = dateofdeath;
-    if (displayorder.isBlank()) {
-      this.displayorder = 100;
-    } else {
-      this.displayorder = Integer.parseInt(displayorder);
-    }
-    this.efspcode = efspcode;
-    this.location = location;
+
+    this(
+        code,
+        name,
+        isAvailable,
+        casetypeid,
+        isrequired,
+        new BigDecimal(Double.parseDouble(fee)),
+        numberofpartiestoignore,
+        sendforredaction,
+        dateofdeath,
+        (displayorder == null || displayorder.isBlank()) ? 100 : Integer.parseInt(displayorder),
+        efspcode,
+        location);
   }
 
   public PartyType(ResultSet rs) throws SQLException {

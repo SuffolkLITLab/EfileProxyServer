@@ -134,8 +134,8 @@ public class JurisdictionServiceHandle {
     log.info("All endpoints for servicehandle: {}", endpoints);
     var map = ef.endPointsToMap(endpoints);
     ArrayList<String> keysToRemove = new ArrayList<>();
-    for (String key : map.keySet()) {
-      var val = map.get(key);
+    for (var keyVal : map.entrySet()) {
+      var val = keyVal.getValue();
       String url = val.get("url");
       if ((url.endsWith("adminusers") && adminUser.isEmpty())
           || (url.endsWith("codes") && codes.isEmpty())
@@ -143,7 +143,7 @@ public class JurisdictionServiceHandle {
           || (url.endsWith("scheduling") && courtScheduling.isEmpty())
           || (url.endsWith("firmattorneyservice") && firmAttorneyAndService.isEmpty())
           || (url.endsWith("payments") && payments.isEmpty())) {
-        keysToRemove.add(key);
+        keysToRemove.add(keyVal.getKey());
       }
     }
     for (String key : keysToRemove) {

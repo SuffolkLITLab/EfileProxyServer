@@ -277,7 +277,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
           trans.get().courtId.substring(0, 1).toUpperCase() + trans.get().courtId.substring(1);
       try (CodeDatabase cd = cdSupplier.get()) {
         courtName =
-            cd.getFullLocationInfo(trans.get().courtId).map(li -> li.name).orElse(courtName);
+            cd.getFullLocationInfo(trans.get().courtId).map(li -> li.name()).orElse(courtName);
       } catch (SQLException ex) {
         log.error("In ECF v4 callback, couldn't get codes db: ", ex);
       }

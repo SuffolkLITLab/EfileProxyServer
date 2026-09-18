@@ -275,7 +275,7 @@ public class EcfCaseTypeFactory {
           Map<String, Object> serviceContactToXmlObjs)
           throws SQLException, FilingError {
     JAXBElement<ecf4.latest.gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug =
-        makeNiemCaseAug(courtLocation.code, info.getPreviousCaseId());
+        makeNiemCaseAug(courtLocation.code(), info.getPreviousCaseId());
     var pair =
         makeTylerCaseAug(
             courtLocation,
@@ -289,7 +289,7 @@ public class EcfCaseTypeFactory {
     JAXBElement<ecf4.latest.tyler.ecf.extensions.common.CaseAugmentationType> tylerAug =
         pair.getLeft();
     JAXBElement<? extends ecf4.latest.gov.niem.niem.niem_core._2.CaseType> myCase;
-    if (comboCodes.cat().ecfcasetype.equals("CivilCase")) {
+    if (comboCodes.cat().ecfcasetype().equals("CivilCase")) {
       myCase =
           makeCivilCaseType(
               caseAug,
@@ -297,7 +297,7 @@ public class EcfCaseTypeFactory {
               info.getCaseDocketNumber(),
               info.getPreviousCaseId(),
               info.getAmountInControversy());
-    } else if (comboCodes.cat().ecfcasetype.equals("DomesticCase")) {
+    } else if (comboCodes.cat().ecfcasetype().equals("DomesticCase")) {
       myCase =
           makeDomesticCaseType(
               caseAug,
@@ -305,25 +305,25 @@ public class EcfCaseTypeFactory {
               info.getCaseDocketNumber(),
               info.getPreviousCaseId(),
               info.isContestedCase());
-    } else if (comboCodes.cat().ecfcasetype.equals("AppellateCase")) {
+    } else if (comboCodes.cat().ecfcasetype().equals("AppellateCase")) {
       myCase = makeAppellateCaseType(caseAug, tylerAug, info, collector);
-    } else if (comboCodes.cat().ecfcasetype.equals("BankruptcyCase")
-        || comboCodes.cat().ecfcasetype.equals("CitationCase")
-        || comboCodes.cat().ecfcasetype.equals("JuvenileCase")
-        || comboCodes.cat().ecfcasetype.equals("CriminalCase")) {
+    } else if (comboCodes.cat().ecfcasetype().equals("BankruptcyCase")
+        || comboCodes.cat().ecfcasetype().equals("CitationCase")
+        || comboCodes.cat().ecfcasetype().equals("JuvenileCase")
+        || comboCodes.cat().ecfcasetype().equals("CriminalCase")) {
       // TODO(brycew): handle these
       InterviewVariable var =
           collector.requestVar(
               "efile_case_category",
               "The "
-                  + comboCodes.cat().name
+                  + comboCodes.cat().name()
                   + " Case category requires an ECF case type that we know about but don't yet"
                   + " support ("
-                  + comboCodes.cat().ecfcasetype
+                  + comboCodes.cat().ecfcasetype()
                   + ")",
               "text",
               List.of(),
-              Optional.of(comboCodes.cat().code));
+              Optional.of(comboCodes.cat().code()));
       collector.addWrong(var);
       FilingError err = FilingError.wrongValue(var);
       throw err;
@@ -332,18 +332,18 @@ public class EcfCaseTypeFactory {
           collector.requestVar(
               "efile_case_category",
               "The "
-                  + comboCodes.cat().name
+                  + comboCodes.cat().name()
                   + " Case category requires an ECF case type that we don't know about or support ("
-                  + comboCodes.cat().ecfcasetype
+                  + comboCodes.cat().ecfcasetype()
                   + ")",
               "text",
               List.of(),
-              Optional.of(comboCodes.cat().code));
+              Optional.of(comboCodes.cat().code()));
       collector.addWrong(var);
       FilingError err = FilingError.wrongValue(var);
       throw err;
     }
-    myCase.getValue().setCaseCategoryText(Ecf4Helper.convertText(comboCodes.cat().code));
+    myCase.getValue().setCaseCategoryText(Ecf4Helper.convertText(comboCodes.cat().code()));
     return Pair.of(myCase, pair.getRight());
   }
 
@@ -377,11 +377,11 @@ public class EcfCaseTypeFactory {
           throws SQLException, FilingError {
     var ecfAug = tylerObjFac.createCaseAugmentationType();
 
-    if (comboCodes.type().code.isEmpty()) {
+    if (comboCodes.type().code().isEmpty()) {
       log.warn("Type's code is empty?: {}", comboCodes);
     } else {
       log.info("Setting case type text to {}", comboCodes.type().toString());
-      ecfAug.setCaseTypeText(Ecf4Helper.convertText(comboCodes.type().code));
+      ecfAug.setCaseTypeText(Ecf4Helper.convertText(comboCodes.type().code()));
     }
 
     var maybeSubtype = info.getCaseSubtypeCode();
@@ -571,7 +571,7 @@ public class EcfCaseTypeFactory {
               ecfAug.setFilerTypeText(Ecf4Helper.convertText(filerType.code()));
             });
 
-    if (courtLocation.allowreturndate && info.getReturnDate().isPresent()) {
+    if (courtLocation.allowreturndate() && info.getReturnDate().isPresent()) {
       ecfAug.setReturnDate(Ecf4Helper.convertDate(info.getReturnDate().get()));
     }
 

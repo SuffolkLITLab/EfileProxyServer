@@ -64,9 +64,9 @@ public class DocassembleToFilingInformationConverterTest {
     when(cd.getCaseCategoriesFor("01")).thenReturn(List.of(exampleCategory));
     when(cd.getCaseCategoryWithCode("01", "123987")).thenReturn(Optional.of(exampleCategory));
     when(cd.getCaseTypesFor("01", "123987", Optional.empty())).thenReturn(List.of(exampleCaseType));
-    when(cd.getFilingType("01", "123987", exampleCaseType.code, true))
+    when(cd.getFilingType("01", "123987", exampleCaseType.code(), true))
         .thenReturn(List.of(exampleFilingType));
-    when(cd.getFilingType("01", "123987", exampleCaseType.code, false))
+    when(cd.getFilingType("01", "123987", exampleCaseType.code(), false))
         .thenReturn(List.of(exampleFilingType));
     when(cd.getAllowedFileTypes("01")).thenReturn(List.of(new FileType("PDF", "PDF", "pdf", "01")));
     when(cd.getFilingComponents("01", exampleFilingType.code))
@@ -88,9 +88,7 @@ public class DocassembleToFilingInformationConverterTest {
                         new DataFieldRow("PartyPhone", "", true, false, "adams"),
                         "PartyAttorney",
                         new DataFieldRow("PartyAttorney", "Attorney", true, false, "adams")))));
-    var loc = new CourtLocationInfo("01");
-    loc.initial = true;
-    loc.subsequent = true;
+    var loc = new CourtLocationInfo("01", true, true);
     parser = new TylerCodesParser(cd, null, loc, true);
   }
 

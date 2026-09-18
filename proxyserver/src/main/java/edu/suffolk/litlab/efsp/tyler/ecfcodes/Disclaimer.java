@@ -1,15 +1,14 @@
 package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
-public class Disclaimer {
-  public String code;
-  public String name;
-  public int listorder;
-  public String requirementText;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 
-  public Disclaimer(String code, String name, int listOrder, String requirementText) {
+public record Disclaimer(String code, String name, int listorder, String requirementText)
+    implements NameAndCode {
+
+  public Disclaimer(String code, String name, int listorder, String requirementText) {
     this.code = code;
     this.name = name;
-    this.listorder = listOrder;
+    this.listorder = listorder;
     this.requirementText = requirementText;
   }
 
