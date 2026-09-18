@@ -1,14 +1,12 @@
 package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class FilerType {
-  public final String code;
-  public final String name;
-  public final boolean isDefault;
-  public final String efspcode;
-  public final String location;
+public record FilerType(
+    String code, String name, boolean isDefault, String efspcode, String location)
+    implements NameAndCode {
 
   public FilerType(String code, String name, boolean isDefault, String efspcode, String location) {
     this.code = code;

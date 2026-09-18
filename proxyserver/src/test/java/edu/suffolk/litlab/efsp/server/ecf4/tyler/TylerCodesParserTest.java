@@ -65,8 +65,8 @@ public class TylerCodesParserTest {
           "777",
           "",
           "",
-          exampleCategory.code,
-          exampleCaseType.code,
+          exampleCategory.code(),
+          exampleCaseType.code(),
           "",
           false,
           "",
@@ -86,12 +86,11 @@ public class TylerCodesParserTest {
         .thenReturn(List.of(exampleCaseType, exampleCaseType2));
     when(cd.getCaseSubtypesFor("01", "456098"))
         .thenReturn(List.of(new NameAndCodeType("SubType code", "998877")));
-    when(cd.getFilingType("01", exampleCategory.code, exampleCaseType.code, true))
+    when(cd.getFilingType("01", exampleCategory.code(), exampleCaseType.code(), true))
         .thenReturn(List.of(filingCode));
     dataFields = mock(DataFields.class);
 
-    var loc = new CourtLocationInfo("01");
-    loc.initial = true;
+    var loc = new CourtLocationInfo("01", true, false);
     parser = new TylerCodesParser(cd, null, loc, dataFields, true);
   }
 
@@ -115,14 +114,14 @@ public class TylerCodesParserTest {
     // TODO(brycew): discovered that normal equals doesn't exist, even though
     // all attributes match. Equals isn't set right somehow, but don't
     // want to break anything if it's already working for some reason.
-    assertThat(ex.casecategory).isEqualTo(exampleCaseType.casecategory);
-    assertThat(ex.code).isEqualTo(exampleCaseType.code);
-    assertThat(ex.efspcode).isEqualTo(exampleCaseType.efspcode);
-    assertThat(ex.fee).isEqualTo(exampleCaseType.fee);
-    assertThat(ex.initial).isEqualTo(exampleCaseType.initial);
-    assertThat(ex.location).isEqualTo(exampleCaseType.location);
-    assertThat(ex.name).isEqualTo(exampleCaseType.name);
-    assertThat(ex.willfileddate).isEqualTo(exampleCaseType.willfileddate);
+    assertThat(ex.casecategory()).isEqualTo(exampleCaseType.casecategory());
+    assertThat(ex.code()).isEqualTo(exampleCaseType.code());
+    assertThat(ex.efspcode()).isEqualTo(exampleCaseType.efspcode());
+    assertThat(ex.fee()).isEqualTo(exampleCaseType.fee());
+    assertThat(ex.initial()).isEqualTo(exampleCaseType.initial());
+    assertThat(ex.location()).isEqualTo(exampleCaseType.location());
+    assertThat(ex.name()).isEqualTo(exampleCaseType.name());
+    assertThat(ex.willfileddate()).isEqualTo(exampleCaseType.willfileddate());
   }
 
   @Test
@@ -177,7 +176,7 @@ public class TylerCodesParserTest {
 
   @Test
   public void testVetFilingCodesRestricted() {
-    when(cd.getFilingType("01", exampleCategory.code, exampleCaseType.code, true))
+    when(cd.getFilingType("01", exampleCategory.code(), exampleCaseType.code(), true))
         .thenReturn(List.of());
     var res = parser.retrieveFilingOptions(exampleCategory, exampleCaseType, true);
     assertThat(res)
@@ -232,13 +231,13 @@ public class TylerCodesParserTest {
 
     @BeforeEach
     void setUp() {
-      when(cd.getCrossReference("01", exampleCaseType.code))
+      when(cd.getCrossReference("01", exampleCaseType.code()))
           .thenReturn(
               List.of(
                   new CrossReference(
                       "87374",
                       "Test cross reference (based on Cook County Attorney/Self-Rep code",
-                      exampleCaseType.code,
+                      exampleCaseType.code(),
                       "False",
                       "True",
                       "^[0-9]{5}$",
@@ -246,8 +245,8 @@ public class TylerCodesParserTest {
                       "COOKCOUNTYATTORNEY",
                       "01"),
                   new CrossReference(
-                      "76343", "PIN#", exampleCaseType.code, "True", "False", "", "", "", "01")));
-      when(cd.getCrossReference("01", exampleCaseType2.code)).thenReturn(List.of());
+                      "76343", "PIN#", exampleCaseType.code(), "True", "False", "", "", "", "01")));
+      when(cd.getCrossReference("01", exampleCaseType2.code())).thenReturn(List.of());
     }
 
     @Test
@@ -505,7 +504,7 @@ public class TylerCodesParserTest {
     public void testProcedureRemedyNoMatching() {
       when(dataFields.getFieldRow("CivilCaseProcedureViewInitial"))
           .thenReturn(new DataFieldRow("CivilCaseProcedureViewInitial", "proc", true, false, "01"));
-      when(cd.getProcedureOrRemedy("01", exampleCatProcRem.code)).thenReturn(List.of());
+      when(cd.getProcedureOrRemedy("01", exampleCatProcRem.code())).thenReturn(List.of());
       var res = parser.vetProcedureRemedy(Optional.of("2244"), true, exampleCatProcRem);
       assertThat(res).isErr().extractingErr().isInstanceOf(NoMatchingCode.class);
     }
@@ -515,7 +514,7 @@ public class TylerCodesParserTest {
       var procRem = new NameAndCodeType("Proc Rem Example", "2244");
       when(dataFields.getFieldRow("CivilCaseProcedureViewInitial"))
           .thenReturn(new DataFieldRow("CivilCaseProcedureViewInitial", "proc", true, false, "01"));
-      when(cd.getProcedureOrRemedy("01", exampleCatProcRem.code)).thenReturn(List.of(procRem));
+      when(cd.getProcedureOrRemedy("01", exampleCatProcRem.code())).thenReturn(List.of(procRem));
       var res = parser.vetProcedureRemedy(Optional.of("2244"), true, exampleCatProcRem);
       assertThat(res).containsOk(Optional.of(procRem));
     }
@@ -531,9 +530,7 @@ public class TylerCodesParserTest {
 
     @Test
     public void noMultipleAttorneys() {
-      var loc = new CourtLocationInfo("01");
-      loc.initial = true;
-      loc.allowmultipleattorneys = false;
+      var loc = new CourtLocationInfo("01", false, false, false);
       parser = new TylerCodesParser(cd, null, loc, dataFields, true);
 
       var map = Map.of(PartyId.Already("1"), List.of("abc", "def"));
@@ -541,8 +538,16 @@ public class TylerCodesParserTest {
       var attySet = Set.of("abc", "def");
       var res = parser.vetPartyAttorneyMap(map, partyIds, attySet);
       assertThat(res).isErr().extractingErr().isInstanceOf(NoMultipleAttorneys.class);
+    }
 
-      loc.allowmultipleattorneys = true;
+    @Test
+    public void yesMultipleAttorneys() {
+      var loc = new CourtLocationInfo("01", true, false, false);
+      parser = new TylerCodesParser(cd, null, loc, dataFields, true);
+
+      var map = Map.of(PartyId.Already("1"), List.of("abc", "def"));
+      var partyIds = Set.of(PartyId.Already("1"));
+      var attySet = Set.of("abc", "def");
       var res2 = parser.vetPartyAttorneyMap(map, partyIds, attySet);
       assertThat(res2).isOk();
     }

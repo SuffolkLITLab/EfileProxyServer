@@ -9,18 +9,18 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 
-public class CaseType implements NameAndCode {
-  public final String code;
-  public final String name;
-  public final String casecategory;
+public record CaseType(
+    String code,
+    String name,
+    String casecategory,
 
-  /** Whether the court accepts new cases of this type. */
-  public final boolean initial;
-
-  public final BigDecimal fee;
-  public final String willfileddate;
-  public final String efspcode;
-  public final String location;
+    /** Whether the court accepts new cases of this type. */
+    boolean initial,
+    BigDecimal fee,
+    String willfileddate,
+    String efspcode,
+    String location)
+    implements NameAndCode {
 
   public CaseType(
       String code,
@@ -31,14 +31,15 @@ public class CaseType implements NameAndCode {
       String willfileddate,
       String efspcode,
       String location) {
-    this.code = code;
-    this.name = name;
-    this.casecategory = casecategory;
-    this.initial = Boolean.parseBoolean(initial);
-    this.fee = BigDecimal.valueOf(Double.parseDouble(fee));
-    this.willfileddate = willfileddate;
-    this.efspcode = efspcode;
-    this.location = location;
+    this(
+        code,
+        name,
+        casecategory,
+        Boolean.parseBoolean(initial),
+        BigDecimal.valueOf(Double.parseDouble(fee)),
+        willfileddate,
+        efspcode,
+        location);
   }
 
   /**

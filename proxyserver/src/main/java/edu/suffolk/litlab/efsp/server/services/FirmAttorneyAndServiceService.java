@@ -211,12 +211,12 @@ public class FirmAttorneyAndServiceService {
     // Won't in IL at least. If it does, this whole system is poorly defined
     try (CodeDatabase cd = cdSupplier.get()) {
       DataFieldRow row = cd.getDataField("1", "GlobalAttorneyNumber");
-      if (row.isrequired && attorney.getBarNumber().isBlank()) {
+      if (row.isrequired() && attorney.getBarNumber().isBlank()) {
         return Response.status(400).entity("Bar number required").build();
       }
       if (!row.matchRegex(attorney.getBarNumber())) {
         return Response.status(400)
-            .entity("Bar number doesn't match regex: " + row.regularexpression)
+            .entity("Bar number doesn't match regex: " + row.regularexpression())
             .build();
       }
     } catch (SQLException ex) {
@@ -513,7 +513,7 @@ public class FirmAttorneyAndServiceService {
       boolean showFirmName = false;
       try (CodeDatabase cd = cdSupplier.get()) {
         DataFieldRow row = cd.getDataField("1", "PublicServiceContactShowFreeFormFirmName");
-        showFirmName = row.isvisible;
+        showFirmName = row.isvisible();
       } catch (SQLException ex) {
         log.error("getPublicList can't get CD: ", ex);
       }

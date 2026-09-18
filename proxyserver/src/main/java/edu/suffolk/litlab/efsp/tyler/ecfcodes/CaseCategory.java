@@ -6,60 +6,43 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CaseCategory implements NameAndCode {
-  /** The Tyler specific code for this case category. E.g.: 183528 */
-  public final String code;
+public final record CaseCategory(
+    /** The Tyler specific code for this case category. E.g.: 183528 */
+    String code,
 
-  /**
-   * A human understandable name for this category. Can be broad, like "Probate", or specific, like
-   * "Law Magistrate: Damages over $10,000 up to $50,000
-   */
-  public final String name;
+    /**
+     * A human understandable name for this category. Can be broad, like "Probate", or specific,
+     * like "Law Magistrate: Damages over $10,000 up to $50,000
+     */
+    String name,
 
-  /**
-   * The ECF Case Type Schema Name. These are things like "AppellateCase", "BankruptcyCase", etc.
-   * The full list is at
-   * https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc425241622
-   */
-  public final String ecfcasetype;
+    /**
+     * The ECF Case Type Schema Name. These are things like "AppellateCase", "BankruptcyCase", etc.
+     * The full list is at
+     * https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc425241622
+     */
+    String ecfcasetype,
 
-  // TODO(brycew-later): turn these into enums
-  /**
-   * Indicates the behavior of the Procedure/Remedy code field for initial filings E.g.: (Not
-   * Available, Available, Required)
-   */
-  public final String procedureremedyinitial;
+    // TODO(brycew-later): turn these into enums
+    /**
+     * Indicates the behavior of the Procedure/Remedy code field for initial filings E.g.: (Not
+     * Available, Available, Required)
+     */
+    String procedureremedyinitial,
 
-  /**
-   * Indicates the behavior of the Procedure/Remedy code field for subsequent filings E.g.: (Not
-   * Available, Available, Required)
-   */
-  public final String procedureremedysubsequent;
+    /**
+     * Indicates the behavior of the Procedure/Remedy code field for subsequent filings E.g.: (Not
+     * Available, Available, Required)
+     */
+    String procedureremedysubsequent,
 
-  /**
-   * Indicates the behavior of the DamageAmount code field for initial filings. E.g.: (Not
-   * Available, Available, Required)
-   */
-  public final String damageamountinitial;
-
-  public final String damageamountsubsequent;
-
-  public CaseCategory(
-      String code,
-      String name,
-      String ecfCaseType,
-      String procedureremedyinitial,
-      String procedureSub,
-      String damageinitial,
-      String damagesubsequent) {
-    this.code = code;
-    this.name = name;
-    this.ecfcasetype = ecfCaseType;
-    this.procedureremedyinitial = procedureremedyinitial;
-    this.procedureremedysubsequent = procedureSub;
-    this.damageamountinitial = damageinitial;
-    this.damageamountsubsequent = damagesubsequent;
-  }
+    /**
+     * Indicates the behavior of the DamageAmount code field for initial filings. E.g.: (Not
+     * Available, Available, Required)
+     */
+    String damageamountinitial,
+    String damageamountsubsequent)
+    implements NameAndCode {
 
   public CaseCategory(ResultSet rs) throws SQLException {
     this(

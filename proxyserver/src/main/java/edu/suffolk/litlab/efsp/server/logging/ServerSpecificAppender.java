@@ -22,7 +22,7 @@ public class ServerSpecificAppender extends AppenderBase<ILoggingEvent> {
 
   Map<String, OutputStream> serverStreams = new HashMap<>();
 
-  boolean immediateFlush = true;
+  private volatile boolean immediateFlush = true;
 
   @Override
   public void start() {

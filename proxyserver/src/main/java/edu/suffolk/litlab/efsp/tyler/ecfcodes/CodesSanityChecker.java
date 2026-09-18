@@ -60,7 +60,7 @@ public class CodesSanityChecker {
       }
       DataFields fields = cd.getDataFields(courtCode);
       for (String fieldCode : neverRequiredFields) {
-        if (fields.getFieldRow(fieldCode).isrequired) {
+        if (fields.getFieldRow(fieldCode).isrequired()) {
           log.error(
               "Court {}: {} is marked required in datafieldconfig, which shouldn't happen",
               courtCode,

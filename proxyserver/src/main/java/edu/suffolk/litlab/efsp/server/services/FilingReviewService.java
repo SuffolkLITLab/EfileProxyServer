@@ -409,7 +409,7 @@ public class FilingReviewService {
     FilingResult filingResult = result.unwrapOrElseThrow();
     List<UUID> filingIds = filingResult.filingIds;
     Optional<String> phoneNumber = Optional.empty();
-    if (user != null && user.getContactInfo().getPhoneNumbers().size() > 0) {
+    if (user.getContactInfo().getPhoneNumbers().size() > 0) {
       // TODO(brycew-later): should we store multiple phone numbers as backup?
       phoneNumber = Optional.of(user.getContactInfo().getPhoneNumbers().get(0));
     }

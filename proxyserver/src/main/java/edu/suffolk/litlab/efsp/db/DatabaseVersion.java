@@ -51,15 +51,16 @@ public class DatabaseVersion {
             """
             CREATE TABLE schema_version ("version" integer NOT NULL)
             """;
-        PreparedStatement pst = userConn.prepareStatement(createSt);
-        int retVal = pst.executeUpdate();
-        if (retVal < 0) {
-          log.warn("Issue when creating schema_version: retVal == {}", retVal);
-        }
-        if (brandNew) {
-          setSchemaVersion(CURRENT_VERSION);
-        } else {
-          setSchemaVersion(0);
+        try (PreparedStatement pst = userConn.prepareStatement(createSt)) {
+          int retVal = pst.executeUpdate();
+          if (retVal < 0) {
+            log.warn("Issue when creating schema_version: retVal == {}", retVal);
+          }
+          if (brandNew) {
+            setSchemaVersion(CURRENT_VERSION);
+          } else {
+            setSchemaVersion(0);
+          }
         }
       }
       return;

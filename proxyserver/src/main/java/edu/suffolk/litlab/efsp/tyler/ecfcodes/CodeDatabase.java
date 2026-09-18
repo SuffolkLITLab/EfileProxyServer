@@ -569,7 +569,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
                     rs.getString(10),
                     rs.getBoolean(11),
                     rs.getString(12));
-            dataFieldMap.put(dfr.code, dfr);
+            dataFieldMap.put(dfr.code(), dfr);
           }
           allDataFields.add(dataFieldMap);
         }

@@ -235,7 +235,7 @@ public class XsdDownloader {
     } else {
       args = in_args;
     }
-    if (args.length < 2 && args.length > 3) {
+    if (args.length < 2 || args.length > 3) {
       System.out.println("Only two parameters: 1--wsdl-url 2--xsds-prefix");
       System.out.println("You passed " + List.of(args).stream().collect(Collectors.joining(", ")));
       return;

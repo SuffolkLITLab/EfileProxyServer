@@ -666,7 +666,7 @@ public class AdminUserService {
       Optional<CourtLocationInfo> system = cd.getFullLocationInfo("0");
       if (system.isPresent()) {
         if (regType.equals(RegistrationType.INDIVIDUAL)
-            && !system.get().allowindividualregistration) {
+            && !system.get().allowindividualregistration()) {
           return Response.status(400)
               .entity("System does not allow individual registration")
               .build();

@@ -88,11 +88,11 @@ public class EcfCourtSpecificSerializer {
     List<FilingCode> filingCodes =
         info.getFilings().stream().map(f -> (FilingCode) f.getFilingCode()).toList();
 
-    if (!type.initial && info.getCaseDocketNumber().isEmpty()) {
+    if (!type.initial() && info.getCaseDocketNumber().isEmpty()) {
       FilingError err =
           FilingError.malformedInterview(
               "Subsequent filing case type ("
-                  + type.code
+                  + type.code()
                   + ") needs docket number, but not present");
       collector.error(err);
     }

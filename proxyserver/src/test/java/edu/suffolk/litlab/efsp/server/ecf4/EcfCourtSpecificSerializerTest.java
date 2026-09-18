@@ -199,8 +199,8 @@ public class EcfCourtSpecificSerializerTest {
   @Test
   public void shouldParseDoc() throws IOException, FilingError {
     collector = new AllWrongCollector();
-    CourtLocationInfo loc = new CourtLocationInfo("not_real");
-    loc.allowserviceoninitial = CourtLocationInfo.BoolOrDefault.TRUE;
+    CourtLocationInfo loc =
+        new CourtLocationInfo("not_real", false, false, CourtLocationInfo.BoolOrDefault.TRUE);
 
     CaseCategory caseCategory = new CaseCategory("7", "Civil", null, null, null, null, null);
     CaseType caseType = new CaseType("100", "Divorce", "7", "true", "100", null, null, "not_real");

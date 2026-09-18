@@ -27,14 +27,16 @@ public class TrueFilingModuleSetup implements EfmModuleSetup {
   private OrgMessageSender sender;
 
   public static Optional<TrueFilingModuleSetup> create(
-      Jurisdiction jurisdiction, DataSource codeDs, DataSource userDs) {
-    return Optional.of(new TrueFilingModuleSetup(jurisdiction, codeDs, userDs));
+      Jurisdiction jurisdiction, DataSource codeDs, DataSource userDs, OrgMessageSender sender) {
+    return Optional.of(new TrueFilingModuleSetup(jurisdiction, codeDs, userDs, sender));
   }
 
-  private TrueFilingModuleSetup(Jurisdiction jurisdiction, DataSource codeDs, DataSource userDs) {
+  private TrueFilingModuleSetup(
+      Jurisdiction jurisdiction, DataSource codeDs, DataSource userDs, OrgMessageSender sender) {
     this.jurisdiction = jurisdiction;
     this.codeDs = codeDs;
     this.userDs = userDs;
+    this.sender = sender;
   }
 
   @Override

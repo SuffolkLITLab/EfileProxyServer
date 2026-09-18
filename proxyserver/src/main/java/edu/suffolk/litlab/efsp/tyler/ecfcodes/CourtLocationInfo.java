@@ -4,96 +4,147 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-public class CourtLocationInfo {
-  public final String code;
+public record CourtLocationInfo(
+    String code,
 
-  /**
-   * The full (more) human readable name for the court. Some examples: adams -> Adams County, and
-   * cook:chd -> Cook County - Chancery
-   */
-  public final String name;
+    /**
+     * The full (more) human readable name for the court. Some examples: adams -> Adams County, and
+     * cook:chd -> Cook County - Chancery
+     */
+    String name,
 
-  /** True if the court allows filing to new cases. */
-  public boolean initial;
+    /** True if the court allows filing to new cases. */
+    boolean initial,
 
-  /** True if the court allows filing to existing cases. */
-  public boolean subsequent;
+    /** True if the court allows filing to existing cases. */
+    boolean subsequent,
+    boolean disallowcopyingenvelopemultipletimes,
+    boolean allowfilingintononindexedcase,
+    List<String> allowablecardtypes,
 
-  public boolean disallowcopyingenvelopemultipletimes;
-  public boolean allowfilingintononindexedcase;
-  public final List<String> allowablecardtypes;
+    /**
+     * From Reference Guide: "The Odyssey NodeID for a court location that is integrated with
+     * Tyler's Odyssey Case Manager" Not really used, since we aren't integrating.
+     */
+    String odysseynodeid,
 
-  /**
-   * From Reference Guide: "The Odyssey NodeID for a court location that is integrated with Tyler's
-   * Odyssey Case Manager" Not really used, since we aren't integrating.
-   */
-  public String odysseynodeid;
+    /**
+     * A UID for each instance of the CMS. From the Reference Guide: "This is only relevant to court
+     * agencies who use the EFM as well as Odyssey Case Manager APIs. This information allows such
+     * agencies to use the OdysseyNodeID field in an EFM instance that integrates to multiple
+     * Odyssey installations." Not used in this software.
+     */
+    String cmsid,
+    String sendservicebeforereview,
 
-  /**
-   * A UID for each instance of the CMS. From the Reference Guide: "This is only relevant to court
-   * agencies who use the EFM as well as Odyssey Case Manager APIs. This information allows such
-   * agencies to use the OdysseyNodeID field in an EFM instance that integrates to multiple Odyssey
-   * installations." Not used in this software.
-   */
-  public String cmsid;
+    /**
+     * The "parent court location" of the current court, e.g. cook is parent of cook:chd. TODO(#53):
+     * figure out if this needs to be fallen back on if certain codes don't exist.
+     */
+    String parentnodeid,
 
-  public String sendservicebeforereview;
+    /**
+     * True if this location is actually a county, as opposed to a specific office / division. Not
+     * used yet. NOTE(brycew): doesn't make sense, several counties in IL have False in this entry.
+     */
+    boolean iscounty,
+    String restrictbankaccountpayment,
+    boolean allowmultipleattorneys,
 
-  /**
-   * The "parent court location" of the current court, e.g. cook is parent of cook:chd. TODO(#53):
-   * figure out if this needs to be fallen back on if certain codes don't exist.
-   */
-  public String parentnodeid;
+    /**
+     * True if a service contact will be emailed if they are detached from a case at this court.
+     * NOTE(brycew): shouldn't have to do anything with this: only relevant to
+     * OasisEcfWsCallback.notifyEvent, but just to whether certain events can happen.
+     */
+    boolean sendservicecontactremovednotifications,
 
-  /**
-   * True if this location is actually a county, as opposed to a specific office / division. Not
-   * used yet. NOTE(brycew): doesn't make sense, several counties in IL have False in this entry.
-   */
-  public boolean iscounty;
+    /**
+     * True if this court allows the filer to specify a maximum fee amount to which the reviewer can
+     * adjust filing sduring review.
+     */
+    boolean allowmaxfeeamount,
 
-  public String restrictbankaccountpayment;
-  public boolean allowmultipleattorneys;
+    /**
+     * If false, the EFM will require a Party Responsible for Fees when a waiver is used at this
+     * location.
+     */
+    boolean transferwaivedfeestocms,
 
-  /**
-   * True if a service contact will be emailed if they are detached from a case at this court.
-   * NOTE(brycew): shouldn't have to do anything with this: only relevant to
-   * OasisEcfWsCallback.notifyEvent, but just to whether certain events can happen.
-   */
-  public boolean sendservicecontactremovednotifications;
+    /**
+     * If false and paying by credit card, courts will "Authorize" the card to determine if
+     * sufficient credit exists on the credit card. TODO(brycew-later): should be something we
+     * notify users of, but IDK if we need to do anything different with this setting?
+     */
+    boolean skippreauth,
+    boolean allowreturndate,
+    boolean showdamageamount,
+    boolean hasconditionalservicetypes,
 
-  /**
-   * True if this court allows the filer to specify a maximum fee amount to which the reviewer can
-   * adjust filing sduring review.
-   */
-  public boolean allowmaxfeeamount;
+    /** True if the court requires the EFSP to mask the case category and type for some types. */
+    boolean hasprotectedcasetypes,
 
-  /**
-   * If false, the EFM will require a Party Responsible for Fees when a waiver is used at this
-   * location.
-   */
-  public boolean transferwaivedfeestocms;
+    /** The list of case type codes that are required to be masked. */
+    List<String> protectedcasetypes,
 
-  /**
-   * If false and paying by credit card, courts will "Authorize" the card to determine if sufficient
-   * credit exists on the credit card. TODO(brycew-later): should be something we notify users of,
-   * but IDK if we need to do anything different with this setting?
-   */
-  public boolean skippreauth;
+    /** The string that you have to use to replace the case category/type if it's protected. */
+    String protectedcasereplacementstring,
+    boolean allowzerofeeswithoutfilingparty,
+    // if default, check DataField FilingServiceCheckBoxInitial
+    BoolOrDefault allowserviceoninitial,
+    boolean allowaddservicecontactsoninitial,
 
-  public final boolean allowreturndate;
-  public final boolean showdamageamount;
-  public boolean hasconditionalservicetypes;
+    /** True if the court allows redaction of documents. See TODO(#39) */
+    boolean allowredaction,
 
-  /** True if the court requires the EFSP to mask the case category and type for some types. */
-  public boolean hasprotectedcasetypes;
+    /** The URL for interacting with the redaction service via HTTP (?) See TODO(#39) */
+    String redactionurl,
 
-  /** The list of case type codes that are required to be masked. */
-  public List<String> protectedcasetypes;
+    /** The URL for launching the redaction viewer/editor. See TODO(#39). */
+    String redactionviewerurl,
 
-  /** The string that you have to use to replace the case category/type if it's protected. */
-  public String protectedcasereplacementstring;
+    /** True if "Forced redaction" is enabled at this court. See TODO(#39). */
+    boolean enforceredaction,
 
-  public boolean allowzerofeeswithoutfilingparty;
+    /* A document type code to indicate the document type to be include for redacted documents
+     * at this court. See TODO(#39). */
+    String redactiondocumenttype,
+
+    /**
+     * Location specific override for the Data Field Config "DocumentDescription" if 1, sets the
+     * default value to be the filing code description (comparable to FilingCode) if 2, sets the
+     * default value to be the name of the uploaded file (comparable to FileName) if NULL, the field
+     * will objy the Data Field Configuration
+     */
+    String defaultdocumentdescription,
+    boolean allowwaiveronmail,
+
+    /** TODO(#38) for follow up to this code. */
+    boolean showreturnonreject,
+    boolean allowchargeupdate,
+    boolean allowpartyid,
+
+    /** The redaction fee for this location. See TODO(#39). */
+    String redactionfee,
+
+    /** True if redaction fees will be waived. See TODO(#39). */
+    boolean allowwaiveronredaction,
+    boolean disallowelectronicserviceonnewcontacts,
+
+    /**
+     * If false, Individual users aren't allowed to register accounts. NOTE(brycew): assuming this
+     * is only present in the System (0) location, because it doesn't make sense as a per court
+     * thing.
+     */
+    boolean allowindividualregistration,
+
+    /**
+     * A comma delimeted list of elements to be redacted. Possible values are: AccountNumber,
+     * CreditCard, DriversLicense, GovernmentID, Passport, SocialSecurityNumber, TaxDocument. See
+     * TODO(#39)
+     */
+    List<String> redactiontargetconfig,
+    boolean allowhearing,
+    String efmType) {
 
   public static enum BoolOrDefault {
     TRUE,
@@ -101,150 +152,225 @@ public class CourtLocationInfo {
     DEFAULT
   }
 
-  public BoolOrDefault
-      allowserviceoninitial; // if default, check DataField FilingServiceCheckBoxInitial
-  public boolean allowaddservicecontactsoninitial;
+  private static BoolOrDefault boolOrDefault(String val) {
+    if (val == null || val.isBlank()) {
+      return BoolOrDefault.DEFAULT;
+    } else {
+      if (Boolean.parseBoolean(val)) {
+        return BoolOrDefault.TRUE;
+      } else {
+        return BoolOrDefault.FALSE;
+      }
+    }
+  }
 
-  /** True if the court allows redaction of documents. See TODO(#39) */
-  public boolean allowredaction;
+  private static List<String> commaSep(String val) {
+    if (val == null || val.isBlank()) {
+      return List.of();
+    } else {
+      return List.of(val.split(","));
+    }
+  }
 
-  /** The URL for interacting with the redaction service via HTTP (?) See TODO(#39) */
-  public String redactionurl;
+  public CourtLocationInfo(String code, boolean initial, boolean subsequent) {
+    this(
+        code,
+        "Court with code " + code,
+        initial,
+        subsequent,
+        false,
+        false,
+        List.of(),
+        "",
+        "",
+        "",
+        "",
+        false,
+        "",
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        List.of(),
+        "",
+        false,
+        BoolOrDefault.DEFAULT,
+        false,
+        false,
+        "",
+        "",
+        false,
+        "",
+        "",
+        false,
+        false,
+        false,
+        false,
+        "",
+        false,
+        false,
+        false,
+        List.of(),
+        false,
+        "ecf");
+  }
 
-  /** The URL for launching the redaction viewer/editor. See TODO(#39). */
-  public String redactionviewerurl;
+  // For testing
+  public CourtLocationInfo(
+      String code, boolean initial, boolean subsequent, BoolOrDefault allowserviceoninitial) {
+    this(
+        code,
+        code,
+        initial,
+        subsequent,
+        false,
+        false,
+        List.of(),
+        "",
+        "",
+        "",
+        "",
+        false,
+        "",
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        List.of(),
+        "",
+        false,
+        allowserviceoninitial,
+        false,
+        false,
+        "",
+        "",
+        false,
+        "",
+        "",
+        false,
+        false,
+        false,
+        false,
+        "",
+        false,
+        false,
+        false,
+        List.of(),
+        false,
+        "ecf");
+  }
 
-  /** True if "Forced redaction" is enabled at this court. See TODO(#39). */
-  public boolean enforceredaction;
-
-  /* A document type code to indicate the document type to be include for redacted documents
-   * at this court. See TODO(#39). */
-  public String redactiondocumenttype;
-
-  /**
-   * Location specific override for the Data Field Config "DocumentDescription" if 1, sets the
-   * default value to be the filing code description (comparable to FilingCode) if 2, sets the
-   * default value to be the name of the uploaded file (comparable to FileName) if NULL, the field
-   * will objy the Data Field Configuration
-   */
-  public String defaultdocumentdescription;
-
-  public boolean allowwaiveronmail;
-
-  /** TODO(#38) for follow up to this code. */
-  public boolean showreturnonreject;
-
-  public final boolean allowchargeupdate;
-  public final boolean allowpartyid;
-
-  /** The redaction fee for this location. See TODO(#39). */
-  public String redactionfee;
-
-  /** True if redaction fees will be waived. See TODO(#39). */
-  public boolean allowwaiveronredaction;
-
-  public boolean disallowelectronicserviceonnewcontacts;
-
-  /**
-   * If false, Individual users aren't allowed to register accounts. NOTE(brycew): assuming this is
-   * only present in the System (0) location, because it doesn't make sense as a per court thing.
-   */
-  public boolean allowindividualregistration;
-
-  /**
-   * A comma delimeted list of elements to be redacted. Possible values are: AccountNumber,
-   * CreditCard, DriversLicense, GovernmentID, Passport, SocialSecurityNumber, TaxDocument. See
-   * TODO(#39)
-   */
-  public List<String> redactiontargetconfig;
-
-  public final boolean allowhearing;
-
-  public final String efmType;
-
-  public CourtLocationInfo(String code) {
-    this.code = code;
-    this.name = "Court with code " + code;
-    this.efmType = "ecf";
-    this.allowhearing = false;
-    this.allowreturndate = false;
-    this.showdamageamount = false;
-    this.allowchargeupdate = false;
-    this.allowpartyid = false;
-    this.allowserviceoninitial = BoolOrDefault.DEFAULT;
-    this.allowablecardtypes = List.of();
+  public CourtLocationInfo(
+      String code,
+      boolean allowmultipleattorneys,
+      boolean allowindividualregistration,
+      boolean showreturnonreject) {
+    this(
+        code,
+        code,
+        false,
+        false,
+        false,
+        false,
+        List.of(),
+        "",
+        "",
+        "",
+        "",
+        false,
+        "",
+        allowmultipleattorneys,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        List.of(),
+        "",
+        false,
+        BoolOrDefault.DEFAULT,
+        false,
+        false,
+        "",
+        "",
+        false,
+        "",
+        "",
+        false,
+        showreturnonreject,
+        false,
+        false,
+        "",
+        false,
+        false,
+        allowindividualregistration,
+        List.of(),
+        false,
+        "ecf");
   }
 
   public CourtLocationInfo(ResultSet rs) throws SQLException {
-    this.efmType = "ecf";
-    this.code = rs.getString(1);
-    this.name = rs.getString(2);
-    this.initial = Boolean.parseBoolean(rs.getString(3));
-    this.subsequent = Boolean.parseBoolean(rs.getString(4));
-    this.disallowcopyingenvelopemultipletimes = Boolean.parseBoolean(rs.getString(5));
-    this.allowfilingintononindexedcase = Boolean.parseBoolean(rs.getString(6));
-    String cardTypes = rs.getString(7);
-    if (cardTypes == null || cardTypes.isBlank()) {
-      this.allowablecardtypes = List.of();
-    } else {
-      this.allowablecardtypes = List.of(cardTypes.split(","));
-    }
-    this.odysseynodeid = rs.getString(8);
-    this.cmsid = rs.getString(9);
-    this.sendservicebeforereview = rs.getString(10);
-    this.parentnodeid = rs.getString(11);
-    this.iscounty = Boolean.parseBoolean(rs.getString(12));
-    this.restrictbankaccountpayment = rs.getString(13);
-    this.allowmultipleattorneys = Boolean.parseBoolean(rs.getString(14));
-    this.sendservicecontactremovednotifications = Boolean.parseBoolean(rs.getString(15));
-    this.allowmaxfeeamount = Boolean.parseBoolean(rs.getString(16));
-    this.transferwaivedfeestocms = Boolean.parseBoolean(rs.getString(17));
-    this.skippreauth = Boolean.parseBoolean(rs.getString(18));
-    this.allowreturndate = Boolean.parseBoolean(rs.getString(19));
-    this.showdamageamount = Boolean.parseBoolean(rs.getString(20));
-    this.hasconditionalservicetypes = Boolean.parseBoolean(rs.getString(21));
-    this.hasprotectedcasetypes = Boolean.parseBoolean(rs.getString(22));
-    if (this.hasprotectedcasetypes) {
-      this.protectedcasetypes = List.of(rs.getString(23).split(","));
-    } else {
-      this.protectedcasetypes = List.of();
-    }
-    this.allowzerofeeswithoutfilingparty = Boolean.parseBoolean(rs.getString(24));
-    String serviceoninitial = rs.getString(25);
-    if (serviceoninitial == null || serviceoninitial.isBlank()) {
-      this.allowserviceoninitial = BoolOrDefault.DEFAULT;
-    } else {
-      if (Boolean.parseBoolean(serviceoninitial)) {
-        this.allowserviceoninitial = BoolOrDefault.TRUE;
-      } else {
-        this.allowserviceoninitial = BoolOrDefault.FALSE;
-      }
-    }
-    this.allowaddservicecontactsoninitial = Boolean.parseBoolean(rs.getString(26));
-    this.allowredaction = Boolean.parseBoolean(rs.getString(27));
-    this.redactionurl = rs.getString(28);
-    this.redactionviewerurl = rs.getString(29);
-    this.enforceredaction = Boolean.parseBoolean(rs.getString(30));
-    this.redactiondocumenttype = rs.getString(31);
-    this.defaultdocumentdescription = rs.getString(32);
-    this.allowwaiveronmail = Boolean.parseBoolean(rs.getString(33));
-    /** TODO(#38): need to check for all instances of "reject", and possibly change to "return". */
-    this.showreturnonreject = Boolean.parseBoolean(rs.getString(34));
-
-    this.protectedcasereplacementstring = rs.getString(35);
-    this.allowchargeupdate = Boolean.parseBoolean(rs.getString(36));
-    this.allowpartyid = Boolean.parseBoolean(rs.getString(37));
-    this.redactionfee = rs.getString(38);
-    this.allowwaiveronredaction = Boolean.parseBoolean(rs.getString(39));
-    this.disallowelectronicserviceonnewcontacts = Boolean.parseBoolean(rs.getString(40));
-    this.allowindividualregistration = Boolean.parseBoolean(rs.getString(41));
-    String targetConfig = rs.getString(42);
-    if (targetConfig == null || targetConfig.isBlank()) {
-      this.redactiontargetconfig = List.of();
-    } else {
-      this.redactiontargetconfig = List.of(targetConfig.split(","));
-    }
-    this.allowhearing = Boolean.parseBoolean(rs.getString(43));
+    this(
+        rs.getString(1),
+        rs.getString(2),
+        Boolean.parseBoolean(rs.getString(3)),
+        Boolean.parseBoolean(rs.getString(4)),
+        Boolean.parseBoolean(rs.getString(5)),
+        Boolean.parseBoolean(rs.getString(6)),
+        commaSep(rs.getString(7)),
+        rs.getString(8),
+        rs.getString(9),
+        rs.getString(10),
+        rs.getString(11),
+        Boolean.parseBoolean(rs.getString(12)),
+        rs.getString(13),
+        Boolean.parseBoolean(rs.getString(14)),
+        Boolean.parseBoolean(rs.getString(15)),
+        Boolean.parseBoolean(rs.getString(16)),
+        Boolean.parseBoolean(rs.getString(17)),
+        Boolean.parseBoolean(rs.getString(18)),
+        Boolean.parseBoolean(rs.getString(19)),
+        Boolean.parseBoolean(rs.getString(20)),
+        Boolean.parseBoolean(rs.getString(21)),
+        Boolean.parseBoolean(rs.getString(22)),
+        (Boolean.parseBoolean(rs.getString(22))) ? List.of(rs.getString(23).split(",")) : List.of(),
+        rs.getString(35),
+        Boolean.parseBoolean(rs.getString(24)),
+        boolOrDefault(rs.getString(25)),
+        Boolean.parseBoolean(rs.getString(26)),
+        Boolean.parseBoolean(rs.getString(27)),
+        rs.getString(28),
+        rs.getString(29),
+        Boolean.parseBoolean(rs.getString(30)),
+        rs.getString(31),
+        rs.getString(32),
+        Boolean.parseBoolean(rs.getString(33)),
+        /**
+         * TODO(#38): need to check for all instances of "reject", and possibly change to "return".
+         */
+        Boolean.parseBoolean(rs.getString(34)),
+        Boolean.parseBoolean(rs.getString(36)),
+        Boolean.parseBoolean(rs.getString(37)),
+        rs.getString(38),
+        Boolean.parseBoolean(rs.getString(39)),
+        Boolean.parseBoolean(rs.getString(40)),
+        Boolean.parseBoolean(rs.getString(41)),
+        commaSep(rs.getString(42)),
+        Boolean.parseBoolean(rs.getString(43)),
+        "ecf");
   }
 
   public static String parentQuery() {

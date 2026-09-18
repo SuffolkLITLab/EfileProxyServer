@@ -14,7 +14,7 @@ public class TylerErrorCodes {
 
   // First three are ones that the proxy should handle well. If we don't then it's
   // our fault.
-  public static Map<String, Integer> tylerToHttp =
+  public static final Map<String, Integer> tylerToHttp =
       Map.ofEntries(
           // Received in substitution msg format but extended msg format expected.
           Map.entry("-1000", 500),

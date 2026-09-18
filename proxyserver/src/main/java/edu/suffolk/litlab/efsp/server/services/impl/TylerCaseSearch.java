@@ -108,7 +108,7 @@ public class TylerCaseSearch implements CaseSearchAPI {
 
       if (courtId.equals("1")) {
         DataFieldRow row = cd.getDataField("1", "AdvancedSearchLocationAllLocations");
-        if (!row.isvisible) {
+        if (!row.isvisible()) {
           return Response.status(400).entity("Can't search all locations").build();
         }
       }
@@ -204,17 +204,17 @@ public class TylerCaseSearch implements CaseSearchAPI {
         return Response.status(statusCode).entity(resp.getError()).build();
       }
 
-      if (locationInfo.get().hasprotectedcasetypes) {
+      if (locationInfo.get().hasprotectedcasetypes()) {
         CaseType caseType = resp.getCase().getValue();
         Optional<CaseAugmentationType> caseAug = EcfCaseTypeFactory.getCaseAugmentation(caseType);
         caseAug.ifPresent(
             aug -> {
               if (locationInfo
                   .get()
-                  .protectedcasetypes
+                  .protectedcasetypes()
                   .contains(aug.getCaseTypeText().getValue())) {
                 TextType protectedText =
-                    Ecf4Helper.convertText(locationInfo.get().protectedcasereplacementstring);
+                    Ecf4Helper.convertText(locationInfo.get().protectedcasereplacementstring());
                 aug.setCaseTypeText(protectedText);
                 caseType.setCaseCategoryText(protectedText);
               }

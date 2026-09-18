@@ -223,13 +223,13 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       }
 
       CourtLocationInfo locationInfo =
-          maybeLocationInfo.orElse(new CourtLocationInfo(info.getCourtLocation()));
-      String courtName = locationInfo.name;
+          maybeLocationInfo.orElse(new CourtLocationInfo(info.getCourtLocation(), false, false));
+      String courtName = locationInfo.name();
 
       CourtPolicyResponseMessageType policy =
           policyCacher.getPolicyFor(filingPort, info.getCourtLocation());
 
-      if (!locationInfo.allowfilingintononindexedcase
+      if (!locationInfo.allowfilingintononindexedcase()
           && info.getCaseDocketNumber().isPresent()
           && info.getPreviousCaseId().isEmpty()) {
         FilingError err =
@@ -243,7 +243,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       }
 
       EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer();
-      var maybeParser = getParser(cd, locationInfo.code, creds);
+      var maybeParser = getParser(cd, locationInfo.code(), creds);
       if (maybeParser.isEmpty()) {
         collector.error(
             FilingError.serverError(
@@ -342,7 +342,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
           var partyTypes = partyTypesRes.expect("");
           allCodes = serializer.serializeCaseCodes(info, partyTypes, collector, isInitialFiling);
         }
-        String caseCategoryName = allCodes.cat().name;
+        String caseCategoryName = allCodes.cat().name();
         log.info("have all codes");
 
         var coreObjFac =
@@ -744,7 +744,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     if (court.isEmpty()) {
       return Result.ok(Response.status(404).entity("No court " + info.getCourtLocation()).build());
     }
-    if (!court.get().hasconditionalservicetypes) {
+    if (!court.get().hasconditionalservicetypes()) {
       return Result.ok(
           Response.status(400)
               .entity(

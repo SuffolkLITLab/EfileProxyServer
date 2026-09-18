@@ -3,19 +3,19 @@ package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DataFieldRow {
-  public String code;
-  public String name;
-  public boolean isvisible;
-  public boolean isrequired;
-  public String helptext;
-  public String ghosttext;
-  public String contextualhelpdata;
-  public String validationmessage;
-  public Pattern regularexpression;
-  public String defaultvalueexpression;
-  public boolean isreadonly;
-  public String location;
+public record DataFieldRow(
+    String code,
+    String name,
+    boolean isvisible,
+    boolean isrequired,
+    String helptext,
+    String ghosttext,
+    String contextualhelpdata,
+    String validationmessage,
+    Pattern regularexpression,
+    String defaultvalueexpression,
+    boolean isreadonly,
+    String location) {
 
   /** Constructor directly from Database. */
   public DataFieldRow(
@@ -31,22 +31,21 @@ public class DataFieldRow {
       String defaultvalueexpression,
       boolean isreadonly,
       String location) {
-    this.code = code;
-    this.name = name;
-    this.isvisible = isvisible;
-    this.isrequired = isrequired;
-    this.helptext = helptext;
-    this.ghosttext = ghosttext;
-    this.contextualhelpdata = contextualhelpdata;
-    this.validationmessage = validationmessage;
-    if (regularexpression == null || regularexpression.isEmpty()) {
-      this.regularexpression = null;
-    } else {
-      this.regularexpression = Pattern.compile(regularexpression);
-    }
-    this.defaultvalueexpression = defaultvalueexpression;
-    this.isreadonly = isreadonly;
-    this.location = location;
+    this(
+        code,
+        name,
+        isvisible,
+        isrequired,
+        helptext,
+        ghosttext,
+        contextualhelpdata,
+        validationmessage,
+        (regularexpression == null || regularexpression.isEmpty())
+            ? null
+            : Pattern.compile(regularexpression),
+        defaultvalueexpression,
+        isreadonly,
+        location);
   }
 
   // Used for testing.

@@ -93,8 +93,7 @@ public class OasisEcfWsCallbackTest {
       trans.serverId = UUID.randomUUID();
       when(mockUd.findTransaction(eq(filingId))).thenReturn(Optional.of(trans));
 
-      var courtInfo = new CourtLocationInfo(courtId);
-      courtInfo.showreturnonreject = false;
+      var courtInfo = new CourtLocationInfo(courtId, false, false, false);
       when(mockCd.getFullLocationInfo(eq(courtId))).thenReturn(Optional.of(courtInfo));
       when(mockSender.sendMessage(
               any(),
