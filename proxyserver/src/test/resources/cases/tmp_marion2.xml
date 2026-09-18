@@ -1,0 +1,202 @@
+<CaseResponseMessage xmlns= \"urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseResponseMessage-4.0\" xmlns:tyler= \"urn:tyler:ecf:extensions:Common\" xmlns:j= \"http://niem.gov/niem/domains/jxdm/4.0\" xmlns:xsi= \"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ecf= \"urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0\"
+    xmlns:nc= \"http://niem.gov/niem/niem-core/2.0\" xmlns:s= \"http://niem.gov/niem/structures/2.0\">
+    <ecf:SendingMDELocationID>
+        <nc:IdentificationID />
+    </ecf:SendingMDELocationID>
+    <ecf:SendingMDEProfileCode />
+    <j:CaseCourt />
+    <ecf:Error>
+        <ecf:ErrorCode>0</ecf:ErrorCode>
+        <ecf:ErrorText>No error</ecf:ErrorText>
+    </ecf:Error>
+    <civil:CivilCase xmlns:civil= \"urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0\">
+        <nc:ActivityDate>
+            <nc:DateTime>2025-09-03T05:00:00.0Z</nc:DateTime>
+        </nc:ActivityDate>
+        <nc:ActivityStatus>
+            <nc:StatusText>Open</nc:StatusText>
+            <nc:StatusDescriptionText>CASE_STATUS</nc:StatusDescriptionText>
+        </nc:ActivityStatus>
+        <nc:CaseTitleText>JONES, JOE ET AL VS. JONES, ROBERT ET AL</nc:CaseTitleText>
+        <nc:CaseCategoryText>6198</nc:CaseCategoryText>
+        <nc:CaseTrackingID>IL016025J2025SC305</nc:CaseTrackingID>
+        <nc:CaseDocketID>2025SC305</nc:CaseDocketID>
+        <j:CaseAugmentation>
+            <j:CaseCourt>
+                <nc:OrganizationIdentification>
+                    <nc:IdentificationID>marion</nc:IdentificationID>
+                </nc:OrganizationIdentification>
+            </j:CaseCourt>
+            <j:CaseJudge>
+                <j:JudicialOfficialBarMembership>
+                    <j:JudicialOfficialBarIdentification>
+                        <nc:IdentificationID />
+                    </j:JudicialOfficialBarIdentification>
+                </j:JudicialOfficialBarMembership>
+            </j:CaseJudge>
+            <j:CaseLineageCase>
+                <nc:CaseTrackingID>dc3b5c91-12e5-47ff-bc24-e820f0873115</nc:CaseTrackingID>
+            </j:CaseLineageCase>
+        </j:CaseAugmentation>
+        <tyler:CaseAugmentation>
+            <ecf:CaseParticipant>
+                <ecf:EntityPerson s:id= \"Party1\">
+                    <nc:PersonName>
+                        <nc:PersonGivenName>ROBERT</nc:PersonGivenName>
+                        <nc:PersonMiddleName></nc:PersonMiddleName>
+                        <nc:PersonSurName>JONES</nc:PersonSurName>
+                        <nc:PersonNameSuffixText></nc:PersonNameSuffixText>
+                    </nc:PersonName>
+                    <nc:PersonOtherIdentification>
+                        <nc:IdentificationID>b9aa5798-f15c-4ce5-bbe0-23723d2df132</nc:IdentificationID>
+                        <nc:IdentificationCategoryText>CASEPARTYID</nc:IdentificationCategoryText>
+                    </nc:PersonOtherIdentification>
+                    <ecf:PersonAugmentation>
+                        <nc:ContactInformation>
+                            <tyler:ServiceConsentEmail></tyler:ServiceConsentEmail>
+                            <nc:ContactTelephoneNumber>
+                                <nc:FullTelephoneNumber>
+                                    <nc:TelephoneNumberFullID></nc:TelephoneNumberFullID>
+                                </nc:FullTelephoneNumber>
+                            </nc:ContactTelephoneNumber>
+                            <nc:ContactEmailID></nc:ContactEmailID>
+                            <nc:ContactMailingAddress>
+                                <nc:StructuredAddress>
+                                    <nc:LocationStreet>
+                                        <nc:StreetFullText>123 GOODIN</nc:StreetFullText>
+                                    </nc:LocationStreet>
+                                    <nc:AddressSecondaryUnitText></nc:AddressSecondaryUnitText>
+                                    <nc:LocationCityName>CARBONDALE</nc:LocationCityName>
+                                    <nc:LocationStateName>IL</nc:LocationStateName>
+                                    <nc:LocationCountryFIPS10-4Code>US</nc:LocationCountryFIPS10-4Code>
+                                    <nc:LocationPostalCode>62903</nc:LocationPostalCode>
+                                </nc:StructuredAddress>
+                            </nc:ContactMailingAddress>
+                        </nc:ContactInformation>
+                    </ecf:PersonAugmentation>
+                </ecf:EntityPerson>
+                <ecf:CaseParticipantRoleCode>20641</ecf:CaseParticipantRoleCode>
+            </ecf:CaseParticipant>
+            <ecf:CaseParticipant>
+                <ecf:EntityPerson s:id= \"Party2\">
+                    <nc:PersonName>
+                        <nc:PersonGivenName>LEE</nc:PersonGivenName>
+                        <nc:PersonMiddleName></nc:PersonMiddleName>
+                        <nc:PersonSurName>SMITH</nc:PersonSurName>
+                        <nc:PersonNameSuffixText></nc:PersonNameSuffixText>
+                    </nc:PersonName>
+                    <nc:PersonOtherIdentification>
+                        <nc:IdentificationID>4a55176e-3bfe-4339-b622-7aedb197005e</nc:IdentificationID>
+                        <nc:IdentificationCategoryText>CASEPARTYID</nc:IdentificationCategoryText>
+                    </nc:PersonOtherIdentification>
+                    <ecf:PersonAugmentation>
+                        <nc:ContactInformation>
+                            <tyler:ServiceConsentEmail></tyler:ServiceConsentEmail>
+                            <nc:ContactTelephoneNumber>
+                                <nc:FullTelephoneNumber>
+                                    <nc:TelephoneNumberFullID></nc:TelephoneNumberFullID>
+                                </nc:FullTelephoneNumber>
+                            </nc:ContactTelephoneNumber>
+                            <nc:ContactEmailID></nc:ContactEmailID>
+                            <nc:ContactMailingAddress>
+                                <nc:StructuredAddress>
+                                    <nc:LocationStreet>
+                                        <nc:StreetFullText>123 SMITH</nc:StreetFullText>
+                                    </nc:LocationStreet>
+                                    <nc:AddressSecondaryUnitText></nc:AddressSecondaryUnitText>
+                                    <nc:LocationCityName>BOSKYDELL</nc:LocationCityName>
+                                    <nc:LocationStateName>IL</nc:LocationStateName>
+                                    <nc:LocationCountryFIPS10-4Code>US</nc:LocationCountryFIPS10-4Code>
+                                    <nc:LocationPostalCode>62901</nc:LocationPostalCode>
+                                </nc:StructuredAddress>
+                            </nc:ContactMailingAddress>
+                        </nc:ContactInformation>
+                    </ecf:PersonAugmentation>
+                </ecf:EntityPerson>
+                <ecf:CaseParticipantRoleCode>20641</ecf:CaseParticipantRoleCode>
+            </ecf:CaseParticipant>
+            <ecf:CaseParticipant>
+                <ecf:EntityPerson s:id= \"Party3\">
+                    <nc:PersonName>
+                        <nc:PersonGivenName>JOE</nc:PersonGivenName>
+                        <nc:PersonMiddleName></nc:PersonMiddleName>
+                        <nc:PersonSurName>JONES</nc:PersonSurName>
+                        <nc:PersonNameSuffixText></nc:PersonNameSuffixText>
+                    </nc:PersonName>
+                    <nc:PersonOtherIdentification>
+                        <nc:IdentificationID>f4258b9c-d6d6-4fdd-b8c1-5e0104441878</nc:IdentificationID>
+                        <nc:IdentificationCategoryText>CASEPARTYID</nc:IdentificationCategoryText>
+                    </nc:PersonOtherIdentification>
+                    <ecf:PersonAugmentation>
+                        <nc:ContactInformation>
+                            <tyler:ServiceConsentEmail></tyler:ServiceConsentEmail>
+                            <nc:ContactTelephoneNumber>
+                                <nc:FullTelephoneNumber>
+                                    <nc:TelephoneNumberFullID></nc:TelephoneNumberFullID>
+                                </nc:FullTelephoneNumber>
+                            </nc:ContactTelephoneNumber>
+                            <nc:ContactEmailID></nc:ContactEmailID>
+                            <nc:ContactMailingAddress>
+                                <nc:StructuredAddress>
+                                    <nc:LocationStreet>
+                                        <nc:StreetFullText>123 GOODIN</nc:StreetFullText>
+                                    </nc:LocationStreet>
+                                    <nc:AddressSecondaryUnitText></nc:AddressSecondaryUnitText>
+                                    <nc:LocationCityName>CARBONDALE</nc:LocationCityName>
+                                    <nc:LocationStateName>IL</nc:LocationStateName>
+                                    <nc:LocationCountryFIPS10-4Code>US</nc:LocationCountryFIPS10-4Code>
+                                    <nc:LocationPostalCode>62903</nc:LocationPostalCode>
+                                </nc:StructuredAddress>
+                            </nc:ContactMailingAddress>
+                        </nc:ContactInformation>
+                    </ecf:PersonAugmentation>
+                </ecf:EntityPerson>
+                <ecf:CaseParticipantRoleCode>20646</ecf:CaseParticipantRoleCode>
+            </ecf:CaseParticipant>
+            <ecf:CaseParticipant>
+                <ecf:EntityPerson s:id= \"Party4\">
+                    <nc:PersonName>
+                        <nc:PersonGivenName>JANE</nc:PersonGivenName>
+                        <nc:PersonMiddleName></nc:PersonMiddleName>
+                        <nc:PersonSurName>SMITH</nc:PersonSurName>
+                        <nc:PersonNameSuffixText></nc:PersonNameSuffixText>
+                    </nc:PersonName>
+                    <nc:PersonOtherIdentification>
+                        <nc:IdentificationID>d1e524cc-1035-4d48-8956-80c5a16b1296</nc:IdentificationID>
+                        <nc:IdentificationCategoryText>CASEPARTYID</nc:IdentificationCategoryText>
+                    </nc:PersonOtherIdentification>
+                    <ecf:PersonAugmentation>
+                        <nc:ContactInformation>
+                            <tyler:ServiceConsentEmail></tyler:ServiceConsentEmail>
+                            <nc:ContactTelephoneNumber>
+                                <nc:FullTelephoneNumber>
+                                    <nc:TelephoneNumberFullID></nc:TelephoneNumberFullID>
+                                </nc:FullTelephoneNumber>
+                            </nc:ContactTelephoneNumber>
+                            <nc:ContactEmailID></nc:ContactEmailID>
+                            <nc:ContactMailingAddress>
+                                <nc:StructuredAddress>
+                                    <nc:LocationStreet>
+                                        <nc:StreetFullText>123 SMITH</nc:StreetFullText>
+                                    </nc:LocationStreet>
+                                    <nc:AddressSecondaryUnitText></nc:AddressSecondaryUnitText>
+                                    <nc:LocationCityName>BOSKYDELL</nc:LocationCityName>
+                                    <nc:LocationStateName>IL</nc:LocationStateName>
+                                    <nc:LocationCountryFIPS10-4Code>US</nc:LocationCountryFIPS10-4Code>
+                                    <nc:LocationPostalCode>62901</nc:LocationPostalCode>
+                                </nc:StructuredAddress>
+                            </nc:ContactMailingAddress>
+                        </nc:ContactInformation>
+                    </ecf:PersonAugmentation>
+                </ecf:EntityPerson>
+                <ecf:CaseParticipantRoleCode>20646</ecf:CaseParticipantRoleCode>
+            </ecf:CaseParticipant>
+            <tyler:CaseTypeText>310339</tyler:CaseTypeText>
+            <tyler:HasUserFiledIntoCaseIndicator>false</tyler:HasUserFiledIntoCaseIndicator>
+        </tyler:CaseAugmentation>
+        <ecf:CauseOfActionCode />
+        <civil:ClassActionIndicator>false</civil:ClassActionIndicator>
+        <civil:JuryDemandIndicator>false</civil:JuryDemandIndicator>
+        <civil:ReliefTypeCode />
+    </civil:CivilCase>
+</CaseResponseMessage>

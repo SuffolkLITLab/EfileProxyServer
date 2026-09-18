@@ -1,0 +1,340 @@
+<CaseResponseMessage xmlns= \"urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseResponseMessage-4.0\" xmlns:tyler= \"urn:tyler:ecf:extensions:Common\" xmlns:j= \"http://niem.gov/niem/domains/jxdm/4.0\" xmlns:xsi= \"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ecf= \"urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0\"
+    xmlns:nc= \"http://niem.gov/niem/niem-core/2.0\" xmlns:s= \"http://niem.gov/niem/structures/2.0\">
+    <ecf:SendingMDELocationID>
+        <nc:IdentificationID />
+    </ecf:SendingMDELocationID>
+    <ecf:SendingMDEProfileCode />
+    <j:CaseCourt />
+    <ecf:Error>
+        <ecf:ErrorCode>0</ecf:ErrorCode>
+        <ecf:ErrorText>No error</ecf:ErrorText>
+    </ecf:Error>
+    <civil:CivilCase xmlns:civil= \"urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0\">
+        <nc:ActivityDate>
+            <nc:DateTime>2020-04-29T05:00:00.0Z</nc:DateTime>
+        </nc:ActivityDate>
+        <nc:ActivityStatus>
+            <nc:StatusText>Open</nc:StatusText>
+            <nc:StatusDescriptionText>CASE_STATUS</nc:StatusDescriptionText>
+        </nc:ActivityStatus>
+        <nc:CaseTitleText>TEST TEST vs. TEST TEST</nc:CaseTitleText>
+        <nc:CaseCategoryText>6193</nc:CaseCategoryText>
+        <nc:CaseTrackingID>01 SA2019LM999999</nc:CaseTrackingID>
+        <nc:CaseDocketID>2019LM999999</nc:CaseDocketID>
+        <j:CaseAugmentation>
+            <j:CaseCourt>
+                <nc:OrganizationIdentification>
+                    <nc:IdentificationID>sangamon</nc:IdentificationID>
+                </nc:OrganizationIdentification>
+            </j:CaseCourt>
+            <j:CaseJudge>
+                <j:JudicialOfficialBarMembership>
+                    <j:JudicialOfficialBarIdentification>
+                        <nc:IdentificationID />
+                    </j:JudicialOfficialBarIdentification>
+                </j:JudicialOfficialBarMembership>
+            </j:CaseJudge>
+            <j:CaseLineageCase>
+                <nc:CaseTrackingID>3073e084-3151-4301-a80b-804e8596fede</nc:CaseTrackingID>
+            </j:CaseLineageCase>
+        </j:CaseAugmentation>
+        <tyler:CaseAugmentation>
+            <ecf:CaseOtherEntityAttorney>
+                <nc:RoleOfPersonReference s:ref= \"Attorney3\" />
+                <j:JudicialOfficialBarMembership>
+                    <j:JudicialOfficialBarIdentification>
+                        <nc:IdentificationID>2222222</nc:IdentificationID>
+                    </j:JudicialOfficialBarIdentification>
+                </j:JudicialOfficialBarMembership>
+                <j:CaseOfficialRoleText>LEAD</j:CaseOfficialRoleText>
+                <ecf:CaseRepresentedPartyReference s:ref= \"Party3\" />
+            </ecf:CaseOtherEntityAttorney>
+            <ecf:CaseOtherEntityAttorney>
+                <nc:RoleOfPersonReference s:ref= \"Attorney2\" />
+                <j:JudicialOfficialBarMembership>
+                    <j:JudicialOfficialBarIdentification>
+                        <nc:IdentificationID>22222222</nc:IdentificationID>
+                    </j:JudicialOfficialBarIdentification>
+                </j:JudicialOfficialBarMembership>
+                <j:CaseOfficialRoleText>LEAD</j:CaseOfficialRoleText>
+                <ecf:CaseRepresentedPartyReference s:ref= \"Party2\" />
+            </ecf:CaseOtherEntityAttorney>
+            <ecf:CaseOtherEntityAttorney>
+                <nc:RoleOfPersonReference s:ref= \"Attorney1\" />
+                <j:JudicialOfficialBarMembership>
+                    <j:JudicialOfficialBarIdentification>
+                        <nc:IdentificationID>22222222</nc:IdentificationID>
+                    </j:JudicialOfficialBarIdentification>
+                </j:JudicialOfficialBarMembership>
+                <j:CaseOfficialRoleText>LEAD</j:CaseOfficialRoleText>
+                <ecf:CaseRepresentedPartyReference s:ref= \"Party1\" />
+            </ecf:CaseOtherEntityAttorney>
+            <ecf:CaseParticipant>
+                <ecf:EntityPerson s:id= \"Attorney1\">
+                    <nc:PersonName>
+                        <nc:PersonGivenName>DOE</nc:PersonGivenName>
+                        <nc:PersonMiddleName>JON</nc:PersonMiddleName>
+                        <nc:PersonSurName>DOE</nc:PersonSurName>
+                    </nc:PersonName>
+                    <nc:PersonOtherIdentification>
+                        <nc:IdentificationID>10e0c543-a182-4eef-8959-ac618dd0ca2c</nc:IdentificationID>
+                        <nc:IdentificationCategoryText>CASEPARTYATTORNEYID</nc:IdentificationCategoryText>
+                    </nc:PersonOtherIdentification>
+                    <ecf:PersonAugmentation>
+                        <nc:ContactInformation>
+                            <nc:ContactTelephoneNumber>
+                                <nc:FullTelephoneNumber>
+                                    <nc:TelephoneNumberFullID></nc:TelephoneNumberFullID>
+                                </nc:FullTelephoneNumber>
+                            </nc:ContactTelephoneNumber>
+                            <nc:ContactEmailID />
+                            <nc:ContactMailingAddress>
+                                <nc:StructuredAddress>
+                                    <nc:LocationStreet>
+                                        <nc:StreetFullText>123 MAIN STREET</nc:StreetFullText>
+                                    </nc:LocationStreet>
+                                    <nc:AddressSecondaryUnitText></nc:AddressSecondaryUnitText>
+                                    <nc:LocationCityName>TESTING</nc:LocationCityName>
+                                    <nc:LocationStateName>IL</nc:LocationStateName>
+                                    <nc:LocationCountryFIPS10-4Code>US</nc:LocationCountryFIPS10-4Code>
+                                    <nc:LocationPostalCode>12345</nc:LocationPostalCode>
+                                </nc:StructuredAddress>
+                            </nc:ContactMailingAddress>
+                        </nc:ContactInformation>
+                    </ecf:PersonAugmentation>
+                </ecf:EntityPerson>
+                <ecf:CaseParticipantRoleCode>ATTY</ecf:CaseParticipantRoleCode>
+            </ecf:CaseParticipant>
+            <ecf:CaseParticipant>
+                <ecf:EntityPerson s:id= \"Party1\">
+                    <nc:PersonName>
+                        <nc:PersonGivenName>TEST</nc:PersonGivenName>
+                        <nc:PersonMiddleName></nc:PersonMiddleName>
+                        <nc:PersonSurName>TEST</nc:PersonSurName>
+                        <nc:PersonNameSuffixText></nc:PersonNameSuffixText>
+                    </nc:PersonName>
+                    <nc:PersonOtherIdentification>
+                        <nc:IdentificationID>d376df44-7721-44f4-ae69-66b314059192</nc:IdentificationID>
+                        <nc:IdentificationCategoryText>CASEPARTYID</nc:IdentificationCategoryText>
+                    </nc:PersonOtherIdentification>
+                    <ecf:PersonAugmentation>
+                        <nc:ContactInformation>
+                            <tyler:ServiceConsentEmail></tyler:ServiceConsentEmail>
+                            <nc:ContactTelephoneNumber>
+                                <nc:FullTelephoneNumber>
+                                    <nc:TelephoneNumberFullID></nc:TelephoneNumberFullID>
+                                </nc:FullTelephoneNumber>
+                            </nc:ContactTelephoneNumber>
+                            <nc:ContactEmailID></nc:ContactEmailID>
+                            <nc:ContactMailingAddress>
+                                <nc:StructuredAddress>
+                                    <nc:LocationStreet>
+                                        <nc:StreetFullText />
+                                    </nc:LocationStreet>
+                                    <nc:AddressSecondaryUnitText />
+                                    <nc:LocationCityName />
+                                    <nc:LocationStateName />
+                                    <nc:LocationCountryFIPS10-4Code>US</nc:LocationCountryFIPS10-4Code>
+                                    <nc:LocationPostalCode />
+                                </nc:StructuredAddress>
+                            </nc:ContactMailingAddress>
+                        </nc:ContactInformation>
+                    </ecf:PersonAugmentation>
+                </ecf:EntityPerson>
+                <ecf:CaseParticipantRoleCode>37455</ecf:CaseParticipantRoleCode>
+            </ecf:CaseParticipant>
+            <ecf:CaseParticipant>
+                <ecf:EntityPerson s:id= \"Attorney2\">
+                    <nc:PersonName>
+                        <nc:PersonGivenName>DOE</nc:PersonGivenName>
+                        <nc:PersonMiddleName>JON</nc:PersonMiddleName>
+                        <nc:PersonSurName>DOE</nc:PersonSurName>
+                    </nc:PersonName>
+                    <nc:PersonOtherIdentification>
+                        <nc:IdentificationID>2b6556ea-fb97-4bf0-8003-ab6e25a4e8fc</nc:IdentificationID>
+                        <nc:IdentificationCategoryText>CASEPARTYATTORNEYID</nc:IdentificationCategoryText>
+                    </nc:PersonOtherIdentification>
+                    <ecf:PersonAugmentation>
+                        <nc:ContactInformation>
+                            <nc:ContactTelephoneNumber>
+                                <nc:FullTelephoneNumber>
+                                    <nc:TelephoneNumberFullID></nc:TelephoneNumberFullID>
+                                </nc:FullTelephoneNumber>
+                            </nc:ContactTelephoneNumber>
+                            <nc:ContactEmailID />
+                            <nc:ContactMailingAddress>
+                                <nc:StructuredAddress>
+                                    <nc:LocationStreet>
+                                        <nc:StreetFullText>123 MAIN STREET</nc:StreetFullText>
+                                    </nc:LocationStreet>
+                                    <nc:AddressSecondaryUnitText></nc:AddressSecondaryUnitText>
+                                    <nc:LocationCityName>TESTING</nc:LocationCityName>
+                                    <nc:LocationStateName>IL</nc:LocationStateName>
+                                    <nc:LocationCountryFIPS10-4Code>US</nc:LocationCountryFIPS10-4Code>
+                                    <nc:LocationPostalCode>12345</nc:LocationPostalCode>
+                                </nc:StructuredAddress>
+                            </nc:ContactMailingAddress>
+                        </nc:ContactInformation>
+                    </ecf:PersonAugmentation>
+                </ecf:EntityPerson>
+                <ecf:CaseParticipantRoleCode>ATTY</ecf:CaseParticipantRoleCode>
+            </ecf:CaseParticipant>
+            <ecf:CaseParticipant>
+                <ecf:EntityPerson s:id= \"Party2\">
+                    <nc:PersonName>
+                        <nc:PersonGivenName>TEST</nc:PersonGivenName>
+                        <nc:PersonMiddleName></nc:PersonMiddleName>
+                        <nc:PersonSurName>TEST</nc:PersonSurName>
+                        <nc:PersonNameSuffixText></nc:PersonNameSuffixText>
+                    </nc:PersonName>
+                    <nc:PersonOtherIdentification>
+                        <nc:IdentificationID>9dc1a2ab-7370-4e78-82a3-479ed59f68d4</nc:IdentificationID>
+                        <nc:IdentificationCategoryText>CASEPARTYID</nc:IdentificationCategoryText>
+                    </nc:PersonOtherIdentification>
+                    <ecf:PersonAugmentation>
+                        <nc:ContactInformation>
+                            <tyler:ServiceConsentEmail></tyler:ServiceConsentEmail>
+                            <nc:ContactTelephoneNumber>
+                                <nc:FullTelephoneNumber>
+                                    <nc:TelephoneNumberFullID></nc:TelephoneNumberFullID>
+                                </nc:FullTelephoneNumber>
+                            </nc:ContactTelephoneNumber>
+                            <nc:ContactEmailID></nc:ContactEmailID>
+                            <nc:ContactMailingAddress>
+                                <nc:StructuredAddress>
+                                    <nc:LocationStreet>
+                                        <nc:StreetFullText />
+                                    </nc:LocationStreet>
+                                    <nc:AddressSecondaryUnitText />
+                                    <nc:LocationCityName />
+                                    <nc:LocationStateName />
+                                    <nc:LocationCountryFIPS10-4Code>US</nc:LocationCountryFIPS10-4Code>
+                                    <nc:LocationPostalCode />
+                                </nc:StructuredAddress>
+                            </nc:ContactMailingAddress>
+                        </nc:ContactInformation>
+                    </ecf:PersonAugmentation>
+                </ecf:EntityPerson>
+                <ecf:CaseParticipantRoleCode>37462</ecf:CaseParticipantRoleCode>
+            </ecf:CaseParticipant>
+            <ecf:CaseParticipant>
+                <ecf:EntityPerson s:id= \"Attorney3\">
+                    <nc:PersonName>
+                        <nc:PersonGivenName>DOE</nc:PersonGivenName>
+                        <nc:PersonMiddleName></nc:PersonMiddleName>
+                        <nc:PersonSurName>TESTER</nc:PersonSurName>
+                    </nc:PersonName>
+                    <nc:PersonOtherIdentification>
+                        <nc:IdentificationID>67e3e63a-c2f2-4e71-999d-6e27718dec01</nc:IdentificationID>
+                        <nc:IdentificationCategoryText>CASEPARTYATTORNEYID</nc:IdentificationCategoryText>
+                    </nc:PersonOtherIdentification>
+                    <ecf:PersonAugmentation>
+                        <nc:ContactInformation>
+                            <nc:ContactTelephoneNumber>
+                                <nc:FullTelephoneNumber>
+                                    <nc:TelephoneNumberFullID></nc:TelephoneNumberFullID>
+                                </nc:FullTelephoneNumber>
+                            </nc:ContactTelephoneNumber>
+                            <nc:ContactEmailID />
+                            <nc:ContactMailingAddress>
+                                <nc:StructuredAddress>
+                                    <nc:LocationStreet>
+                                        <nc:StreetFullText>123 MAIN STREET</nc:StreetFullText>
+                                    </nc:LocationStreet>
+                                    <nc:AddressSecondaryUnitText></nc:AddressSecondaryUnitText>
+                                    <nc:LocationCityName>SOMEWHERE</nc:LocationCityName>
+                                    <nc:LocationStateName>IL</nc:LocationStateName>
+                                    <nc:LocationCountryFIPS10-4Code>US</nc:LocationCountryFIPS10-4Code>
+                                    <nc:LocationPostalCode>12345</nc:LocationPostalCode>
+                                </nc:StructuredAddress>
+                            </nc:ContactMailingAddress>
+                        </nc:ContactInformation>
+                    </ecf:PersonAugmentation>
+                </ecf:EntityPerson>
+                <ecf:CaseParticipantRoleCode>ATTY</ecf:CaseParticipantRoleCode>
+            </ecf:CaseParticipant>
+            <ecf:CaseParticipant>
+                <ecf:EntityPerson s:id= \"Party3\">
+                    <nc:PersonName>
+                        <nc:PersonGivenName>TEST PLTF</nc:PersonGivenName>
+                        <nc:PersonMiddleName></nc:PersonMiddleName>
+                        <nc:PersonSurName>SANGAMON</nc:PersonSurName>
+                        <nc:PersonNameSuffixText></nc:PersonNameSuffixText>
+                    </nc:PersonName>
+                    <nc:PersonOtherIdentification>
+                        <nc:IdentificationID>7cdb184d-74c9-42a8-a106-952271fd4d29</nc:IdentificationID>
+                        <nc:IdentificationCategoryText>CASEPARTYID</nc:IdentificationCategoryText>
+                    </nc:PersonOtherIdentification>
+                    <ecf:PersonAugmentation>
+                        <nc:ContactInformation>
+                            <tyler:ServiceConsentEmail></tyler:ServiceConsentEmail>
+                            <nc:ContactTelephoneNumber>
+                                <nc:FullTelephoneNumber>
+                                    <nc:TelephoneNumberFullID></nc:TelephoneNumberFullID>
+                                </nc:FullTelephoneNumber>
+                            </nc:ContactTelephoneNumber>
+                            <nc:ContactEmailID></nc:ContactEmailID>
+                            <nc:ContactMailingAddress>
+                                <nc:StructuredAddress>
+                                    <nc:LocationStreet>
+                                        <nc:StreetFullText />
+                                    </nc:LocationStreet>
+                                    <nc:AddressSecondaryUnitText />
+                                    <nc:LocationCityName />
+                                    <nc:LocationStateName />
+                                    <nc:LocationCountryFIPS10-4Code>US</nc:LocationCountryFIPS10-4Code>
+                                    <nc:LocationPostalCode />
+                                </nc:StructuredAddress>
+                            </nc:ContactMailingAddress>
+                        </nc:ContactInformation>
+                    </ecf:PersonAugmentation>
+                </ecf:EntityPerson>
+                <ecf:CaseParticipantRoleCode>37455</ecf:CaseParticipantRoleCode>
+            </ecf:CaseParticipant>
+            <ecf:CaseParticipant>
+                <ecf:EntityPerson s:id= \"Party4\">
+                    <nc:PersonName>
+                        <nc:PersonGivenName>TEST DEF</nc:PersonGivenName>
+                        <nc:PersonMiddleName></nc:PersonMiddleName>
+                        <nc:PersonSurName>SANGAMON</nc:PersonSurName>
+                        <nc:PersonNameSuffixText></nc:PersonNameSuffixText>
+                    </nc:PersonName>
+                    <nc:PersonOtherIdentification>
+                        <nc:IdentificationID>c9bf2cdc-8d65-42b3-b56b-36b6ee6b4aec</nc:IdentificationID>
+                        <nc:IdentificationCategoryText>CASEPARTYID</nc:IdentificationCategoryText>
+                    </nc:PersonOtherIdentification>
+                    <ecf:PersonAugmentation>
+                        <nc:ContactInformation>
+                            <tyler:ServiceConsentEmail></tyler:ServiceConsentEmail>
+                            <nc:ContactTelephoneNumber>
+                                <nc:FullTelephoneNumber>
+                                    <nc:TelephoneNumberFullID></nc:TelephoneNumberFullID>
+                                </nc:FullTelephoneNumber>
+                            </nc:ContactTelephoneNumber>
+                            <nc:ContactEmailID></nc:ContactEmailID>
+                            <nc:ContactMailingAddress>
+                                <nc:StructuredAddress>
+                                    <nc:LocationStreet>
+                                        <nc:StreetFullText />
+                                    </nc:LocationStreet>
+                                    <nc:AddressSecondaryUnitText />
+                                    <nc:LocationCityName />
+                                    <nc:LocationStateName />
+                                    <nc:LocationCountryFIPS10-4Code>US</nc:LocationCountryFIPS10-4Code>
+                                    <nc:LocationPostalCode />
+                                </nc:StructuredAddress>
+                            </nc:ContactMailingAddress>
+                        </nc:ContactInformation>
+                    </ecf:PersonAugmentation>
+                </ecf:EntityPerson>
+                <ecf:CaseParticipantRoleCode>37462</ecf:CaseParticipantRoleCode>
+            </ecf:CaseParticipant>
+            <tyler:CaseTypeText>183922</tyler:CaseTypeText>
+            <tyler:HasUserFiledIntoCaseIndicator>false</tyler:HasUserFiledIntoCaseIndicator>
+        </tyler:CaseAugmentation>
+        <ecf:CauseOfActionCode />
+        <civil:ClassActionIndicator>false</civil:ClassActionIndicator>
+        <civil:JuryDemandIndicator>false</civil:JuryDemandIndicator>
+        <civil:ReliefTypeCode />
+    </civil:CivilCase>
+</CaseResponseMessage>

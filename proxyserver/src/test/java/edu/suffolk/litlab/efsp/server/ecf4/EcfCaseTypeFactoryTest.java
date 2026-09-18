@@ -89,7 +89,7 @@ public class EcfCaseTypeFactoryTest {
   public void shouldUnpackTylerCaseCorrectly()
       throws FileNotFoundException, JAXBException, XMLStreamException {
     var myCase =
-        readFromFile(this.getClass().getResourceAsStream("/case_resp.xml")).getCase().getValue();
+        readFromFile(this.getClass().getResourceAsStream("/cases/case_resp.xml")).getCase().getValue();
     System.out.println(
         Ecf4Helper.objectToXmlStrOrError(
             myCase, ecf4.latest.gov.niem.niem.niem_core._2.CaseType.class));
@@ -114,7 +114,7 @@ public class EcfCaseTypeFactoryTest {
   @Test
   public void shouldMatchExistingPartyPersonOrOrgXmlWrappers() throws Exception {
     // ecf4.latest.gov.niem.niem.niem_core._2.CaseType myCase =
-    // readFromFile(this.getClass().getResourceAsStream("/case_resp.xml")).getCase().getValue();
+    // readFromFile(this.getClass().getResourceAsStream("cases/case_resp.xml")).getCase().getValue();
     // EcfCaseTypeFactory caseFactory = new EcfCaseTypeFactory(cd, "illinois");
     EcfCaseTypeFactory.getCriteria();
     InterviewToFilingInformationConverter converter =
