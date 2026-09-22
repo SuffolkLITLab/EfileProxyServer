@@ -432,6 +432,9 @@ public class FilingInformationDocassembleJacksonDeserializer
     var maybeMax = getNumberMember(node, "max_fee_amount");
     entities.setMaxFeeAmount(parser.vetMaxAmount(maybeMax));
 
+    var maybeCauseOfAction = getStringMember(node, "cause_of_action_code");
+    entities.setCauseOfActionCode(maybeCauseOfAction);
+
     boolean contestedCase = false;
     JsonNode jsonContested = node.get("is_contested_case");
     if (jsonContested != null && jsonContested.isBoolean()) {

@@ -148,7 +148,9 @@ public class EcfCaseTypeFactory {
               info.getCaseDocketNumber(),
               comboCodes.cat(),
               info.getPreviousCaseId(),
-              info.getAmountInControversy());
+              info.getAmountInControversy(),
+              // TODO(brycew): better cause of action default?
+              info.getCauseOfActionCode().orElse(""));
     } else if (ecftype == EcfCaseTypes.DomesticCase) {
       myCase =
           makeDomesticCaseType(
@@ -437,7 +439,8 @@ public class EcfCaseTypeFactory {
       Optional<String> caseDocketId,
       NameAndCode caseCategory,
       Optional<String> caseTrackingId,
-      Optional<BigDecimal> amountInControversy) {
+      Optional<BigDecimal> amountInControversy,
+      String causeOfActionCode) {
     var ecfCivilObjFac =
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory();
     var ecfCommonObjFac =
@@ -456,7 +459,8 @@ public class EcfCaseTypeFactory {
         });
     c.getRest().add(caseAug);
     c.getRest().add(ecfAug);
-    c.getRest().add(ecfCommonObjFac.createCauseOfActionCode(Ecf4Helper.convertText("CIV750LT")));
+    c.getRest()
+        .add(ecfCommonObjFac.createCauseOfActionCode(Ecf4Helper.convertText(causeOfActionCode)));
     c.getRest().add(ecfCivilObjFac.createClassActionIndicator(Ecf4Helper.convertBool(false)));
     c.getRest().add(ecfCivilObjFac.createJuryDemandIndicator(Ecf4Helper.convertBool(false)));
     c.getRest().add(ecfCivilObjFac.createReliefTypeCode(new TextType()));
