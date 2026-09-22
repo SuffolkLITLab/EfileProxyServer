@@ -426,14 +426,16 @@ public class TFCodesParser implements CodesParser {
       var doc = docs.get(i);
       long docSize = doc.allAttachmentsLength();
       if (docSize > maxEach) {
-        return Result.err(new DocTooBig(i));
+        var docName =
+            doc.getDescription().map(d -> d.get()).orElse(doc.getFilingComments().orElse(""));
+        return Result.err(new DocTooBig(docName, docSize, maxEach));
       }
       cumulativeBytes += docSize;
     }
     MeasureType maxTotalDocSize = policy.getMaximumAllowedMessageSize();
     long maxTotal = Ecf4Helper.sizeMeasureAsBytes(maxTotalDocSize);
     if (cumulativeBytes > maxTotal) {
-      return Result.err(new CumulativeDocsTooBig(cumulativeBytes));
+      return Result.err(new CumulativeDocsTooBig(cumulativeBytes, maxTotal));
     }
     return Result.nullOk();
   }

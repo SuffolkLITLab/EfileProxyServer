@@ -175,14 +175,17 @@ public class FilingInformationDocassembleJacksonDeserializer
         userEmail = users.get(0).getContactInfo().getEmail();
       }
       if (userEmail.isEmpty() || userEmail.orElse("").isBlank()) {
-        InterviewVariable var =
-            new InterviewVariable(
-                "users[0].email",
-                "Email is required for at least one user",
-                "text",
-                List.of(),
-                Optional.empty());
-        collector.addRequired(var);
+        var allowAnon = node.get("allow_anon_user");
+        if (allowAnon == null || !allowAnon.asBoolean()) {
+          InterviewVariable var =
+              new InterviewVariable(
+                  "users[0].email",
+                  "Email is required for at least one user",
+                  "text",
+                  List.of(),
+                  Optional.empty());
+          collector.addRequired(var);
+        }
       }
     }
 

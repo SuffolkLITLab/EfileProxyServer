@@ -57,8 +57,8 @@ public interface CodesParser extends AutoCloseable {
   public record FileNameTextError(TextVarError err) implements FileNameError {}
 
   public sealed interface FilingDocError {}
-  public record DocTooBig(int idx) implements FilingDocError {}
-  public record CumulativeDocsTooBig(long cumulativeBytes) implements FilingDocError {}
+  public record DocTooBig(String docName, long docSize, long maxAllowed) implements FilingDocError {}
+  public record CumulativeDocsTooBig(long cumulativeBytes, long maxTotal) implements FilingDocError {}
   // spotless:on
 
   // Methods
