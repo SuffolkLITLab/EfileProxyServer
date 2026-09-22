@@ -30,7 +30,6 @@ import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import gov.niem.niem.niem_core._2.IdentificationType;
-import gov.niem.niem.niem_core._2.MeasureType;
 import gov.niem.niem.niem_core._2.TextType;
 import imagesoft.ecf.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import imagesoft.ecf.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
@@ -152,7 +151,6 @@ public class TrueFilingFiler extends EfmCheckableFilingInterface {
     try (TFCodeDatabase cd = cdSupplier.get()) {
       String courtName = info.getCourtLocation();
       EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd, this.jurisdiction);
-      var policy = policyCacher.getPolicyFor(filingPort, info.getCourtLocation());
       var maybeParser = getParser(info.getCourtLocation(), creds);
       if (maybeParser.isEmpty()) {
         collector.error(
@@ -202,33 +200,34 @@ public class TrueFilingFiler extends EfmCheckableFilingInterface {
         var leadContact = repairLeadContact(info.getLeadContact(), info);
         cfm.setDocumentSubmitter(serializer.serializeNiemEntity(leadContact));
 
-        // filing lead documents
-        MeasureType maxIndivDocSize =
-            policy.getDevelopmentPolicyParameters().getMaximumAllowedAttachmentSize();
-        long maxSize = Ecf4Helper.sizeMeasureAsBytes(maxIndivDocSize);
-        long cumulativeBytes = 0;
+        /*
+        var docSizeRes = parser.vetFilingDocSize(info.getFilings());
+        if (docSizeRes.isErr()) {
+        	if (docSizeRes.expectErr("") instanceof DocTooBig tooBig) {
+              FilingError err =
+                  FilingError.malformedInterview(
+                      "Document "
+                		  + tooBig.docName()
+                          + " is too big! Must be max "
+                          + tooBig.maxAllowed()
+                          + ", is "
+                          + tooBig.docSize());
+              collector.error(err);
+        	} else if (docSizeRes.expectErr("") instanceof CumulativeDocsTooBig tooBig) {
+              FilingError err =
+                  FilingError.malformedInterview(
+                      "All Documents combined are too big! Must be max"
+                          + tooBig.maxTotal()
+                          + ", are "
+                          + tooBig.cumulativeBytes());
+              collector.error(err);
+        	}
+        }
+        */
 
         Map<String, Object> filingIdToObj = new HashMap<>();
         int seqNum = 0;
         for (FilingDoc filingDoc : info.getFilings()) {
-
-          long bytes = filingDoc.allAttachmentsLength();
-          if (bytes > maxSize) {
-            FilingError err =
-                FilingError.malformedInterview(
-                    "Document "
-                        + filingDoc
-                            .getDescription()
-                            .map(d -> d.get())
-                            .orElse(filingDoc.getFilingComments().orElse(""))
-                        + " is too big! Must be max "
-                        + maxSize
-                        + ", is "
-                        + bytes);
-            collector.error(err);
-          }
-          cumulativeBytes += bytes;
-
           NameAndCode fc = allCodes.filings().get(seqNum);
           collector.pushAttributeStack("al_court_bundle[" + seqNum + "]");
           DocumentType result = serializer.filingDocToXml(filingDoc, fc);
@@ -238,18 +237,6 @@ public class TrueFilingFiler extends EfmCheckableFilingInterface {
           cfm.getFilingLeadDocument().add(result);
           seqNum += 1;
           log.info("Added a document to the XML");
-        }
-        MeasureType maxTotalDocSize =
-            policy.getDevelopmentPolicyParameters().getMaximumAllowedMessageSize();
-        long maxTotal = Ecf4Helper.sizeMeasureAsBytes(maxTotalDocSize);
-        if (cumulativeBytes > maxTotal) {
-          FilingError err =
-              FilingError.malformedInterview(
-                  "All Documents combined are too big! Must be max"
-                      + maxSize
-                      + ", are "
-                      + cumulativeBytes);
-          collector.error(err);
         }
         log.info(
             "Full cfm: {}",

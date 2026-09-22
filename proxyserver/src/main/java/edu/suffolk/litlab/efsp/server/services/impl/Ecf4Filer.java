@@ -8,7 +8,6 @@ import ecf4.latest.gov.niem.niem.niem_core._2.DateRangeType;
 import ecf4.latest.gov.niem.niem.niem_core._2.DateType;
 import ecf4.latest.gov.niem.niem.niem_core._2.EntityType;
 import ecf4.latest.gov.niem.niem.niem_core._2.IdentificationType;
-import ecf4.latest.gov.niem.niem.niem_core._2.MeasureType;
 import ecf4.latest.gov.niem.niem.niem_core._2.TextType;
 import ecf4.latest.gov.niem.niem.proxy.xsd._2.Date;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
@@ -46,6 +45,8 @@ import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceM
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.ecf4.QueryType;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
+import edu.suffolk.litlab.efsp.ecfcodes.CodesParser.CumulativeDocsTooBig;
+import edu.suffolk.litlab.efsp.ecfcodes.CodesParser.DocTooBig;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.model.CaseServiceContact;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
@@ -226,9 +227,6 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       CourtLocationInfo locationInfo =
           maybeLocationInfo.orElse(new CourtLocationInfo(info.getCourtLocation(), false, false));
       String courtName = locationInfo.name();
-
-      CourtPolicyResponseMessageType policy =
-          policyCacher.getPolicyFor(filingPort, info.getCourtLocation());
 
       if (!locationInfo.allowfilingintononindexedcase()
           && info.getCaseDocketNumber().isPresent()
@@ -417,31 +415,32 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         cfm.setSendingMDEProfileCode(Ecf4Helper.MDE_PROFILE_CODE);
         cfm.setCase(assembledCase);
 
-        MeasureType maxIndivDocSize =
-            policy.getDevelopmentPolicyParameters().getValue().getMaximumAllowedAttachmentSize();
-        long maxSize = Ecf4Helper.sizeMeasureAsBytes(maxIndivDocSize);
-        long cumulativeBytes = 0;
+        var docSizeRes = parser.vetFilingDocSize(info.getFilings());
+        if (docSizeRes.isErr()) {
+          if (docSizeRes.expectErr("") instanceof DocTooBig tooBig) {
+            FilingError err =
+                FilingError.malformedInterview(
+                    "Document "
+                        + tooBig.docName()
+                        + " is too big! Must be max "
+                        + tooBig.maxAllowed()
+                        + ", is "
+                        + tooBig.docSize());
+            collector.error(err);
+          } else if (docSizeRes.expectErr("") instanceof CumulativeDocsTooBig tooBig) {
+            FilingError err =
+                FilingError.malformedInterview(
+                    "All Documents combined are too big! Must be max"
+                        + tooBig.maxTotal()
+                        + ", are "
+                        + tooBig.cumulativeBytes());
+            collector.error(err);
+          }
+        }
 
         Map<String, Object> filingIdToObj = new HashMap<>();
         int seqNum = 0;
         for (FilingDoc filingDoc : info.getFilings()) {
-          long bytes = filingDoc.allAttachmentsLength();
-          if (bytes > maxSize) {
-            FilingError err =
-                FilingError.malformedInterview(
-                    "Document "
-                        + filingDoc
-                            .getDescription()
-                            .map(d -> d.get())
-                            .orElse(filingDoc.getFilingComments().orElse(""))
-                        + " is too big! Must be max "
-                        + maxSize
-                        + ", is "
-                        + bytes);
-            collector.error(err);
-          }
-          cumulativeBytes += bytes;
-
           FilingCode fc = allCodes.filings().get(seqNum);
 
           collector.pushAttributeStack("al_court_bundle[" + seqNum + "]");
@@ -457,18 +456,6 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
           }
           seqNum += 1;
           log.info("Added a document to the XML");
-        }
-        MeasureType maxTotalDocSize =
-            policy.getDevelopmentPolicyParameters().getValue().getMaximumAllowedMessageSize();
-        long maxTotal = Ecf4Helper.sizeMeasureAsBytes(maxTotalDocSize);
-        if (cumulativeBytes > maxTotal) {
-          FilingError err =
-              FilingError.malformedInterview(
-                  "All Documents combined are too big! Must be max"
-                      + maxSize
-                      + ", are "
-                      + cumulativeBytes);
-          collector.error(err);
         }
         EcfCaseTypeFactory.getCaseAugmentation(assembledCase.getValue())
             .ifPresent(

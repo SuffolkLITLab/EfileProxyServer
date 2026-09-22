@@ -306,8 +306,12 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
     return safetyWrap(
         () -> {
           // initial is ignored
-          PreparedStatement st =
-              CaseType.prepQuery(conn, jurisStr(), courtLocationId, caseCategoryCode);
+          PreparedStatement st;
+          if (caseCategoryCode == null || caseCategoryCode.isBlank()) {
+            st = CaseType.prepQuery(conn, jurisStr(), courtLocationId);
+          } else {
+            st = CaseType.prepQuery(conn, jurisStr(), courtLocationId, caseCategoryCode);
+          }
           ResultSet rs = st.executeQuery();
           List<NameAndCode> nacs = new ArrayList<>();
           // TODO(bryce): can be more efficient, just grabbing the name and code and not all of the

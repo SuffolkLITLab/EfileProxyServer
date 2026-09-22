@@ -209,7 +209,7 @@ public class TrueFilingCodesService extends CodesService {
    * contain at least one case type that is matched by the term. Can be used to confirm that all of
    * the expected courts you want to file in contain a case type that you can use.
    *
-   * <p>Used primarly for exploration and gaining a better understanding of jurisdiction naming
+   * <p>Used primarily for exploration and gaining a better understanding of jurisdiction naming
    * conventions. Likely shouldn't be used while a user is filing.
    */
   @GET
@@ -373,14 +373,7 @@ public class TrueFilingCodesService extends CodesService {
   @Override
   public Response getCaseTypes(String courtId, String categoryId, String timing)
       throws SQLException {
-    if (categoryId == null || categoryId.isBlank()) {
-      return cors(
-          Response.status(400)
-              .entity(
-                  "\"You need to limit the number of case types by providing a category_id: see"
-                      + " /categories\""));
-    }
-
+    // It's okay if we don't filter by category id actually.
     try (TFCodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));

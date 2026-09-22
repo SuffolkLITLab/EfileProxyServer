@@ -67,6 +67,20 @@ public record CaseType(UUID id, String code, String description, String caseCate
       """;
 
   public static PreparedStatement prepQuery(
+      Connection conn, String jurisdiction, String courtLocationId) throws SQLException {
+    String query =
+        """
+        SELECT id, code, description, casecategory
+        FROM truefiling_casetype
+        WHERE jurisdiction=? AND location=?
+        """;
+    PreparedStatement st = conn.prepareStatement(query);
+    st.setString(1, jurisdiction);
+    st.setString(2, courtLocationId);
+    return st;
+  }
+
+  public static PreparedStatement prepQuery(
       Connection conn, String jurisdiction, String courtLocationId, String caseCategoryCode)
       throws SQLException {
     String query =
