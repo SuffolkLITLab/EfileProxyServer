@@ -71,12 +71,16 @@ public class FilingInformation {
 
   private Optional<BigDecimal> amountInControversy = Optional.empty();
   private Optional<BigDecimal> maxFeeAmount = Optional.empty();
+
+  /** In TrueFiling AK, contains subject matter info (i.e. type of protection order sought). */
+  private Optional<String> causeOfActionCode = Optional.empty();
+
   private boolean contestedCase = false;
   private boolean outOfState = false;
   private EmailTemplates emailTemplates = new EmailTemplates();
 
   /**
-   * Gets all of the peole who are listed by filer ids in the filing docs. This corresponds to the
+   * Gets all of the people who are listed by filer ids in the filing docs. This corresponds to the
    * `users` variable in Docassemble interviews.
    *
    * @return The People who are filers in the filing documents
@@ -214,6 +218,10 @@ public class FilingInformation {
     return maxFeeAmount;
   }
 
+  public Optional<String> getCauseOfActionCode() {
+    return causeOfActionCode;
+  }
+
   public boolean isContestedCase() {
     return contestedCase;
   }
@@ -316,6 +324,10 @@ public class FilingInformation {
 
   public void setMaxFeeAmount(Optional<BigDecimal> maxFeeAmount) {
     this.maxFeeAmount = maxFeeAmount;
+  }
+
+  public void setCauseOfActionCode(Optional<String> causeOfActionCode) {
+    this.causeOfActionCode = causeOfActionCode;
   }
 
   public void setIsContestedCase(boolean isContestedCase) {
