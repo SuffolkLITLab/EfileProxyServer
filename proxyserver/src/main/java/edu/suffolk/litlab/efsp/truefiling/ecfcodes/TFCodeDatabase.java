@@ -102,8 +102,13 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
   }
 
   public List<NameAndCode> getPartyTypeFor(String court) {
+    // TODO: these seem hardcoded for the case type, should consider splitting back out.
     return List.of(
-        new NameAndCodeType("Petitioner", "PET"), new NameAndCodeType("Respondent", "RESP"));
+        new NameAndCodeType("Petitioner", "PET"),
+        new NameAndCodeType("Respondent", "RESP"),
+        new NameAndCodeType("Adult on Behalf of a Minor", "ADBM"),
+        new NameAndCodeType("Minor Petitioner", "MPET"),
+        new NameAndCodeType("Minor Respondent", "MRESP"));
   }
 
   @Override

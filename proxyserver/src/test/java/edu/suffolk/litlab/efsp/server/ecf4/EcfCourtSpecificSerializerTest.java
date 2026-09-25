@@ -190,6 +190,7 @@ public class EcfCourtSpecificSerializerTest {
         new ContactInformation(
             List.of("1234567890", "(123) 456-7890"),
             Optional.empty(),
+            Optional.empty(),
             Optional.of("bob@example.com"));
     var contactInfoType = courtSer.serializeEcfContactInformation(info);
     assertThat(contactInfoType.getContactMeans()).hasSize(3);

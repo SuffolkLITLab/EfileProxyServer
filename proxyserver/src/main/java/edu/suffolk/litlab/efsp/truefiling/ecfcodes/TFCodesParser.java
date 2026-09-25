@@ -158,12 +158,13 @@ public class TFCodesParser implements CodesParser {
     List<NameAndCode> pTypesForCase = cd.getPartyTypeFor(court);
     Map<String, NameAndCode> codeToPartyType =
         pTypesForCase.stream().collect(Collectors.toMap(pt -> pt.code(), pt -> pt));
-    Set<String> requiredTypes =
-        pTypesForCase.stream()
-            // There are only two parties in the current case, both are required
-            // .filter(t -> t.isrequired)
-            .map(t -> t.code())
-            .collect(Collectors.toSet());
+    Set<String> requiredTypes = new HashSet<>();
+    // TODO: bryce: the real requirements are:
+    // PET + RESP, or MPET + ADBM + RESP, or PET + ADBM + RESP, or MPET + ADBM + MRESP + ADBM
+    // Haven't coded handling those combinations yet.
+    // .filter(t -> t.isrequired)
+    // .map(t -> t.code())
+    // .collect(Collectors.toSet());
     Set<String> presentPartyTypes = new HashSet<>();
     // it (might be, haven't tested for TrueFiling) possible for older cases to have party types
     // that aren't allowed
