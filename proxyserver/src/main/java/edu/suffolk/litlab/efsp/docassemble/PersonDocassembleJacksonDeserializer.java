@@ -16,6 +16,8 @@ import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +52,12 @@ public class PersonDocassembleJacksonDeserializer {
     var maybePhone = getNonEmptyStringMember(node, "phone_number");
     maybePhone.ifPresent(number -> inputPhones.add(number));
 
+    var maybeWork = getNonEmptyStringMember(node, "work_number");
+    maybeWork.ifPresent(number -> inputPhones.add(number));
+
+    var maybeHome = getNonEmptyStringMember(node, "home_number");
+    maybeHome.ifPresent(number -> inputPhones.add(number));
+
     var phonesRes = parser.vetPhoneNumbers(inputPhones);
     List<String> phones;
     if (phonesRes.isErr()) {
@@ -74,6 +82,21 @@ public class PersonDocassembleJacksonDeserializer {
         }
       }
     }
+    Optional<Address> mailingAddr = Optional.empty();
+    if (node.has("mailing_address") && node.get("mailing_address").isObject()) {
+      collector.pushAttributeStack("mailing_address");
+      try {
+        mailingAddr =
+            AddressDocassembleJacksonDeserializer.fromNode(
+                node.get("mailing_address"), parser, collector);
+        collector.popAttributeStack();
+      } catch (FilingError err) {
+        if (!err.getType().equals(FilingError.Type.MissingRequired)) {
+          // Roughly speaking, the address isn't required. Rethrow anything els.
+          throw err;
+        }
+      }
+    }
     var emailRes = parser.vetEmail(getNonEmptyStringMember(node, "email"));
     Optional<String> email;
     if (emailRes.isErr()) {
@@ -82,7 +105,7 @@ public class PersonDocassembleJacksonDeserializer {
     } else {
       email = emailRes.expect("");
     }
-    final ContactInformation info = new ContactInformation(phones, addr, email);
+    final ContactInformation info = new ContactInformation(phones, addr, mailingAddr, email);
 
     Optional<String> partyType = getStringMember(node, "party_type");
 
@@ -103,7 +126,8 @@ public class PersonDocassembleJacksonDeserializer {
     } else {
       gender = genderRes.expect("");
     }
-    Optional<String> birthdateString = getStringMember(node, "date_of_birth");
+    Optional<String> birthdateString =
+        getStringMember(node, "date_of_birth").or(() -> getStringMember(node, "birthdate"));
     Optional<LocalDate> birthdate =
         birthdateString
             .map(
@@ -111,7 +135,17 @@ public class PersonDocassembleJacksonDeserializer {
                   try {
                     return Optional.<LocalDate>of(LocalDate.parse(bdStr));
                   } catch (DateTimeParseException ex) {
-                    return Optional.<LocalDate>empty();
+                    try {
+                      var dateTime = LocalDateTime.parse(bdStr);
+                      return Optional.of(dateTime.toLocalDate());
+                    } catch (DateTimeParseException ex2) {
+                      try {
+                        var dateTime = OffsetDateTime.parse(bdStr);
+                        return Optional.of(dateTime.toLocalDate());
+                      } catch (DateTimeParseException ex3) {
+                        return Optional.<LocalDate>empty();
+                      }
+                    }
                   }
                 })
             .orElse(Optional.<LocalDate>empty());

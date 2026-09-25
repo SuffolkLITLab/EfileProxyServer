@@ -3,22 +3,15 @@ package edu.suffolk.litlab.efsp.model;
 import java.util.List;
 import java.util.Optional;
 
-public class ContactInformation {
-  private final List<String> phoneNumbers;
-  private final Optional<Address> address;
-  private final Optional<String> email;
-
-  /** Default constructor. */
-  public ContactInformation(
-      List<String> phoneNumbers, Optional<Address> address, Optional<String> email) {
-    this.phoneNumbers = phoneNumbers;
-    this.address = address;
-    this.email = email;
-  }
+public record ContactInformation(
+    List<String> phoneNumbers,
+    Optional<Address> address,
+    Optional<Address> mailingAddress,
+    Optional<String> email) {
 
   /** Minimal constructor, empty lists and empty optionals. */
   public ContactInformation(String email) {
-    this(List.of(), Optional.empty(), Optional.ofNullable(email));
+    this(List.of(), Optional.empty(), Optional.empty(), Optional.ofNullable(email));
   }
 
   public List<String> getPhoneNumbers() {

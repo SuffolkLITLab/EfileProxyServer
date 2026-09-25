@@ -33,9 +33,9 @@ import gov.niem.niem.usps_states._2.USStateCodeSimpleType;
 import gov.niem.niem.usps_states._2.USStateCodeType;
 import jakarta.xml.bind.JAXBElement;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentAttachmentType;
@@ -70,25 +70,23 @@ public class EcfCourtSpecificSerializer {
   }
 
   public JAXBElement<? extends Object> serializeCaseEntity(Person per) {
-    ContactInformationType cit = serializeEcfContactInfo(per.getContactInfo());
-    Optional<ContactInformationType> citEmail = serializeEmail(per.getContactInfo());
+    var contactInfoList = serializeEcfContactInfo(per.getContactInfo());
     if (per.isOrg()) {
-      return ecfOf.createEntityOrganization(serializeOrganization(per, cit, citEmail));
+      return ecfOf.createEntityOrganization(serializeOrganization(per, contactInfoList));
     } else {
-      return ecfOf.createEntityPerson(serializePerson(per, cit, citEmail));
+      return ecfOf.createEntityPerson(serializePerson(per, contactInfoList));
     }
   }
 
   public EntityType serializeNiemEntity(Person per) {
-    ContactInformationType cit = serializeEcfContactInfo(per.getContactInfo());
-    Optional<ContactInformationType> citEmail = serializeEmail(per.getContactInfo());
+    var contactInfoList = serializeEcfContactInfo(per.getContactInfo());
     var et = niemObjFac.createEntityType();
     if (per.isOrg()) {
-      var org = serializeOrganization(per, cit, citEmail);
+      var org = serializeOrganization(per, contactInfoList);
       org.setId(null);
       et.setEntityRepresentation(ecfOf.createEntityOrganization(org));
     } else {
-      var person = serializePerson(per, cit, citEmail);
+      var person = serializePerson(per, contactInfoList);
       person.setId(null);
       et.setEntityRepresentation(ecfOf.createEntityPerson(person));
     }
@@ -96,10 +94,11 @@ public class EcfCourtSpecificSerializer {
   }
 
   private OrganizationType serializeOrganization(
-      Person per, ContactInformationType cit, Optional<ContactInformationType> citEmail) {
+      Person per, List<ContactInformationType> contactInfoList) {
     OrganizationAugmentationType aug = ecfOf.createOrganizationAugmentationType();
-    aug.getContactInformation().add(cit);
-    citEmail.ifPresent(c -> aug.getContactInformation().add(c));
+    for (var cit : contactInfoList) {
+      aug.getContactInformation().add(cit);
+    }
     OrganizationType ot = ecfOf.createOrganizationType();
     ot.setOrganizationName(Ecf4Helper.convertText(per.getName().makeFullName()));
     ot.setId(per.getIdString());
@@ -107,8 +106,7 @@ public class EcfCourtSpecificSerializer {
     return ot;
   }
 
-  private PersonType serializePerson(
-      Person per, ContactInformationType cit, Optional<ContactInformationType> citEmail) {
+  private PersonType serializePerson(Person per, List<ContactInformationType> infos) {
     // Else, it's a person: add other optional person stuff
     PersonType pt = ecfOf.createPersonType();
     pt.setId(per.getIdString());
@@ -123,8 +121,9 @@ public class EcfCourtSpecificSerializer {
 
     pt.setPersonName(serializeNameType(per.getName()));
     PersonAugmentationType aug = ecfOf.createPersonAugmentationType();
-    aug.getContactInformation().add(cit);
-    citEmail.ifPresent(c -> aug.getContactInformation().add(c));
+    for (var cit : infos) {
+      aug.getContactInformation().add(cit);
+    }
     pt.setPersonAugmentation(aug);
     per.getRole()
         .ifPresent(
@@ -193,37 +192,55 @@ public class EcfCourtSpecificSerializer {
     return cpt;
   }
 
-  public ContactInformationType serializeEcfContactInfo(ContactInformation contactInfo) {
-    ContactInformationType cit = niemObjFac.createContactInformationType();
+  public List<ContactInformationType> serializeEcfContactInfo(ContactInformation contactInfo) {
+    var contactList = new ArrayList<ContactInformationType>();
+    if (contactInfo.mailingAddress().isPresent()) {
+      ContactInformationType addrCit = niemObjFac.createContactInformationType();
+      Address addr = contactInfo.mailingAddress().get();
+      JAXBElement<AddressType> contactMeans = serializeNiemContactMeans(addr);
+      addrCit.getContactMeans().add(contactMeans);
+      addrCit.setContactInformationDescriptionText(
+          Ecf4Helper.convertText("DEFAULT")); // mailing addr
+      contactList.add(addrCit);
+    }
     if (contactInfo.getAddress().isPresent()) {
+      ContactInformationType addrCit = niemObjFac.createContactInformationType();
       Address addr = contactInfo.getAddress().get();
       JAXBElement<AddressType> contactMeans = serializeNiemContactMeans(addr);
-      cit.getContactMeans().add(contactMeans);
+      addrCit.getContactMeans().add(contactMeans);
+      addrCit.setContactInformationDescriptionText(Ecf4Helper.convertText("HA2")); // Home Address 2
+      contactList.add(addrCit);
     }
+    // TODO: business address: code is BA1
 
     List<String> numbers = contactInfo.getPhoneNumbers();
     for (String phoneNumber : numbers) {
+      ContactInformationType phoneCit = niemObjFac.createContactInformationType();
       TelephoneNumberType tnt = niemObjFac.createTelephoneNumberType();
       FullTelephoneNumberType ftnt = niemObjFac.createFullTelephoneNumberType();
       ftnt.setTelephoneNumberFullID(Ecf4Helper.convertString(phoneNumber));
       tnt.setTelephoneNumberRepresentation(niemObjFac.createFullTelephoneNumber(ftnt));
-      cit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
+      phoneCit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
+      // TODO: change phone codes:
+      // BP, Business Phone, CP, Cell Phone
+      // DEFAULT, Primary Phone
+      // HP2, Home Phone
+      // MP, Message Phone
+      // OTH, Other Phone
+      contactList.add(phoneCit);
     }
-    return cit;
-  }
-
-  public Optional<ContactInformationType> serializeEmail(ContactInformation contactInfo) {
-    return contactInfo
+    contactInfo
         .getEmail()
-        .map(
+        .ifPresent(
             email -> {
               ContactInformationType cit = niemObjFac.createContactInformationType();
               cit.getContactMeans()
                   .add(niemObjFac.createContactEmailID(Ecf4Helper.convertString(email)));
               // TODO(brycew): how to change default? do we need to?
               cit.setContactInformationDescriptionText(Ecf4Helper.convertText("DEFAULT"));
-              return cit;
+              contactList.add(cit);
             });
+    return contactList;
   }
 
   /**

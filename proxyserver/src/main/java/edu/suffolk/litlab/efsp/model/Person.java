@@ -136,6 +136,7 @@ public class Person {
         new ContactInformation(
             getContactInfo().getPhoneNumbers(),
             getContactInfo().getAddress(),
+            getContactInfo().mailingAddress(),
             Optional.of(newEmail)),
         getGender(),
         getLanguage(),
