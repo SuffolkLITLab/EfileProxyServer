@@ -10,6 +10,7 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
 import edu.suffolk.litlab.efsp.model.Address;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
+import edu.suffolk.litlab.efsp.model.ContactInformation.PhoneType;
 import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.model.Person.Gender;
@@ -19,8 +20,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,25 +47,28 @@ public class PersonDocassembleJacksonDeserializer {
       return Result.err(err);
     }
 
-    List<String> inputPhones = new ArrayList<String>();
-    var maybeMobile = getNonEmptyStringMember(node, "mobile_number");
-    maybeMobile.ifPresent(number -> inputPhones.add(number));
+    Map<PhoneType, String> inputPhones = new HashMap<>();
+    getNonEmptyStringMember(node, "mobile_number")
+        .ifPresent(number -> inputPhones.put(PhoneType.MOBILE, number));
 
-    var maybePhone = getNonEmptyStringMember(node, "phone_number");
-    maybePhone.ifPresent(number -> inputPhones.add(number));
+    getNonEmptyStringMember(node, "phone_number")
+        .ifPresent(number -> inputPhones.put(PhoneType.DEFAULT, number));
 
-    var maybeWork = getNonEmptyStringMember(node, "work_number");
-    maybeWork.ifPresent(number -> inputPhones.add(number));
+    getNonEmptyStringMember(node, "work_number")
+        .ifPresent(number -> inputPhones.put(PhoneType.WORK, number));
 
-    var maybeHome = getNonEmptyStringMember(node, "home_number");
-    maybeHome.ifPresent(number -> inputPhones.add(number));
+    getNonEmptyStringMember(node, "home_number")
+        .ifPresent(number -> inputPhones.put(PhoneType.HOME, number));
+
+    getNonEmptyStringMember(node, "home_number")
+        .ifPresent(number -> inputPhones.put(PhoneType.OTHER, number));
 
     var phonesRes = parser.vetPhoneNumbers(inputPhones);
-    List<String> phones;
+    Map<PhoneType, String> phones = new HashMap<>();
     if (phonesRes.isErr()) {
       var phoneBuilder = collector.varBuilder().name("phone_number").datatype("text");
       collector.addTextError(phonesRes.expectErr(""), phoneBuilder);
-      phones = List.of();
+      phones = Map.of();
     } else {
       phones = phonesRes.expect("");
     }

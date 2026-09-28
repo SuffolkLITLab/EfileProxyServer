@@ -15,6 +15,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.CodesParser.TooLongVar;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser.WrongRefVal;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCodeType;
+import edu.suffolk.litlab.efsp.model.ContactInformation.PhoneType;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
@@ -576,21 +577,21 @@ public class TylerCodesParserTest {
 
     @Test
     public void testNormalPhoneNumber() {
-      var phones = List.of("4092345678");
+      var phones = Map.of(PhoneType.DEFAULT, "4092345678");
       var res = parser.vetPhoneNumbers(phones);
       assertThat(res).containsOk(phones);
     }
 
     @Test
     public void testBadPhoneNumber() {
-      var phones = List.of("+34092345678");
+      var phones = Map.of(PhoneType.DEFAULT, "+34092345678");
       var res = parser.vetPhoneNumbers(phones);
       assertThat(res).isErr();
     }
 
     @Test
     public void testOneBadOneOkayPhoneNumber() {
-      var phones = List.of("+34092345678", "+1 4092345678");
+      var phones = Map.of(PhoneType.DEFAULT, "+34092345678", PhoneType.HOME, "+1 4092345678");
       var res = parser.vetPhoneNumbers(phones);
       assertThat(res).containsOk(List.of("+1 4092345678"));
     }

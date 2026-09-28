@@ -15,6 +15,7 @@ import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.
 import ecf4.latest.tyler.ecf.extensions.common.CapabilityType;
 import edu.suffolk.litlab.efsp.docassemble.FilingDocDocassembleJacksonDeserializer;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
+import edu.suffolk.litlab.efsp.model.ContactInformation.PhoneType;
 import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.PartyInfo;
@@ -188,7 +189,7 @@ public class EcfCourtSpecificSerializerTest {
     collector = new AllWrongCollector();
     ContactInformation info =
         new ContactInformation(
-            List.of("1234567890", "(123) 456-7890"),
+            Map.of(PhoneType.DEFAULT, "1234567890", PhoneType.OTHER, "(123) 456-7890"),
             Optional.empty(),
             Optional.empty(),
             Optional.of("bob@example.com"));

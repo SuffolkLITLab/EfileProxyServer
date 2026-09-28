@@ -7,6 +7,7 @@ import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyres
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCodeType;
+import edu.suffolk.litlab.efsp.model.ContactInformation.PhoneType;
 import edu.suffolk.litlab.efsp.model.FilingAction;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.OptionalService;
@@ -744,7 +745,8 @@ public class TylerCodesParser implements CodesParser {
     return Result.ok(email);
   }
 
-  public Result<List<String>, TextVarError> vetPhoneNumbers(List<String> numbers) {
+  public Result<Map<PhoneType, String>, TextVarError> vetPhoneNumbers(
+      Map<PhoneType, String> numbers) {
     DataFieldRow phoneRow = allDataFields.getFieldRow("PartyPhone");
     if (phoneRow.isvisible()) {
       if (phoneRow.isrequired() && numbers.isEmpty()) {
@@ -752,14 +754,15 @@ public class TylerCodesParser implements CodesParser {
       }
       if (numbers.isEmpty()) {
         // if just visible but not required, keep the empty list
-        return Result.ok(List.of());
+        return Result.ok(Map.of());
       }
       var correctNumbers =
-          numbers.stream()
+          numbers.entrySet().stream()
               .map(
-                  number -> {
+                  entry -> {
+                    var number = entry.getValue();
                     if (phoneRow.matchRegex(number)) {
-                      return number;
+                      return entry;
                     }
                     // HACK(brycew): Massachusetts doesn't like dashes in the number, just wants
                     // numbers, but also requires a space between the country code and the rest of
@@ -774,29 +777,34 @@ public class TylerCodesParser implements CodesParser {
                         tmp_number = tmp_number.replace("+1", "+1 ");
                         tmp_number = tmp_number.replace("+0", "+0 ");
                       }
-                      return tmp_number;
+                      entry.setValue(tmp_number);
+                      return entry;
                     } else {
-                      return number
-                          .replace("-", "")
-                          .replace("(", "")
-                          .replace(")", "")
-                          .replace(" ", "");
+                      var bestNumber =
+                          number
+                              .replace("-", "")
+                              .replace("(", "")
+                              .replace(")", "")
+                              .replace(" ", "");
+                      entry.setValue(bestNumber);
+                      return entry;
                     }
                   })
               .filter(
-                  number -> {
+                  entry -> {
+                    var number = entry.getValue();
                     if (number.isEmpty()) {
                       return false;
                     }
                     return phoneRow.matchRegex(number);
                   })
-              .toList();
+              .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
       if (correctNumbers.isEmpty()) {
         return Result.err(new WrongVar(numbers.toString(), phoneRow.regularexpression()));
       }
       return Result.ok(correctNumbers);
     }
-    return Result.ok(List.of());
+    return Result.ok(Map.of());
   }
 
   /**

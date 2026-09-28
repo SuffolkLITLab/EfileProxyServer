@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efsp.ecfcodes;
 
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efsp.model.ContactInformation.PhoneType;
 import edu.suffolk.litlab.efsp.model.FilingAction;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.OptionalService;
@@ -127,7 +128,8 @@ public interface CodesParser extends AutoCloseable {
 
   public Result<Optional<String>, TextVarError> vetEmail(Optional<String> email);
 
-  public Result<List<String>, TextVarError> vetPhoneNumbers(List<String> numbers);
+  public Result<Map<PhoneType, String>, TextVarError> vetPhoneNumbers(
+      Map<PhoneType, String> numbers);
 
   public Result<String, TextVarError> vetFirstName(Optional<String> name);
 

@@ -8,6 +8,7 @@ import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
+import edu.suffolk.litlab.efsp.model.ContactInformation.PhoneType;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.FilingResult;
 import edu.suffolk.litlab.efsp.model.Person;
@@ -412,7 +413,20 @@ public class FilingReviewService {
     Optional<String> phoneNumber = Optional.empty();
     if (user.getContactInfo().getPhoneNumbers().size() > 0) {
       // TODO(brycew-later): should we store multiple phone numbers as backup?
-      phoneNumber = Optional.of(user.getContactInfo().getPhoneNumbers().get(0));
+      var numbers = user.getContactInfo().getPhoneNumbers();
+      phoneNumber = Optional.ofNullable(numbers.get(PhoneType.DEFAULT));
+      if (phoneNumber.isEmpty()) {
+        phoneNumber = Optional.ofNullable(numbers.get(PhoneType.MOBILE));
+      }
+      if (phoneNumber.isEmpty()) {
+        phoneNumber = Optional.ofNullable(numbers.get(PhoneType.HOME));
+      }
+      if (phoneNumber.isEmpty()) {
+        phoneNumber = Optional.ofNullable(numbers.get(PhoneType.WORK));
+      }
+      if (phoneNumber.isEmpty()) {
+        phoneNumber = Optional.ofNullable(numbers.get(PhoneType.OTHER));
+      }
     }
     Timestamp ts = new Timestamp(System.currentTimeMillis());
 
