@@ -593,7 +593,7 @@ public class TylerCodesParserTest {
     public void testOneBadOneOkayPhoneNumber() {
       var phones = Map.of(PhoneType.DEFAULT, "+34092345678", PhoneType.HOME, "+1 4092345678");
       var res = parser.vetPhoneNumbers(phones);
-      assertThat(res).containsOk(List.of("+1 4092345678"));
+      assertThat(res).containsOk(Map.of(PhoneType.HOME, "+1 4092345678"));
     }
   }
 }

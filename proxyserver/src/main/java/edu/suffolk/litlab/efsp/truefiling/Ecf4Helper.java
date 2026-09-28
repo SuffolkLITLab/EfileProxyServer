@@ -266,6 +266,24 @@ public class Ecf4Helper {
     }
   }
 
+  public static String amountToString(
+      oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType amt) {
+    if (amt == null) {
+      return "";
+    }
+    var currencyCode = amt.getCurrencyID();
+    String valStr = amt.getValue().toString();
+    if (currencyCode == null) {
+      return valStr;
+    }
+    // TODO(brycew): more internationalization
+    if (currencyCode.equals(CurrencyCodeSimpleType.USD)) {
+      return "$" + valStr;
+    } else {
+      return valStr + " " + currencyCode.toString();
+    }
+  }
+
   /**
    * Converts any XML annotated object (from CXF) to a string. Useful for debugging. Doesn't throw,
    * but does return the string of the exception instead.

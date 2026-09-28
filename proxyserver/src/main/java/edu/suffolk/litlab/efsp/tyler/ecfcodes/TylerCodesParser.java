@@ -777,8 +777,7 @@ public class TylerCodesParser implements CodesParser {
                         tmp_number = tmp_number.replace("+1", "+1 ");
                         tmp_number = tmp_number.replace("+0", "+0 ");
                       }
-                      entry.setValue(tmp_number);
-                      return entry;
+                      return Map.entry(entry.getKey(), tmp_number);
                     } else {
                       var bestNumber =
                           number
@@ -786,8 +785,7 @@ public class TylerCodesParser implements CodesParser {
                               .replace("(", "")
                               .replace(")", "")
                               .replace(" ", "");
-                      entry.setValue(bestNumber);
-                      return entry;
+                      return Map.entry(entry.getKey(), bestNumber);
                     }
                   })
               .filter(

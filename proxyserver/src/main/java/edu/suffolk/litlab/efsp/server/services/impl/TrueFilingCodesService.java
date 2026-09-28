@@ -281,7 +281,7 @@ public class TrueFilingCodesService extends CodesService {
    * <p>NOTE: party types are usually tightly coupled to the type of case they are in, so a general
    * search like this might not be as useful.
    *
-   * <p>Used primarly for exploration and gaining a better understanding of jurisdiction naming
+   * <p>Used primarily for exploration and gaining a better understanding of jurisdiction naming
    * conventions. Likely shouldn't be used while a user is filing.
    */
   @GET

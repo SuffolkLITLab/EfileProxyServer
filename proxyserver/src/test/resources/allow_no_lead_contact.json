@@ -101,7 +101,7 @@
           "geolocated": false,
           "city_only": false
         },
-        "is_form_filler": true,
+        "is_form_filler": false,
         "email": "bw+faketylerprose@gmail.com",
         "party_type_code": "20646",
         "party_type": "20646",
@@ -134,7 +134,7 @@
           "geolocated": false,
           "city_only": false
         },
-        "is_form_filler": true,
+        "is_form_filler": false,
         "email": "bw+faketylerprose@gmail.com",
         "party_type_code": "20646",
         "party_type": "20646",
