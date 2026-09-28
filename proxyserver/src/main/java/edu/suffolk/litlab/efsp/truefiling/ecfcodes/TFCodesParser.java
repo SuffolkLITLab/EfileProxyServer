@@ -4,6 +4,7 @@ import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
+import edu.suffolk.litlab.efsp.model.ContactInformation.PhoneType;
 import edu.suffolk.litlab.efsp.model.FilingAction;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.OptionalService;
@@ -339,7 +340,8 @@ public class TFCodesParser implements CodesParser {
   }
 
   @Override
-  public Result<List<String>, TextVarError> vetPhoneNumbers(List<String> numbers) {
+  public Result<Map<PhoneType, String>, TextVarError> vetPhoneNumbers(
+      Map<PhoneType, String> numbers) {
     return Result.ok(numbers);
   }
 

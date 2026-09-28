@@ -33,6 +33,7 @@ import ecf4.latest.tyler.ecf.extensions.common.DocumentType;
 import ecf4.latest.tyler.ecf.extensions.common.FilingTypeType;
 import edu.suffolk.litlab.efsp.model.Address;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
+import edu.suffolk.litlab.efsp.model.ContactInformation.PhoneType;
 import edu.suffolk.litlab.efsp.model.FilingAction;
 import edu.suffolk.litlab.efsp.model.FilingAttachment;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
@@ -191,8 +192,9 @@ public class EcfCourtSpecificSerializer {
       cit.getContactMeans().add(contactMeans);
     }
 
-    List<String> numbers = contactInfo.getPhoneNumbers();
-    for (String phoneNumber : numbers) {
+    Map<PhoneType, String> numbers = contactInfo.getPhoneNumbers();
+    for (var entry : numbers.entrySet()) {
+      String phoneNumber = entry.getValue();
       TelephoneNumberType tnt = niemObjFac.createTelephoneNumberType();
       FullTelephoneNumberType ftnt = niemObjFac.createFullTelephoneNumberType();
       ftnt.setTelephoneNumberFullID(Ecf4Helper.convertString(phoneNumber));

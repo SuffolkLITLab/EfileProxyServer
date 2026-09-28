@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efsp.truefiling.ecf4;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.model.Address;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
+import edu.suffolk.litlab.efsp.model.ContactInformation.PhoneType;
 import edu.suffolk.litlab.efsp.model.FilingAttachment;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
@@ -213,20 +214,25 @@ public class EcfCourtSpecificSerializer {
     }
     // TODO: business address: code is BA1
 
-    List<String> numbers = contactInfo.getPhoneNumbers();
-    for (String phoneNumber : numbers) {
+    Map<PhoneType, String> numbers = contactInfo.getPhoneNumbers();
+    for (var entry : numbers.entrySet()) {
+      String phoneNumber = entry.getValue();
       ContactInformationType phoneCit = niemObjFac.createContactInformationType();
       TelephoneNumberType tnt = niemObjFac.createTelephoneNumberType();
       FullTelephoneNumberType ftnt = niemObjFac.createFullTelephoneNumberType();
       ftnt.setTelephoneNumberFullID(Ecf4Helper.convertString(phoneNumber));
       tnt.setTelephoneNumberRepresentation(niemObjFac.createFullTelephoneNumber(ftnt));
       phoneCit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
-      // TODO: change phone codes:
-      // BP, Business Phone, CP, Cell Phone
-      // DEFAULT, Primary Phone
-      // HP2, Home Phone
-      // MP, Message Phone
-      // OTH, Other Phone
+      var descText =
+          switch (entry.getKey()) {
+            case DEFAULT -> "DEFAULT";
+            case HOME -> "HP2";
+            case WORK -> "BP";
+            case MOBILE -> "CP";
+            case OTHER -> "OTH";
+              // MP, Message Phone also exists, but that's dumb.
+          };
+      phoneCit.setContactInformationDescriptionText(Ecf4Helper.convertText(descText));
       contactList.add(phoneCit);
     }
     contactInfo
