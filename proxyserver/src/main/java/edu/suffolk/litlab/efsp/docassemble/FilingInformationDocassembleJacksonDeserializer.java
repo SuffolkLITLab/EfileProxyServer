@@ -341,18 +341,19 @@ public class FilingInformationDocassembleJacksonDeserializer
 
     entities.setPaymentId(extractNullableString(node.get("tyler_payment_id")));
 
-    if (users.size() >= 1
-        && users.get(0).isFormFiller()
-        && users.get(0).getContactInfo().getEmail().isPresent()) {
-      log.info(
-          "Using users[0] as lead_contact because `is_form_filler` is true (this is what the EFM will do as well)");
-      entities.setLeadContact(users.get(0));
-    } else if (users.size() >= 1
-        && users.get(0).isFormFiller()
-        && users.get(0).getContactInfo().getEmail().isEmpty()) {
-      log.warn(
-          "I want to use users[0] as lead_contact, but they don't have an email! Should set it, but will use the account email instead");
-      entities.setLeadContact(users.get(0));
+    var formFiller = users.stream().filter(u -> u.isFormFiller()).findFirst();
+    if (formFiller.isPresent()) {
+      if (formFiller.get().getContactInfo().getEmail().isPresent()) {
+        log.info(
+            "Using user {} as lead_contact because `is_form_filler` is true (this is what the EFM will do as well)",
+            formFiller.get().getId());
+        entities.setLeadContact(formFiller.get());
+      } else {
+        log.warn(
+            "I want to use user {} as lead_contact, but they don't have an email! Should set it, but will use the account email instead",
+            formFiller.get().getId());
+        entities.setLeadContact(formFiller.get());
+      }
     } else {
       JsonNode leadJson = node.get("lead_contact");
       if (leadJson != null && !leadJson.isNull()) {

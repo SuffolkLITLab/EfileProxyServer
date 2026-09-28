@@ -9,13 +9,11 @@ import edu.suffolk.litlab.efsp.server.services.impl.TrueFilingCodesService;
 import edu.suffolk.litlab.efsp.server.services.impl.TrueFilingFiler;
 import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
-import edu.suffolk.litlab.efsp.server.setup.tyler.OasisEcfWsCallback;
 import edu.suffolk.litlab.efsp.server.truefiling.PolicyCacher;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.truefiling.ecfcodes.TFCodeDatabase;
 import edu.suffolk.litlab.efsp.truefiling.ecfcodes.TrueFilingCodeUpdater;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -124,10 +122,10 @@ public class TrueFilingModuleSetup implements EfmModuleSetup {
 
   @Override
   public void setupGlobals() {
-    Supplier<CodeDatabase> makeCD = () -> CodeDatabase.fromDS(jurisdiction, codeDs);
+    Supplier<TFCodeDatabase> makeCD = () -> TFCodeDatabase.fromDS(jurisdiction, codeDs);
     Supplier<UserDatabase> makeUD = () -> UserDatabase.fromDS(userDs);
     // TODO: actually setup the Ecf callback stuff.
-    OasisEcfWsCallback implementor = new OasisEcfWsCallback(makeCD, makeUD, sender);
+    var implementor = new TrueFilingWsCallback(makeCD, makeUD, sender);
     String address =
         ServiceHelpers.BASE_LOCAL_URL
             + "/jurisdictions/"
