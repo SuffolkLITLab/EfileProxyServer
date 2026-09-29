@@ -200,4 +200,8 @@ public class Person {
   public String getIdString() {
     return "id-" + id.toString();
   }
+  
+  public String toString() {
+	return "Person[" + getIdString() + ", " + getName() + ", " + getContactInfo() + "]";
+  }
 }

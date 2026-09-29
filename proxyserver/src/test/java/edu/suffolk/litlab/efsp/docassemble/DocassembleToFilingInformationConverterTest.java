@@ -38,8 +38,11 @@ import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DocassembleToFilingInformationConverterTest {
+  Logger log = LoggerFactory.getLogger(DocassembleToFilingInformationConverterTest.class);
 
   InterviewToFilingInformationConverter converter;
   CodesParser parser;
@@ -94,6 +97,7 @@ public class DocassembleToFilingInformationConverterTest {
   }
 
   private String getFileContents(String inFileName) throws IOException {
+	log.info("Getting File contents for {}", inFileName);
     InputStream inputStream = this.getClass().getResourceAsStream(inFileName);
     // https://stackoverflow.com/a/35446009/11416267, number 8
     ByteArrayOutputStream result = new ByteArrayOutputStream();
@@ -252,6 +256,6 @@ public class DocassembleToFilingInformationConverterTest {
         2,
         info.getNewPlaintiffs().size(),
         "Should have only been 2 plaintiffs, but were " + info.getNewPlaintiffs().size());
-    // assertTrue(info.getLeadContact().isEmpty());
+    assertTrue(info.getLeadContact().isEmpty());
   }
 }
