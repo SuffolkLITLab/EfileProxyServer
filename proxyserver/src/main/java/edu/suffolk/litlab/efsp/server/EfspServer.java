@@ -258,14 +258,14 @@ public class EfspServer {
     OrgMessageSender sender = new OrgMessageSender(mdSupplier, sendMsg.get());
 
     Optional<String> togaKeyStr = GetEnv("TOGA_CLIENT_KEYS");
-    List<Jurisdiction> jurisdictions =
+    List<Jurisdiction> tylerJurisdictions =
         GetEnv("TYLER_JURISDICTIONS")
             .map(j -> Stream.of(j.split(" ")))
             .orElse(Stream.empty())
             .map(Jurisdiction::parse)
             .toList();
     List<String> togaKeys = List.of(togaKeyStr.orElse("").split(" "));
-    if (jurisdictions.size() > 0 && jurisdictions.size() != togaKeys.size()) {
+    if (tylerJurisdictions.size() > 0 && tylerJurisdictions.size() != togaKeys.size()) {
       log.error("TOGA_CLIENT_KEYS list should be same size as TYLER_JURISDICTIONS list.");
       throw new RuntimeException("TOGA_CLIENT_KEYS and TYLER_JURISDICTION mismatch");
     }
@@ -276,8 +276,8 @@ public class EfspServer {
     codesUpdateTime = LocalTime.parse(time);
 
     List<EfmModuleSetup> modules = new ArrayList<>();
-    for (int idx = 0; idx < jurisdictions.size(); idx++) {
-      var jurisdiction = jurisdictions.get(idx);
+    for (int idx = 0; idx < tylerJurisdictions.size(); idx++) {
+      var jurisdiction = tylerJurisdictions.get(idx);
       TylerModuleSetup.create(
               jurisdiction,
               togaKeys.get(idx),
@@ -308,6 +308,9 @@ public class EfspServer {
     }
     log.info("Starting Server with the following Filers: {}", modules);
 
+    List<Jurisdiction> jurisdictions = new ArrayList<>();
+    jurisdictions.addAll(tylerJurisdictions);
+    jurisdictions.addAll(tfJurisdictions);
     Supplier<LoginDatabase> ldSupplier = () -> LoginDatabase.fromDS(userDs);
     SecurityHub security = new SecurityHub(ldSupplier, jurisdictions);
     EfspServer server = new EfspServer(codeDs, userDs, sender, modules, security, converterMap);
