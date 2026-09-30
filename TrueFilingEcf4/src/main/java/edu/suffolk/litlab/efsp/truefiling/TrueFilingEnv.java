@@ -29,6 +29,7 @@ public enum TrueFilingEnv {
   public static TrueFilingEnv from(ServerEnv env) {
     return switch (env) {
       case ServerEnv.PROD -> PROD;
+      case ServerEnv.QA -> TEST;
       case ServerEnv.TEST -> DEV;
     };
   }

@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efsp.truefiling.ecfcodes;
 
 import edu.suffolk.litlab.efsp.Jurisdiction;
+import edu.suffolk.litlab.efsp.ServerEnv;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseAPI;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeUpdater;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeUpdater.CourtCodelistInfo;
@@ -8,6 +9,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.CodeUrlGetter;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.truefiling.Ecf4Helper;
 import edu.suffolk.litlab.efsp.truefiling.SoapClientChooser;
+import edu.suffolk.litlab.efsp.truefiling.TrueFilingEnv;
 import imagesoft.ecf.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.ws.BindingProvider;
@@ -111,8 +113,12 @@ public class TrueFilingCodeUpdater {
 
     // Reusing USER for Jurisdiction, SESSION for the court / location, and REQUEST for the table
     // name.
+    var serverEnv = ServerEnv.fromEnvVar();
     executeCommand(
-        () -> CodeUpdater.makeCodeDatabase((ds) -> TFCodeDatabase.fromDS(Jurisdiction.ALASKA, ds)),
+        () ->
+            CodeUpdater.makeCodeDatabase(
+                (ds) ->
+                    TFCodeDatabase.fromDS(Jurisdiction.ALASKA, TrueFilingEnv.from(serverEnv), ds)),
         Jurisdiction.ALASKA,
         List.of(args));
   }

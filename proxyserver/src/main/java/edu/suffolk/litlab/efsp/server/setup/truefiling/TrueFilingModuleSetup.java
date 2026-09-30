@@ -12,6 +12,7 @@ import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.truefiling.PolicyCacher;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.truefiling.TrueFilingEnv;
 import edu.suffolk.litlab.efsp.truefiling.ecfcodes.TFCodeDatabase;
 import edu.suffolk.litlab.efsp.truefiling.ecfcodes.TrueFilingCodeUpdater;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
@@ -27,39 +28,51 @@ import javax.sql.DataSource;
 public class TrueFilingModuleSetup implements EfmModuleSetup {
 
   private final Jurisdiction jurisdiction;
+  private final TrueFilingEnv env;
   private final DataSource codeDs;
   private final DataSource userDs;
   private final Map<String, InterviewToFilingInformationConverter> converterMap;
+  private final Set<String> locations;
 
   private final OrgMessageSender sender;
 
   public static Optional<TrueFilingModuleSetup> create(
       Jurisdiction jurisdiction,
+      TrueFilingEnv env,
       DataSource codeDs,
       DataSource userDs,
       Map<String, InterviewToFilingInformationConverter> converterMap,
       OrgMessageSender sender) {
     return Optional.of(
-        new TrueFilingModuleSetup(jurisdiction, codeDs, userDs, converterMap, sender));
+        new TrueFilingModuleSetup(jurisdiction, env, codeDs, userDs, converterMap, sender));
   }
 
   private TrueFilingModuleSetup(
       Jurisdiction jurisdiction,
+      TrueFilingEnv env,
       DataSource codeDs,
       DataSource userDs,
       Map<String, InterviewToFilingInformationConverter> converterMap,
       OrgMessageSender sender) {
     this.jurisdiction = jurisdiction;
+    this.env = env;
     this.codeDs = codeDs;
     this.userDs = userDs;
     this.converterMap = converterMap;
     this.sender = sender;
+    if (env == TrueFilingEnv.DEV) {
+      this.locations = Set.of("55da5b11-2bc4-4881-abd1-b0dfdb506bb1");
+    } else if (env == TrueFilingEnv.TEST) {
+      this.locations = Set.of("FEE1F051-91EC-41DB-A6A1-AF6D0138E177");
+    } else {
+      this.locations = Set.of("55da5b11-2bc4-4881-abd1-b0dfdb506bb1");
+    }
   }
 
   @Override
   public void preSetup() {
     // Check that tables exist: pull from sources if they don't
-    try (TFCodeDatabase cd = new TFCodeDatabase(jurisdiction, codeDs.getConnection())) {
+    try (TFCodeDatabase cd = new TFCodeDatabase(jurisdiction, env, codeDs.getConnection())) {
       cd.createTablesIfAbsent();
       // There is always one hard-coded location in AK, so check a different table.
       List<String> locations = cd.getAllLocations();
@@ -82,7 +95,7 @@ public class TrueFilingModuleSetup implements EfmModuleSetup {
   }
 
   public Set<String> getCourts() {
-    return Set.of("55da5b11-2bc4-4881-abd1-b0dfdb506bb1");
+    return locations;
   }
 
   @Override
@@ -91,7 +104,7 @@ public class TrueFilingModuleSetup implements EfmModuleSetup {
     var callbackMap = new HashMap<String, EfmRestCallbackInterface>();
     Supplier<TFCodeDatabase> cdSupplier =
         () -> {
-          return TFCodeDatabase.fromDS(jurisdiction, this.codeDs);
+          return TFCodeDatabase.fromDS(jurisdiction, env, this.codeDs);
         };
 
     PolicyCacher policyCacher = new PolicyCacher();
@@ -122,7 +135,7 @@ public class TrueFilingModuleSetup implements EfmModuleSetup {
 
   @Override
   public void setupGlobals() {
-    Supplier<TFCodeDatabase> makeCD = () -> TFCodeDatabase.fromDS(jurisdiction, codeDs);
+    Supplier<TFCodeDatabase> makeCD = () -> TFCodeDatabase.fromDS(jurisdiction, env, codeDs);
     Supplier<UserDatabase> makeUD = () -> UserDatabase.fromDS(userDs);
     // TODO: actually setup the Ecf callback stuff.
     var implementor = new TrueFilingWsCallback(makeCD, makeUD, sender);

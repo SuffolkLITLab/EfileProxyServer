@@ -97,7 +97,7 @@ public class DocassembleToFilingInformationConverterTest {
   }
 
   private String getFileContents(String inFileName) throws IOException {
-	log.info("Getting File contents for {}", inFileName);
+    log.info("Getting File contents for {}", inFileName);
     InputStream inputStream = this.getClass().getResourceAsStream(inFileName);
     // https://stackoverflow.com/a/35446009/11416267, number 8
     ByteArrayOutputStream result = new ByteArrayOutputStream();

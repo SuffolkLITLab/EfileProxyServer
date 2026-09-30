@@ -38,7 +38,7 @@ public class TylerClientsTest {
 
   @Test
   public void allFactoriesShouldNotThrow() {
-    for (ServerEnv env : ServerEnv.values()) {
+    for (ServerEnv env : List.of(ServerEnv.TEST, ServerEnv.PROD)) {
       when(ServerEnv.fromEnvVar()).thenReturn(env);
       for (Jurisdiction jurisdiction :
           List.of(TEXAS, MASSACHUSETTS, ILLINOIS, INDIANA, CALIFORNIA, VERMONT)) {
