@@ -3,7 +3,7 @@
 # Copy into .github/workflows/fly.yml for GitHub to see this file.
 # For more details, check out:
 # https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
-name: Fly Deploy
+name: Fly Deploy (QA)
 on:
   push:
     branches:
@@ -14,7 +14,7 @@ jobs:
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
-    concurrency: deploy-group    # optional: ensure only one action runs at a time
+    concurrency: deploy-group-qa    # optional: ensure only one action runs at a time
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@63da3ecc5e2793b98a3f2519b3d75d4f4c11cec2 #master
