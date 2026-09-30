@@ -1,0 +1,23 @@
+# fly.toml app configuration file generated for efsp-qa on 2026-09-29T15:47:39-04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'efsp-qa'
+primary_region = 'sjc'
+kill_timeout = '1m0s'
+
+[build]
+[http_service]
+  internal_port = 9000
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[vm]]
+  size = 'shared-cpu-4x'
+  memory = '6gb'
+  cpu_kind = 'shared'
+  cpus = 4
+  memory_mb = 6144

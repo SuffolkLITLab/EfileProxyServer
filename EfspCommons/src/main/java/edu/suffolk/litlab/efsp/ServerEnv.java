@@ -8,6 +8,7 @@ import java.util.Optional;
 public enum ServerEnv {
   /// i.e. the production / live environment
   PROD("prod"),
+  QA("qa"),
   /// where we do integration, development, and testing.
   TEST("test");
 
@@ -41,6 +42,7 @@ public enum ServerEnv {
                       e -> {
                         return switch (e) {
                           case "prod" -> ServerEnv.PROD;
+                          case "qa" -> ServerEnv.QA;
                           case "stage" -> ServerEnv.TEST;
                           default -> ServerEnv.TEST;
                         };
@@ -50,6 +52,6 @@ public enum ServerEnv {
         .orElseThrow(
             () ->
                 new IllegalArgumentException(
-                    "The Env vars 'SERVER_ENV' ('test' or 'prod') or 'TYLER_ENV' ('stage' or 'prod') needs to be defined"));
+                    "The Env vars 'SERVER_ENV' ('test', 'qa', 'prod') or 'TYLER_ENV' ('stage' or 'prod') needs to be defined"));
   }
 }

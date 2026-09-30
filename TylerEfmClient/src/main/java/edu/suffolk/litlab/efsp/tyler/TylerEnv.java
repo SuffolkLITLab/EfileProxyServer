@@ -2,7 +2,7 @@ package edu.suffolk.litlab.efsp.tyler;
 
 import edu.suffolk.litlab.efsp.ServerEnv;
 
-/** The type of server environents that Tyler owns themselves. */
+/** The type of server environments that Tyler owns themselves. */
 public enum TylerEnv {
   /// i.e. the production / live environment
   PROD("prod"),
@@ -29,9 +29,14 @@ public enum TylerEnv {
   }
 
   public static TylerEnv from(ServerEnv env) {
-    return switch (env) {
-      case ServerEnv.PROD -> TylerEnv.PROD;
-      case ServerEnv.TEST -> TylerEnv.STAGE;
-    };
+    // TODO: make this a switch, figure out why surefire throws IndexExceptions.
+    if (env == ServerEnv.PROD) {
+      return TylerEnv.PROD;
+    } else if (env == ServerEnv.QA) {
+      return TylerEnv.STAGE;
+    } else if (env == ServerEnv.TEST) {
+      return TylerEnv.STAGE;
+    }
+    return TylerEnv.STAGE;
   }
 }

@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efsp.truefiling;
 
 import edu.suffolk.litlab.efsp.Jurisdiction;
+import edu.suffolk.litlab.efsp.ServerEnv;
 import gov.niem.niem.domains.jxdm._4.CourtType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.IdentificationType;
@@ -21,6 +22,7 @@ public class PrintVersions {
     // X509_PASSWORD in env.
     System.out.println("Getting versions for all truefile servers");
     try {
+      TrueFilingEnv env = TrueFilingEnv.from(ServerEnv.fromEnvVar());
       var review =
           SoapClientChooser.getFilingReviewFactory(Jurisdiction.ALASKA).getFilingReviewMDEPort();
       SoapClientChooser.setupServicePort((BindingProvider) review);
@@ -31,11 +33,19 @@ public class PrintVersions {
       var niemCoreObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
       var adamsId = niemCoreObjFac.createIdentificationType();
       var adamsStr = new gov.niem.niem.proxy.xsd._2.String();
-      adamsStr.setValue("55da5b11-2bc4-4881-abd1-b0dfdb506bb1");
+      String courtId;
+      if (env == TrueFilingEnv.DEV) {
+        courtId = "55da5b11-2bc4-4881-abd1-b0dfdb506bb1";
+      } else if (env == TrueFilingEnv.TEST) {
+        courtId = "FEE1F051-91EC-41DB-A6A1-AF6D0138E177";
+      } else {
+        courtId = "55da5b11-2bc4-4881-abd1-b0dfdb506bb1";
+      }
+      adamsStr.setValue(courtId);
       adamsId.setIdentificationID(adamsStr);
       court.setOrganizationIdentification(adamsId);
       var text = new TextType();
-      text.setValue("55da5b11-2bc4-4881-abd1-b0dfdb506bb1");
+      text.setValue(courtId);
       court.setCourtName(text);
       query.setCaseCourt(court);
       var id = new IdentificationType();

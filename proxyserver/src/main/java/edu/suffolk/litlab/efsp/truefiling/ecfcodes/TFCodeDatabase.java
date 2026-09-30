@@ -8,6 +8,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.CodeDocException;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDocIterator;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCodeType;
+import edu.suffolk.litlab.efsp.truefiling.TrueFilingEnv;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,15 +30,27 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
   private static final Logger log = LoggerFactory.getLogger(TFCodeDatabase.class);
 
   private final Jurisdiction jurisdiction;
+  private final List<NameAndCode> locations;
 
-  public TFCodeDatabase(Jurisdiction jurisdiction, Connection conn) {
+  public TFCodeDatabase(Jurisdiction jurisdiction, TrueFilingEnv env, Connection conn) {
     super(conn);
     this.jurisdiction = jurisdiction;
+    // Only AK Trial Court, and it differs between environments
+    if (env == TrueFilingEnv.DEV) {
+      this.locations =
+          List.of(new NameAndCodeType("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+    } else if (env == TrueFilingEnv.TEST) {
+      this.locations =
+          List.of(new NameAndCodeType("Alaska Court", "FEE1F051-91EC-41DB-A6A1-AF6D0138E177"));
+    } else {
+      this.locations =
+          List.of(new NameAndCodeType("Alasaka Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+    }
   }
 
-  public static TFCodeDatabase fromDS(Jurisdiction jurisdiction, DataSource ds) {
+  public static TFCodeDatabase fromDS(Jurisdiction jurisdiction, TrueFilingEnv env, DataSource ds) {
     try {
-      TFCodeDatabase cd = new TFCodeDatabase(jurisdiction, ds.getConnection());
+      TFCodeDatabase cd = new TFCodeDatabase(jurisdiction, env, ds.getConnection());
       return cd;
     } catch (SQLException e) {
       log.error("In TFCodeDatabase constructor, can't get connection: ", e);
@@ -77,28 +90,27 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
 
   @Override
   public List<String> getAllLocations() {
-    // Only AK Trial Court
-    return List.of("55da5b11-2bc4-4881-abd1-b0dfdb506bb1");
+    return locations.stream().map(l -> l.code()).toList();
   }
 
   @Override
   public List<NameAndCode> getLocationNames() {
-    return List.of(new NameAndCodeType("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+    return locations;
   }
 
   @Override
   public List<NameAndCode> getFileableLocationNames() {
-    return List.of(new NameAndCodeType("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+    return locations;
   }
 
   @Override
   public List<NameAndCode> getFileableInitialLocationNames() {
-    return List.of(new NameAndCodeType("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+    return locations;
   }
 
   @Override
   public List<NameAndCode> getFileableSubsequentLocationNames() {
-    return List.of(new NameAndCodeType("Alaska Court", "55da5b11-2bc4-4881-abd1-b0dfdb506bb1"));
+    return locations;
   }
 
   public List<NameAndCode> getPartyTypeFor(String court) {

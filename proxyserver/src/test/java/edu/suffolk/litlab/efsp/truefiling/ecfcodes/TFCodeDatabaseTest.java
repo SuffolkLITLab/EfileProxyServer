@@ -6,6 +6,7 @@ import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersionTest;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCodeType;
+import edu.suffolk.litlab.efsp.truefiling.TrueFilingEnv;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -46,7 +47,7 @@ public class TFCodeDatabaseTest {
             postgres.getJdbcUrl(),
             postgres.getUsername(),
             postgres.getPassword());
-    cd = new TFCodeDatabase(Jurisdiction.ALASKA, conn);
+    cd = new TFCodeDatabase(Jurisdiction.ALASKA, TrueFilingEnv.DEV, conn);
     cd.createTablesIfAbsent();
     cd.createTableIfAbsent(CASE_CATEGORY_TABLE);
     cd.createTableIfAbsent(CASE_TYPE_TABLE);

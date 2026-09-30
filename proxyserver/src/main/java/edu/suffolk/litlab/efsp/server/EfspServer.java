@@ -38,6 +38,7 @@ import edu.suffolk.litlab.efsp.server.utils.exceptionmappers.JsonExceptionMapper
 import edu.suffolk.litlab.efsp.server.utils.exceptionmappers.ProxyServerExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.exceptionmappers.SoapExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.exceptionmappers.SoapFaultExceptionMapper;
+import edu.suffolk.litlab.efsp.truefiling.TrueFilingEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
@@ -295,7 +296,8 @@ public class EfspServer {
             .toList();
     for (int idx = 0; idx < tfJurisdictions.size(); idx++) {
       var jurisdiction = tfJurisdictions.get(idx);
-      TrueFilingModuleSetup.create(jurisdiction, codeDs, userDs, converterMap, sender)
+      TrueFilingModuleSetup.create(
+              jurisdiction, TrueFilingEnv.from(serverEnv), codeDs, userDs, converterMap, sender)
           .ifPresent(mod -> modules.add(mod));
     }
     if (modules.isEmpty()) {
