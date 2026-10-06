@@ -134,8 +134,12 @@ public class TylerCodeUpdater {
       if (command.equalsIgnoreCase("replaceall")) {
         return cu.replaceAll(systemUrls, codelistGetter, codeUrlGetter, cd);
       } else if (command.equalsIgnoreCase("replacesome")) {
-        return cu.replaceSome(
-            systemUrls, codelistGetter, codeUrlGetter, cd, args.subList(1, args.size()));
+        var someLocations = args.subList(1, args.size());
+        if (someLocations.isEmpty()) {
+          log.error("Need to provide args of locations to replace (gave none)");
+          return false;
+        }
+        return cu.replaceSome(systemUrls, codelistGetter, codeUrlGetter, cd, someLocations);
       } else if (command.equalsIgnoreCase("refresh")) {
         return cu.updateAll(systemUrls, codelistGetter, codeUrlGetter, cd);
       } else {
@@ -161,7 +165,7 @@ public class TylerCodeUpdater {
    */
   public static void main(String[] args) throws Exception {
     if (args.length < 1) {
-      log.error("Need to pass in a subprogram: downloadIndiv, or refresh");
+      log.error("Need to pass in a subprogram: downloadIndiv, refresh, replacesome, replaceall");
       System.exit(1);
     }
 

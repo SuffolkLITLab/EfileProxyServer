@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
@@ -321,34 +320,10 @@ public class CodeUpdater {
       return false;
     }
 
-    // Drop each of tables that need to be updated
     Savepoint sp = cd.setSavepoint("court update savepoint");
     Map<String, List<String>> rawVersionsToUpdate = cd.getVersionsToUpdate();
     Map<String, List<String>> versionsToUpdate =
         makeOrRemoveUnsupportedTables(rawVersionsToUpdate, cd);
-    Instant startDel = Instant.now();
-    log.info(
-        "Removing {} court entries, over {} queries",
-        versionsToUpdate.size(),
-        versionsToUpdate.values().stream().map(List::size).reduce(0, (a, b) -> a + b));
-    for (Entry<String, List<String>> courtAndTables : versionsToUpdate.entrySet()) {
-      final String courtLocation = courtAndTables.getKey();
-      List<String> tables = courtAndTables.getValue();
-      log.debug(
-          "In {},\nremoving entries for court {} for tables: {}",
-          cd.getJurisdiction(),
-          courtLocation,
-          tables);
-      for (String table : tables) {
-        Instant delTime = Instant.now();
-
-        // Will ignore tables that don't exist.
-        cd.deleteFromTable(table, courtLocation);
-
-        updateDuration = updateDuration.plus(Duration.between(delTime, Instant.now()));
-      }
-    }
-    log.info("Took {} to remove existing tables", Duration.between(startDel, Instant.now()));
     Instant startPolicy = Instant.now();
     Map<String, List<CourtCodelistInfo>> policies =
         streamPolicies(
@@ -360,6 +335,12 @@ public class CodeUpdater {
     for (var policy : policies.entrySet()) {
       final String courtLocation = policy.getKey();
       final List<String> tables = versionsToUpdate.get(courtLocation);
+      // Delete right before reloading, so the delete, the new rows, and the new installedversion
+      // commit together. Readers never see a court's old version with its rows missing.
+      for (String table : tables) {
+        // Will ignore tables that don't exist.
+        cd.deleteFromTable(table, courtLocation);
+      }
       if (!downloadCourtTables(
           courtLocation, Optional.of(tables), cd, urlGetter, policy.getValue())) {
         log.warn("Failed updating court {}'s tables {}", courtLocation, tables);
@@ -384,6 +365,10 @@ public class CodeUpdater {
       CodeUrlGetter urlGetter,
       CodeDatabaseAPI cd)
       throws SQLException, IOException, JAXBException, URISyntaxException {
+    cd.setAutoCommit(false);
+    // All tables for all courts are about to be emptied; drop all versions too.
+    // Each court gets its version back when it reloads.
+    cd.deleteFromTable("installedversion");
     return replaceSome(systemUrls, codeInfoGetter, urlGetter, cd, List.of());
   }
 
