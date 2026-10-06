@@ -43,7 +43,9 @@ public class ServiceHelpers {
     SENDING_MDE_LOCATION =
         switch (GetEnv("SERVER_ENV").map(ServerEnv::parse).orElse(ServerEnv.TEST)) {
           case ServerEnv.PROD -> "https://efile.suffolklitlab.org";
-          case ServerEnv.QA -> "https://efile-qa.suffolklitlab.org";
+          // They didn't like the QA url, just use the test one
+          // "https://efile-qa.suffolklitlab.org";
+          case ServerEnv.QA -> "https://efile-test.suffolklitlab.org";
           case ServerEnv.TEST -> "https://efile-test.suffolklitlab.org";
         };
 
