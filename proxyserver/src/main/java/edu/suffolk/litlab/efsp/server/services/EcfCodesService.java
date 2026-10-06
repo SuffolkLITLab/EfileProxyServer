@@ -90,6 +90,28 @@ public class EcfCodesService extends CodesService {
     return cors(Response.ok(retMap));
   }
 
+  @GET
+  @Path("/filing_catalog")
+  public Response getFilingCatalogManifest() throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      return cors(Response.ok(cd.getFilingCatalogManifest()));
+    }
+  }
+
+  @GET
+  @Path("/filing_catalog/courts/{court_id}")
+  public Response getFilingCatalogCourt(@PathParam("court_id") String courtId) throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      return cd.getFilingCatalogCourt(courtId)
+          .map(catalog -> cors(Response.ok(catalog)))
+          .orElseGet(
+              () ->
+                  cors(
+                      Response.status(404)
+                          .entity("\"Court " + courtId + " has no complete filing catalog\"")));
+    }
+  }
+
   @Override
   public Response getCourts(
       HttpHeaders httpHeaders, boolean fileable, String fileableType, boolean withNames) {

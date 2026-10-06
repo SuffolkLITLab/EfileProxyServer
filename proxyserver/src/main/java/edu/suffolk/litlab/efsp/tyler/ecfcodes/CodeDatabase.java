@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -146,6 +148,117 @@ public class CodeDatabase extends CodeDatabaseAPI {
 
   private String jurisStr() {
     return jurisdiction.getName();
+  }
+
+  private static final String CATALOG_COURTS_SQL =
+      """
+      SELECT l.code, l.name, (l.initial ILIKE 'true' OR l.subsequent ILIKE 'true') AS fileable,
+        count(v.installedversion) AS versions,
+        md5(jsonb_build_array(l.name, jsonb_object_agg(v.codelist, v.installedversion)
+          FILTER (WHERE v.codelist IS NOT NULL))::text) AS revision
+      FROM location l LEFT JOIN installedversion v
+        ON v.jurisdiction=l.jurisdiction AND v.location=l.code
+        AND v.codelist IN ('casecategorycodes.zip', 'casetypecodes.zip', 'filingcodes.zip')
+        AND btrim(v.installedversion) <> ''
+      WHERE l.jurisdiction=?
+      GROUP BY l.code, l.name, l.initial, l.subsequent ORDER BY l.code
+      """;
+
+  private static final String CATALOG_CATEGORIES_SQL =
+      """
+      SELECT code, name FROM casecategory WHERE jurisdiction=? AND location=?
+        AND ecfcasetype != 'CriminalCase' ORDER BY code, name
+      """;
+
+  private static final String CATALOG_CASE_TYPES_SQL =
+      """
+      SELECT code, name, casecategory AS case_category, coalesce(lower(initial)='true', false) AS initial
+      FROM casetype WHERE jurisdiction=? AND location=? ORDER BY casecategory, code, name
+      """;
+
+  private static final String CATALOG_FILING_TYPES_SQL =
+      """
+      SELECT code, name, casecategory AS case_category, casetypeid AS case_type, filingtype AS timing
+      FROM filing WHERE jurisdiction=? AND location=? AND iscourtuseonly='False'
+        AND filingtype IN ('Initial', 'Subsequent', 'Both')
+      ORDER BY code, casecategory, casetypeid, filingtype, name
+      """;
+
+  /**
+   * Every court with a complete installed filing catalog. A court's revision changes when its name
+   * or the installed version of any of its three code lists changes. No Tyler requests.
+   */
+  public Map<String, Object> getFilingCatalogManifest() throws SQLException {
+    Map<String, Object> result = catalogHeader();
+    result.put("courts", catalogCourts());
+    return result;
+  }
+
+  /** One court's filing catalog, or empty if the court has no complete installed catalog. */
+  public Optional<Map<String, Object>> getFilingCatalogCourt(String courtCode) throws SQLException {
+    Optional<Map<String, Object>> court =
+        catalogCourts().stream().filter(c -> courtCode.equals(c.get("code"))).findFirst();
+    if (court.isEmpty()) {
+      return Optional.empty();
+    }
+    Map<String, Object> result = catalogHeader();
+    result.put("court", court.get());
+    result.put("categories", catalogRows(CATALOG_CATEGORIES_SQL, courtCode));
+    result.put("case_types", catalogRows(CATALOG_CASE_TYPES_SQL, courtCode));
+    result.put("filing_types", catalogRows(CATALOG_FILING_TYPES_SQL, courtCode));
+    return Optional.of(result);
+  }
+
+  private Map<String, Object> catalogHeader() {
+    Map<String, Object> result = new LinkedHashMap<>();
+    result.put("version", 1);
+    result.put("jurisdiction", jurisStr());
+    return result;
+  }
+
+  private List<Map<String, Object>> catalogCourts() throws SQLException {
+    List<Map<String, Object>> courts = new ArrayList<>();
+    try (PreparedStatement st = conn.prepareStatement(CATALOG_COURTS_SQL)) {
+      st.setString(1, jurisStr());
+      try (ResultSet rs = st.executeQuery()) {
+        while (rs.next()) {
+          if (rs.getInt("versions") == 3) {
+            courts.add(
+                Map.of(
+                    "code",
+                    rs.getString("code"),
+                    "name",
+                    rs.getString("name"),
+                    "revision",
+                    rs.getString("revision")));
+          } else if (rs.getBoolean("fileable")) {
+            // Fail loudly rather than let clients cache a filing court with missing codes.
+            throw new SQLException(
+                "Incomplete installed filing catalog for court " + rs.getString("code"));
+          }
+        }
+      }
+    }
+    return courts;
+  }
+
+  private List<Map<String, Object>> catalogRows(String sql, String courtCode) throws SQLException {
+    List<Map<String, Object>> rows = new ArrayList<>();
+    try (PreparedStatement st = conn.prepareStatement(sql)) {
+      st.setString(1, jurisStr());
+      st.setString(2, courtCode);
+      try (ResultSet rs = st.executeQuery()) {
+        ResultSetMetaData meta = rs.getMetaData();
+        while (rs.next()) {
+          Map<String, Object> row = new LinkedHashMap<>();
+          for (int column = 1; column <= meta.getColumnCount(); column++) {
+            row.put(meta.getColumnLabel(column), rs.getObject(column));
+          }
+          rows.add(row);
+        }
+      }
+    }
+    return rows;
   }
 
   public void createTableIfAbsent(String tableName) throws SQLException {
