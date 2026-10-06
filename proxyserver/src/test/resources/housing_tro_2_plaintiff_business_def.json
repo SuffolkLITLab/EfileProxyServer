@@ -168,7 +168,7 @@
                         "instanceName": "Housing_Temporary_Restraining_Order0002_attachment[i]"
                     }
                 },
-                "data_url": "https://www.adobe.com/support/products/enterprise/knowledgecenter/media/c4611_sample_explain.pdf",
+                "data_url": "https://raw.githubusercontent.com/SuffolkLITLab/docassemble-EFSPIntegration/refs/tags/v1.2.2/docassemble/EFSPIntegration/data/sources/example_upload.pdf",
                 "title": "Housing Temporary Restraining Order",
                 "filename": "housing_tro",
                 "filing_component": "332",
