@@ -56,8 +56,11 @@ public class DatabaseCreator {
     tds.setConnectionPoolDataSource(cpds);
     tds.setDefaultAutoCommit(true);
     tds.setDefaultTestOnBorrow(true);
+    tds.setDefaultTestWhileIdle(true);
+    tds.setDefaultTimeBetweenEvictionRunsMillis(15_000);
     tds.setValidationQuery("SELECT 1");
     tds.setMaxTotal(maxConnections);
+    tds.setLoginTimeout(waitForConnMillis * 5);
     tds.setDefaultMaxWait(Duration.ofMillis(waitForConnMillis));
     try (Connection conn = tds.getConnection()) {
       conn.setAutoCommit(true);
