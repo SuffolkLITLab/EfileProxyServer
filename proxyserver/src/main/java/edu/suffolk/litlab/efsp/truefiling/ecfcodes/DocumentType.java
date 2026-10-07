@@ -75,4 +75,49 @@ public record DocumentType(
     st.setString(3, casetypecode);
     return st;
   }
+
+  public static PreparedStatement prepSearchQuery(
+      Connection conn, String jurisdiction, String searchTerm) throws SQLException {
+    final String search =
+        """
+        SELECT DISTINCT name
+        FROM truefiling_documenttype
+        WHERE jurisdiction=? AND description ILIKE ?
+        ORDER BY name
+        """;
+    PreparedStatement st = conn.prepareStatement(search);
+    st.setString(1, jurisdiction);
+    st.setString(2, searchTerm);
+    return st;
+  }
+
+  public static PreparedStatement prepCourtCoverageQuery(
+      Connection conn, String jurisdiction, String searchTerm) throws SQLException {
+    final String search =
+        """
+        SELECT DISTINCT location
+        FROM truefiling_documenttype
+        WHERE jurisdiction=? AND description ILIKE ?
+        ORDER BY location
+        """;
+    PreparedStatement st = conn.prepareStatement(search);
+    st.setString(1, jurisdiction);
+    st.setString(2, searchTerm);
+    return st;
+  }
+
+  public static PreparedStatement prepRetrieveQuery(
+      Connection conn, String jurisdiction, String documentName) throws SQLException {
+    String retrieve =
+        """
+        SELECT DISTINCT code, location
+        FROM truefiling_documenttype
+        WHERE jurisdiction=? AND description=?
+        ORDER BY location
+        """;
+    PreparedStatement st = conn.prepareStatement(retrieve);
+    st.setString(1, jurisdiction);
+    st.setString(2, documentName);
+    return st;
+  }
 }

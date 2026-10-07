@@ -40,12 +40,7 @@ public class TrueFilingCodesService extends CodesService {
           "getCategories",
           "getCaseTypes",
           "getFilingTypes",
-          "getFilingStatuses",
-          "getAllowedFileTypes",
-          "getPartyTypes",
-          "getCaseSubtypes",
-          "getFilingComponents",
-          "getDocumentTypes");
+          "getFilingStatuses");
 
   private static final Set<String> underCaseTypeMethodNames = Set.of("getPartyTypes");
 
@@ -60,7 +55,19 @@ public class TrueFilingCodesService extends CodesService {
   @Override
   public Response getAll() {
     var retMap = ef.endPointsToMap(ef.findRESTEndpoints(List.of(this.getClass())));
-    return cors(Response.ok(retMap));
+    var endpointMap = new HashMap<>();
+    var notImplemented =
+        List.of(
+            "searchOptionalServices",
+            "retrieveOptionalServices",
+            "getOptionalService",
+            "getOptionalServices");
+    for (var entry : retMap.entrySet()) {
+      if (!notImplemented.contains(entry.getKey())) {
+        endpointMap.put(entry.getKey(), entry.getValue());
+      }
+    }
+    return cors(Response.ok(endpointMap));
   }
 
   @Override
@@ -251,24 +258,23 @@ public class TrueFilingCodesService extends CodesService {
   public Response searchFilingTypes(
       @QueryParam("search") String searchTerm, @QueryParam("result") String resultStr)
       throws SQLException {
-    throw new UnsupportedOperationException();
-    /*
     DesiredResult desiredResult = DesiredResult.parse(resultStr);
     try (TFCodeDatabase cd = cdSupplier.get()) {
       return switch (desiredResult) {
-        case DesiredResult.NAMES -> cors(Response.ok(cd.searchFilingType(searchTerm)));
+        case DesiredResult.NAMES -> cors(Response.ok(cd.searchDocumentType(searchTerm)));
         case DesiredResult.COURT_COVERAGE ->
-            cors(Response.ok(cd.courtCoverageFilingType(searchTerm)));
+            cors(Response.ok(cd.courtCoverageDocumentType(searchTerm)));
       };
     }
-    */
   }
 
   @GET
   @Path("/filing_types/{retrieve_name}")
   public Response retrieveFilingTypes(@PathParam("retrieve_name") String retrieveName)
       throws SQLException {
-    throw new UnsupportedOperationException();
+    try (TFCodeDatabase cd = cdSupplier.get()) {
+      return cors(Response.ok(cd.retrieveDocumentType(retrieveName)));
+    }
   }
 
   /**
@@ -289,8 +295,6 @@ public class TrueFilingCodesService extends CodesService {
   public Response searchPartyTypes(
       @QueryParam("search") String searchTerm, @QueryParam("result") String resultStr)
       throws SQLException {
-    throw new UnsupportedOperationException();
-    /*
     DesiredResult desiredResult = DesiredResult.parse(resultStr);
     try (TFCodeDatabase cd = cdSupplier.get()) {
       return switch (desiredResult) {
@@ -299,19 +303,15 @@ public class TrueFilingCodesService extends CodesService {
             cors(Response.ok(cd.courtCoveragePartyType(searchTerm)));
       };
     }
-    */
   }
 
   @GET
   @Path("/party_types/{retrieve_name}")
   public Response retrievePartyTypes(@PathParam("retrieve_name") String retrieveName)
       throws SQLException {
-    throw new UnsupportedOperationException();
-    /*
     try (TFCodeDatabase cd = cdSupplier.get()) {
       return cors(Response.ok(cd.retrievePartyType(retrieveName)));
     }
-    */
   }
 
   /**
@@ -321,7 +321,7 @@ public class TrueFilingCodesService extends CodesService {
    * contain at least one optional service that is matched by the term. Can be used to confirm that
    * all of the expected courts you want to file in contain an optional service that you can use.
    *
-   * <p>Used primarly for exploration and gaining a better understanding of jurisdiction naming
+   * <p>Used primarily for exploration and gaining a better understanding of jurisdiction naming
    * conventions. Likely shouldn't be used while a user is filing.
    */
   @GET
