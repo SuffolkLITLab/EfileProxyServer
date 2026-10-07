@@ -123,6 +123,39 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
         new NameAndCodeType("Minor Respondent", "MRESP"));
   }
 
+  public List<String> searchPartyType(String partyTerm) {
+    String finalPartyTerm = (partyTerm == null) ? "" : partyTerm;
+    var partyTypes = getPartyTypeFor("");
+    return partyTypes.stream()
+        .filter(pt -> pt.getName().contains(finalPartyTerm))
+        .map(pt -> pt.getName())
+        .toList();
+  }
+
+  public List<CodeAndLocation> retrievePartyType(String partyDesc) {
+    String finalPartyDesc = (partyDesc == null) ? "" : partyDesc;
+    var partyTypes = getPartyTypeFor("");
+    return partyTypes.stream()
+        .filter(pt -> pt.getName().equals(finalPartyDesc))
+        .map(pt -> new CodeAndLocation(pt.getCode(), locations.get(0).getCode()))
+        .toList();
+  }
+
+  public List<String> courtCoveragePartyType(String partyDesc) {
+    String finalPartyDesc = (partyDesc == null) ? "" : partyDesc;
+    var partyTypes = getPartyTypeFor(null);
+    var present =
+        partyTypes.stream()
+            .filter(pt -> pt.getName().contains(finalPartyDesc))
+            .findFirst()
+            .isPresent();
+    if (present) {
+      return locations.stream().map(l -> l.getCode()).toList();
+    } else {
+      return List.of();
+    }
+  }
+
   @Override
   public void updateTable(String tableName, String courtName, InputStream is)
       throws SQLException, CodeDocException {
@@ -406,6 +439,49 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
           }
           st.close();
           return nacs;
+        });
+  }
+
+  public List<String> searchDocumentType(String documentTerm) {
+    return safetyWrap(
+        () -> {
+          PreparedStatement st = DocumentType.prepSearchQuery(conn, jurisStr(), documentTerm);
+          ResultSet rs = st.executeQuery();
+          List<String> names = new ArrayList<>();
+          while (rs.next()) {
+            names.add(rs.getString(1));
+          }
+          st.close();
+          return names;
+        });
+  }
+
+  public List<CodeAndLocation> retrieveDocumentType(String documentTerm) {
+    return safetyWrap(
+        () -> {
+          PreparedStatement st = DocumentType.prepRetrieveQuery(conn, jurisStr(), documentTerm);
+          ResultSet rs = st.executeQuery();
+          List<CodeAndLocation> names = new ArrayList<>();
+          while (rs.next()) {
+            names.add(new CodeAndLocation(rs.getString(1), rs.getString(2)));
+          }
+          st.close();
+          return names;
+        });
+  }
+
+  public List<String> courtCoverageDocumentType(String documentDesc) {
+    return safetyWrap(
+        () -> {
+          PreparedStatement st =
+              DocumentType.prepCourtCoverageQuery(conn, jurisStr(), documentDesc);
+          ResultSet rs = st.executeQuery();
+          List<String> locations = new ArrayList<>();
+          while (rs.next()) {
+            locations.add(rs.getString(1));
+          }
+          st.close();
+          return locations;
         });
   }
 
