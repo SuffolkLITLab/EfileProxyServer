@@ -60,12 +60,12 @@ public class MessageSettingsDatabase extends Database {
 
   public void updateTable(MessageInfo info) throws SQLException {
     updateTable(
-        info.serverId,
-        info.fromEmail,
-        info.subjectLine,
-        info.emailResponseTemplate,
-        info.confirmationSubjectLine,
-        info.emailConfirmation);
+        info.serverId(),
+        info.fromEmail(),
+        info.subjectLine(),
+        info.emailResponseTemplate(),
+        info.confirmationSubjectLine(),
+        info.emailConfirmation());
   }
 
   public void updateTable(

@@ -17,4 +17,12 @@ public class StdLib {
   public static boolean exists(String val) {
     return val != null && !val.isBlank();
   }
+
+  public static String chooseNotBlank(String val, String val2) {
+    if (exists(val)) {
+      return val;
+    } else {
+      return val2;
+    }
+  }
 }

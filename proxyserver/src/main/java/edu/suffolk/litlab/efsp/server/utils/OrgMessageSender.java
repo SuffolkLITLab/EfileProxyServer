@@ -83,21 +83,17 @@ public class OrgMessageSender {
       log.error("Couldn't connect to message settings database", ex);
     }
 
+    var defaultSettings =
+        new MessageInfo(
+            serverId,
+            defaultFrom,
+            defaultSubject,
+            defaultResponseTemplate,
+            defaultConfirmationSubject,
+            defaultConfirmation);
     if (maybeInfo.isPresent()) {
       MessageInfo info = maybeInfo.get();
-      if (info.fromEmail == null) {
-        info.fromEmail = defaultFrom;
-      }
-      if (info.subjectLine == null) {
-        info.subjectLine = defaultSubject;
-      }
-      if (info.emailResponseTemplate == null) {
-        info.emailResponseTemplate = defaultResponseTemplate;
-      }
-      if (info.emailConfirmation == null) {
-        info.emailConfirmation = defaultConfirmation;
-      }
-      return info;
+      return info.overlayOn(defaultSettings);
     } else {
       log.warn("Couldn't get message settings, using defaults");
       return new MessageInfo(
@@ -130,8 +126,8 @@ public class OrgMessageSender {
       String theirCaseTitle) {
     MessageInfo msgSettings = getSettings(trans.serverId);
     Map<String, Object> templateVars = new HashMap<String, Object>();
-    String template = msgSettings.emailResponseTemplate;
-    String subject = msgSettings.subjectLine;
+    String template = msgSettings.emailResponseTemplate();
+    String subject = msgSettings.subjectLine();
     // Set neutral msg and subject first, since we prefer personalized messages over
     // defaults, even if tone isn't perfect.
     if (trans.neutralMsgTemplate != null && !trans.neutralMsgTemplate.isBlank()) {
@@ -174,7 +170,8 @@ public class OrgMessageSender {
       int result;
       try {
         result =
-            sendMsg.sendEmail(msgSettings.fromEmail, subject, trans.email, template, templateVars);
+            sendMsg.sendEmail(
+                msgSettings.fromEmail(), subject, trans.email, template, templateVars);
         return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
         log.error("Error when sending email", e);
@@ -201,11 +198,11 @@ public class OrgMessageSender {
     String emailTemplate = tmpls.confirmationTemplate();
     if (emailTemplate == null || emailTemplate.isBlank()) {
       log.warn("given email template was blank ({}), using default", emailTemplate);
-      emailTemplate = msgSettings.emailConfirmation;
+      emailTemplate = msgSettings.emailConfirmation();
     }
     String emailSubject = tmpls.confirmationSubject();
     if (emailSubject == null || emailSubject.isBlank()) {
-      emailSubject = msgSettings.subjectLine;
+      emailSubject = msgSettings.subjectLine();
     }
     String ids = transactionIds.stream().map(t -> t.toString()).collect(Collectors.joining(", "));
     Map<String, Object> templateVars = new HashMap<String, Object>();
@@ -221,7 +218,7 @@ public class OrgMessageSender {
       try {
         result =
             sendMsg.sendEmail(
-                msgSettings.fromEmail, emailSubject, email, emailTemplate, templateVars);
+                msgSettings.fromEmail(), emailSubject, email, emailTemplate, templateVars);
         return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
         log.error("Error when sending confirmation", e);
