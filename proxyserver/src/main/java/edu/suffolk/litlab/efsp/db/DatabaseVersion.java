@@ -20,11 +20,19 @@ import org.slf4j.LoggerFactory;
  * going back to extremely old versions of the code, this class should be completely self contained,
  * only using SQL queries from here.
  *
+ * <p>To add a new version:
+ *
+ * <ol>
+ *   <li>Increment CURRENT_VERSION
+ *   <li>Add an else-if to the end of updateDatabase() for the new version.
+ *   <li>Write your actual upgrade function (upgradeFromYYToZZ()).
+ * </ol>
+ *
  * @author brycew
  */
 public class DatabaseVersion {
 
-  static final int CURRENT_VERSION = 11;
+  static final int CURRENT_VERSION = 12;
   private static Logger log = LoggerFactory.getLogger(DatabaseVersion.class);
   private final Connection codeConn;
   private final Connection userConn;
@@ -152,6 +160,8 @@ public class DatabaseVersion {
       update9To10();
     } else if (onDiskVersion == 10) {
       update10To11();
+    } else if (onDiskVersion == 11) {
+      update11To12();
     }
     setSchemaVersion(onDiskVersion + 1);
     userConn.commit();
@@ -607,5 +617,17 @@ public class DatabaseVersion {
       }
     }
     codeConn.commit();
+  }
+
+  public void update11To12() throws SQLException {
+    final String alterMsgTable =
+        """
+	  	ALTER TABLE message_settings
+	  		 ADD COLUMN sendgrid_vault_id uuid
+	  	""";
+    try (Statement st = userConn.createStatement()) {
+      st.executeUpdate(alterMsgTable);
+    }
+    userConn.commit();
   }
 }

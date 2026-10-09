@@ -125,6 +125,7 @@ public class OrgMessageSender {
       String courtName,
       String theirCaseTitle) {
     MessageInfo msgSettings = getSettings(trans.serverId);
+    SendMessage customSendMsg = sendMsg.customSender(msgSettings.sendgridApiKey());
     Map<String, Object> templateVars = new HashMap<String, Object>();
     String template = msgSettings.emailResponseTemplate();
     String subject = msgSettings.subjectLine();
@@ -170,7 +171,7 @@ public class OrgMessageSender {
       int result;
       try {
         result =
-            sendMsg.sendEmail(
+            customSendMsg.sendEmail(
                 msgSettings.fromEmail(), subject, trans.email, template, templateVars);
         return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
@@ -195,6 +196,8 @@ public class OrgMessageSender {
       String caseTitle,
       String envelopeId) {
     MessageInfo msgSettings = getSettings(serverId);
+    SendMessage customSendMsg = sendMsg.customSender(msgSettings.sendgridApiKey());
+
     String emailTemplate = tmpls.confirmationTemplate();
     if (emailTemplate == null || emailTemplate.isBlank()) {
       log.warn("given email template was blank ({}), using default", emailTemplate);
@@ -217,7 +220,7 @@ public class OrgMessageSender {
       int result;
       try {
         result =
-            sendMsg.sendEmail(
+            customSendMsg.sendEmail(
                 msgSettings.fromEmail(), emailSubject, email, emailTemplate, templateVars);
         return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {

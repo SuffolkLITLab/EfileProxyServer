@@ -14,6 +14,7 @@ import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
+import edu.suffolk.litlab.efsp.stdlib.SensitiveInfo;
 import jakarta.mail.Message.RecipientType;
 import jakarta.mail.MessagingException;
 import jakarta.mail.PasswordAuthentication;
@@ -71,12 +72,12 @@ public class SendMessage {
     String sendingMethod = maybeSendingMethod.get();
     String sendgridApiKey = null;
     if (sendingMethod.equalsIgnoreCase("sendgrid")) {
-      Optional<String> maybeKey = GetEnv("SENDGRID_API_KEY");
-      if (maybeKey.isEmpty()) {
+      var maybeApiKey = GetEnv("SENDGRID_API_KEY");
+      if (maybeApiKey.isEmpty()) {
         log.warn("Need SENDGRID_API_KEY if sending method is {}", sendingMethod);
         return Optional.empty();
       }
-      sendgridApiKey = maybeKey.get();
+      sendgridApiKey = maybeApiKey.get();
     }
 
     List<String> smtpVars;
@@ -111,6 +112,26 @@ public class SendMessage {
     }
 
     return Optional.of(new SendMessage(sendingMethod, smtpVars, sendgridApiKey, twilioVars));
+  }
+
+  public SendMessage customSender(Optional<SensitiveInfo<String>> maybeApiKey) {
+    if (!sendingMethod.equalsIgnoreCase("sendgrid") || maybeApiKey.isEmpty()) {
+      log.info("Using default Sendgrid API key, no server key provided");
+      return this;
+    }
+
+    log.info("Using custom Sendgrid API key for server instead of default");
+    return new SendMessage(
+        sendingMethod,
+        smtpServer,
+        smtpPort,
+        smtpEnableAuth,
+        smtpUser,
+        smtpPassword,
+        maybeApiKey.get().field(),
+        twilioAccountSid,
+        twilioAuthToken,
+        twilioSendingNumber);
   }
 
   private SendMessage(
@@ -191,7 +212,7 @@ public class SendMessage {
    * @param context A HashMap containing variables that will be substituted in the message_template
    * @throws IOException If there's a network error
    */
-  public boolean sendSmtpEmail(
+  private boolean sendSmtpEmail(
       String from, String subject, String to, String messageTemplate, Map<String, Object> context)
       throws IOException {
 
@@ -241,7 +262,7 @@ public class SendMessage {
    * @param context A HashMap containing variables that will be substituted in the message_template
    * @throws IOException If there's a network error talking to sendgrid
    */
-  public int sendSendgridEmail(
+  private int sendSendgridEmail(
       String from, String subject, String to, String messageTemplate, Map<String, Object> context)
       throws IOException {
 
