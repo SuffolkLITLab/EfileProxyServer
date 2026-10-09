@@ -24,7 +24,8 @@ services:
     env_file: .env
     volumes:
       - data-volume:/var/lib/postgresql/data
-      - ./config/postgres-config:/etc/postgresql
+      # run Docker/vault-key.sh before starting the docker compose database
+      - ./Docker/pgsodium_root.key:/etc/postgresql-custom/pgsodium_root.key:Z
 
 volumes:
   data-volume:
