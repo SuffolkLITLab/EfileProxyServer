@@ -44,7 +44,7 @@ public class MessageSettingsDatabase extends Database {
         String createQuery =
             """
             CREATE TABLE message_settings (
-            "server_id" uuid PRIMARY KEY, "from_email" text, "subject_line" text,
+            "server_id" uuid PRIMARY KEY, "from_email" text, "sendgrid_vault_id" uuid, "subject_line" text,
             "email_template" text, "email_confirmation" text, "confirmation_subject_line" text)\
             """;
         try (Statement createSt = conn.createStatement()) {
@@ -114,7 +114,7 @@ public class MessageSettingsDatabase extends Database {
 
     String query =
         """
-        SELECT server_id, from_email, subject_line, email_template, confirmation_subject_line,
+        SELECT server_id, from_email, sendgrid_vault_id, subject_line, email_template, confirmation_subject_line,
         email_confirmation
         FROM message_settings
         WHERE server_id=?\
@@ -123,10 +123,15 @@ public class MessageSettingsDatabase extends Database {
       st.setObject(1, serverId);
       ResultSet rs = st.executeQuery();
       if (rs.next()) {
+        String sendgridKey = null;
+        if (rs.getObject(3) != null) {
+          sendgridKey = findSendgridKey((UUID) rs.getObject(3)).orElse(null);
+        }
         MessageInfo info =
             new MessageInfo(
                 (UUID) rs.getObject(1),
                 rs.getString(2),
+                sendgridKey,
                 rs.getString(3),
                 rs.getString(4),
                 rs.getString(5),
@@ -139,5 +144,32 @@ public class MessageSettingsDatabase extends Database {
     }
     log.warn("No settings for {}", serverId);
     return Optional.empty();
+  }
+
+  private Optional<String> findSendgridKey(UUID vaultId) {
+    if (conn == null) {
+      log.error("Connection in addToTable wasn't open yet!");
+      return Optional.empty();
+    }
+
+    String query =
+        """
+        SELECT id, decrypted_secret
+        FROM vault.decrypted_secrets
+        WHERE id=?\
+        """;
+    try (PreparedStatement st = conn.prepareStatement(query)) {
+      st.setObject(1, vaultId);
+      ResultSet rs = st.executeQuery();
+      if (rs.next()) {
+        if (rs.getString(2) != null) {
+          return Optional.of(rs.getString(2));
+        }
+      }
+      return Optional.empty();
+    } catch (SQLException e) {
+      log.error("Exception getting message settings", e);
+      return Optional.empty();
+    }
   }
 }
