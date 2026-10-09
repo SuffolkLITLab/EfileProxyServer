@@ -1,15 +1,17 @@
 package edu.suffolk.litlab.efsp.db.model;
 
+import static edu.suffolk.litlab.efsp.stdlib.StdLib.chooseNotBlank;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.UUID;
 
-public class MessageInfo {
-  public UUID serverId;
-  public String fromEmail;
-  public String subjectLine;
-  public String emailResponseTemplate;
-  public String confirmationSubjectLine;
-  public String emailConfirmation;
+public record MessageInfo(
+    UUID serverId,
+    String fromEmail,
+    String subjectLine,
+    String emailResponseTemplate,
+    String confirmationSubjectLine,
+    String emailConfirmation) {
 
   public MessageInfo(
       UUID serverId,
@@ -24,6 +26,16 @@ public class MessageInfo {
     this.emailResponseTemplate = emailResponseTemplate;
     this.emailConfirmation = emailConfirmation;
     this.confirmationSubjectLine = confirmationSubjectLine;
+  }
+
+  public MessageInfo overlayOn(MessageInfo newInfo) {
+    return new MessageInfo(
+        serverId,
+        chooseNotBlank(fromEmail, newInfo.fromEmail()),
+        chooseNotBlank(subjectLine, newInfo.subjectLine()),
+        chooseNotBlank(emailResponseTemplate, newInfo.emailResponseTemplate()),
+        chooseNotBlank(confirmationSubjectLine, newInfo.confirmationSubjectLine()),
+        chooseNotBlank(emailConfirmation, newInfo.emailConfirmation()));
   }
 
   public MessageInfo(JsonNode node) {

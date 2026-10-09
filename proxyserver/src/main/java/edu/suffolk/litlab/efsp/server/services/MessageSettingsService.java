@@ -82,10 +82,7 @@ public class MessageSettingsService {
       MessageInfo existingInfo =
           md.findMessageInfo(serverId)
               .orElse(new MessageInfo(serverId, null, null, null, null, null));
-      existingInfo.emailResponseTemplate = newInfo.emailResponseTemplate;
-      existingInfo.subjectLine = newInfo.subjectLine;
-      existingInfo.fromEmail = newInfo.fromEmail;
-      md.updateTable(existingInfo);
+      md.updateTable(newInfo.overlayOn(existingInfo));
       return Response.status(200).build();
     } catch (SQLException ex) {
       log.error("Error when trying to update settings: ", ex);
