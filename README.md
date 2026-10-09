@@ -15,6 +15,8 @@ These instructions are written for Linux (specifically Ubuntu 22.04), steps for 
     ```bash
     git clone https://github.com/SuffolkLITLab/EfileProxyServer
     cd EfileProxyServer
+    # Need to run this for the database setup to work
+    ./Docker/run_vault.sh
     docker compose -f dev-compose.yml up --watch # For a development build
     docker compose build && docker compose up -d # For a production-like build
     ```
