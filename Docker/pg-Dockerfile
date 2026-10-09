@@ -1,0 +1,7 @@
+FROM ghcr.io/supabase/postgres:17.11.0.004
+
+ENV POSTGRES_DB ''
+ENV POSTGRES_USER ''
+ENV POSTGRES_PASSWORD ''
+
+COPY z-load-extensions.sh /docker-entrypoint-initdb.d/
