@@ -44,6 +44,12 @@ public class TylerClients {
     return TylerEnv.from(ServerEnv.fromEnvVar());
   }
 
+  /**
+   * Gets the EfmUserService from the individual jursdiction and env arguments.
+   *
+   * @param jurisdiction e.g. "illinois".
+   * @param env e.g. "stage", "test", or "prod"
+   */
   public static Optional<TylerUserFactory> getEfmUserFactory(Jurisdiction jurisdiction) {
     var version = getVersion(jurisdiction);
     var domain = new TylerDomain(jurisdiction, getTylerEnv());
@@ -64,6 +70,13 @@ public class TylerClients {
         });
   }
 
+  /**
+   * Gets Tyler server's root URL for a given jurisdiction / Tyler Env (i.e. california stage).
+   *
+   * @param jurisdiction
+   * @param envEnum
+   * @return
+   */
   public static String getTylerServerRootUrl(Jurisdiction jurisdiction) {
     TylerDomain domain = new TylerDomain(jurisdiction, getTylerEnv());
     if (domain.jurisdiction() == Jurisdiction.CALIFORNIA) {
