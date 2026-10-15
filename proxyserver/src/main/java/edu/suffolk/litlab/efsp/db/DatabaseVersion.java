@@ -623,10 +623,24 @@ public class DatabaseVersion {
     final String alterMsgTable =
         """
 	  	ALTER TABLE message_settings
-	  		 ADD COLUMN sendgrid_vault_id uuid
+	  		 ADD COLUMN sendgrid_vault_id uuid,
+	  		 ADD COLUMN is_default boolean DEFAULT true,
+	  		 DROP CONSTRAINT message_settings_pkey
 	  	""";
+    final String newPkey =
+        """
+    	ALTER TABLE message_settings
+    	    ADD PRIMARY KEY (server_id, from_email);
+    	""";
+    final String newSubmittedColumn =
+        """
+    	ALTER TABLE submitted_filings
+    	    ADD COLUMN from_email text
+    	""";
     try (Statement st = userConn.createStatement()) {
       st.executeUpdate(alterMsgTable);
+      st.executeUpdate(newPkey);
+      st.executeUpdate(newSubmittedColumn);
     }
     userConn.commit();
   }

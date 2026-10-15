@@ -458,7 +458,8 @@ public class FilingInformationDocassembleJacksonDeserializer
             getStringDefault(node, "rejected_contents", ""),
             getStringDefault(node, "rejected_subject", ""),
             getStringDefault(node, "neutral_contents", ""),
-            getStringDefault(node, "neutral_subject", ""));
+            getStringDefault(node, "neutral_subject", ""),
+            getStringDefault(node, "from_email", ""));
 
     entities.setEmailTemplates(emailTemplates);
 

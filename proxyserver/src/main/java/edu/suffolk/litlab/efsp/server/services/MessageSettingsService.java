@@ -20,6 +20,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,10 +51,11 @@ public class MessageSettingsService {
   @Path("/settings")
   @NeedsAuthorization
   public Response getMsgSettings(@Context SecurityContext security) {
+    // TODO: add from_email here if anyone wants to query specific ones
     EfspSecurityContext efspSecurity = (EfspSecurityContext) security;
     MDC.put(MDCWrappers.OPERATION, "MessageSettingsService.getMsgSettings");
     OrgMessageSender orgMsg = new OrgMessageSender(mdSupplier, null);
-    MessageInfo info = orgMsg.getSettings(efspSecurity.getServerId());
+    MessageInfo info = orgMsg.getSettings(efspSecurity.getServerId(), Optional.empty());
     return Response.ok(info).build();
   }
 
