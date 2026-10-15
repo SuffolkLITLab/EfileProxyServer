@@ -7,10 +7,14 @@ import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import imagesoft.ecf.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import imagesoft.ecf.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.WebServiceFeature;
+
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+
 import org.apache.cxf.ext.logging.LoggingFeature;
 import org.apache.cxf.message.Message;
 import org.slf4j.Logger;
@@ -51,9 +55,7 @@ public class SoapClientChooser {
     var domain = new TrueFilingDomain(jurisdiction, getTrueFilingEnv());
     URL url = getRes(domain, REVIEW_SUFFIX);
     if (shouldLogRequests()) {
-      LoggingFeature loggingFeature = new LoggingFeature();
-      loggingFeature.setPrettyLogging(true);
-      return new FilingReviewMDEService(url, loggingFeature);
+      return new FilingReviewMDEService(url, getLoggingFeature());
     }
     return new FilingReviewMDEService(url);
   }
@@ -62,9 +64,7 @@ public class SoapClientChooser {
     var domain = new TrueFilingDomain(jurisdiction, getTrueFilingEnv());
     URL url = getRes(domain, RECORD_SUFFIX);
     if (shouldLogRequests()) {
-      LoggingFeature loggingFeature = new LoggingFeature();
-      loggingFeature.setPrettyLogging(true);
-      return new CourtRecordMDEService(url, loggingFeature);
+      return new CourtRecordMDEService(url, getLoggingFeature());
     }
     return new CourtRecordMDEService(url);
   }
@@ -80,5 +80,19 @@ public class SoapClientChooser {
       ctx.put(Message.PROTOCOL_HEADERS, Map.of("IntegratorId", List.of()));
     }
     ctx.put("set-jaxb-validation-event-handler", "false");
+  }
+  
+  private static WebServiceFeature getLoggingFeature() {
+	  LoggingFeature loggingFeature = new LoggingFeature();
+      loggingFeature.addSensitiveElementNames(
+          Set.of("api_key", "password", "Password", "BinaryBase64Object"));
+      loggingFeature.addSensitiveProtocolHeaderNames(
+          Set.of(
+              "IntegratorId",
+              "X-API-KEY",
+              "x-api-key",
+              "X-Api-Key"));
+      loggingFeature.setPrettyLogging(true);
+      return loggingFeature;
   }
 }

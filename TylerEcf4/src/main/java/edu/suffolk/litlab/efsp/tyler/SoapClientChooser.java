@@ -9,6 +9,8 @@ import edu.suffolk.litlab.efsp.Jurisdiction;
 import jakarta.xml.ws.WebServiceFeature;
 import java.net.URL;
 import java.util.Optional;
+import java.util.Set;
+
 import org.apache.cxf.ext.logging.LoggingFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +35,6 @@ public class SoapClientChooser {
       shouldLogRequests = Optional.of(ConfigurationLoader.shouldLogRequests());
     }
     return shouldLogRequests.orElse(false);
-  }
-
-  public static WebServiceFeature getLoggingFeature() {
-    LoggingFeature loggingFeature = new LoggingFeature();
-    loggingFeature.setPrettyLogging(true);
-    return loggingFeature;
   }
 
   private static URL getRes(TylerDomain domain, TylerVersion version, String suffix) {
@@ -122,4 +118,20 @@ public class SoapClientChooser {
           }
         });
   }
+
+  private static WebServiceFeature getLoggingFeature() {
+    LoggingFeature loggingFeature = new LoggingFeature();
+    loggingFeature.addSensitiveElementNames(
+        Set.of("api_key", "password", "Password", "BinaryBase64Object"));
+    loggingFeature.addSensitiveProtocolHeaderNames(
+        Set.of(
+              "IntegratorId",
+              "X-API-KEY",
+              "x-api-key",
+              "X-Api-Key"));
+      loggingFeature.setPrettyLogging(true);
+    loggingFeature.setPrettyLogging(true);
+    return loggingFeature;
+  }
+
 }
