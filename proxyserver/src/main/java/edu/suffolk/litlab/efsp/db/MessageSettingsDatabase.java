@@ -44,8 +44,8 @@ public class MessageSettingsDatabase extends Database {
         String createQuery =
             """
             CREATE TABLE message_settings (
-            "server_id" uuid PRIMARY KEY, "from_email" text, "sendgrid_vault_id" uuid, "subject_line" text,
-            "email_template" text, "email_confirmation" text, "confirmation_subject_line" text)\
+            "server_id" uuid, "from_email" text, "is_default" boolean DEFAULT true, "sendgrid_vault_id" uuid, "subject_line" text,
+            "email_template" text, "email_confirmation" text, "confirmation_subject_line" text, PRIMARY KEY(server_id, from_email))\
             """;
         try (Statement createSt = conn.createStatement()) {
           int retVal = createSt.executeUpdate(createQuery);
@@ -62,6 +62,7 @@ public class MessageSettingsDatabase extends Database {
     updateTable(
         info.serverId(),
         info.fromEmail(),
+        false,
         info.subjectLine(),
         info.emailResponseTemplate(),
         info.confirmationSubjectLine(),
@@ -71,6 +72,7 @@ public class MessageSettingsDatabase extends Database {
   public void updateTable(
       UUID serverId,
       String toEmail,
+      boolean isDefault,
       String subjectLine,
       String emailTemplate,
       String confirmationSubjectLine,
@@ -84,24 +86,25 @@ public class MessageSettingsDatabase extends Database {
     String insertIntoTable =
         """
         INSERT INTO message_settings (
-            "server_id", "from_email", "subject_line", "email_template", "confirmation_subject_line", "email_confirmation"
+            "server_id", "from_email", "is_default", "subject_line", "email_template", "confirmation_subject_line", "email_confirmation"
         ) VALUES (
-          ?, ?, ?, ?, ?, ?) ON CONFLICT (server_id) DO UPDATE SET from_email=?, subject_line=?,
+          ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (server_id, from_email) DO UPDATE SET is_default=?, subject_line=?,
               email_template=?, confirmation_subject_line=?, email_confirmation=?
         """;
 
     try (PreparedStatement insertSt = conn.prepareStatement(insertIntoTable)) {
       insertSt.setObject(1, serverId);
       insertSt.setString(2, toEmail);
-      insertSt.setString(3, subjectLine);
-      insertSt.setString(4, emailTemplate);
-      insertSt.setString(5, confirmationSubjectLine);
-      insertSt.setString(6, emailConfirmation);
-      insertSt.setString(7, toEmail);
-      insertSt.setString(8, subjectLine);
-      insertSt.setString(9, emailTemplate);
-      insertSt.setString(10, confirmationSubjectLine);
-      insertSt.setString(11, emailConfirmation);
+      insertSt.setBoolean(3, isDefault);
+      insertSt.setString(4, subjectLine);
+      insertSt.setString(5, emailTemplate);
+      insertSt.setString(6, confirmationSubjectLine);
+      insertSt.setString(7, emailConfirmation);
+      insertSt.setBoolean(8, isDefault);
+      insertSt.setString(9, subjectLine);
+      insertSt.setString(10, emailTemplate);
+      insertSt.setString(11, confirmationSubjectLine);
+      insertSt.setString(12, emailConfirmation);
       insertSt.executeUpdate();
     }
   }
@@ -117,7 +120,7 @@ public class MessageSettingsDatabase extends Database {
         SELECT server_id, from_email, sendgrid_vault_id, subject_line, email_template, confirmation_subject_line,
         email_confirmation
         FROM message_settings
-        WHERE server_id=?\
+        WHERE server_id=? AND is_default=true\
         """;
     try (PreparedStatement st = conn.prepareStatement(query)) {
       st.setObject(1, serverId);
@@ -144,6 +147,47 @@ public class MessageSettingsDatabase extends Database {
     }
     log.warn("No settings for {}", serverId);
     return Optional.empty();
+  }
+
+  public Optional<MessageInfo> findMessageInfo(UUID serverId, String fromEmail) {
+    if (conn == null) {
+      log.error("Connection in addToTable wasn't open yet!");
+      return Optional.empty();
+    }
+
+    String query =
+        """
+        SELECT server_id, from_email, sendgrid_vault_id, subject_line, email_template, confirmation_subject_line,
+        email_confirmation
+        FROM message_settings
+        WHERE server_id=? AND from_email=?\
+        """;
+    try (PreparedStatement st = conn.prepareStatement(query)) {
+      st.setObject(1, serverId);
+      st.setString(2, fromEmail);
+      ResultSet rs = st.executeQuery();
+      if (rs.next()) {
+        String sendgridKey = null;
+        if (rs.getObject(3) != null) {
+          sendgridKey = findSendgridKey((UUID) rs.getObject(3)).orElse(null);
+        }
+        MessageInfo info =
+            new MessageInfo(
+                (UUID) rs.getObject(1),
+                rs.getString(2),
+                sendgridKey,
+                rs.getString(3),
+                rs.getString(4),
+                rs.getString(5),
+                rs.getString(6));
+        return Optional.of(info);
+      }
+    } catch (SQLException e) {
+      log.error("Exception getting message settings", e);
+      return Optional.empty();
+    }
+    log.warn("No settings for {} with from email {}, falling back to default settings", serverId);
+    return findMessageInfo(serverId);
   }
 
   private Optional<String> findSendgridKey(UUID vaultId) {

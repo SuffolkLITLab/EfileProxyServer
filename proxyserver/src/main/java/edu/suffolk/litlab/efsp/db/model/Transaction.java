@@ -20,6 +20,7 @@ public class Transaction {
   public String neutralMsgSubject;
   public UUID transactionId;
   public UUID serverId;
+  public String fromEmail;
   public String apiKeyUsed;
   public String caseTypeName;
   public String courtId;
@@ -32,7 +33,8 @@ public class Transaction {
       SELECT name, user_id, phone_number, email, transaction_id, server_id,
           api_key_used, casetype, court_id, submitted, accepted_msg_template,
           accepted_msg_subject, rejected_msg_template, rejected_msg_subject,
-          neutral_msg_template, neutral_msg_subject, case_title, envelope_id
+          neutral_msg_template, neutral_msg_subject, case_title, envelope_id,
+          from_email
       FROM submitted_filings
       WHERE transaction_id = ?\
       """;
@@ -61,6 +63,7 @@ public class Transaction {
     trans.neutralMsgSubject = rs.getString(16);
     trans.caseTitle = rs.getString(17);
     trans.envelopeId = rs.getString(18);
+    trans.fromEmail = rs.getString(19);
     return trans;
   }
 }

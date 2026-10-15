@@ -60,7 +60,8 @@ public class UserDatabase extends Database {
             "neutral_msg_template" text,
             "neutral_msg_subject" text,
             "case_title" text,
-            "envelope_id" text)\
+            "envelope_id" text,
+            "from_email" text)\
             """;
         try (Statement createSt = conn.createStatement()) {
           log.info("Full statement: {}", createQuery);
@@ -140,12 +141,13 @@ public class UserDatabase extends Database {
             "neutral_msg_template",
             "neutral_msg_subject",
             "case_title",
-            "envelope_id"
+            "envelope_id",
+            "from_email"
         ) VALUES (
             ?, ?,
             ?, ?, ?, ?,
             ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?)\
+            ?, ?, ?, ?, ?, ?, ?, ?, ?)\
         """;
     try (PreparedStatement insertSt = conn.prepareStatement(insertIntoTable)) {
       insertSt.setObject(1, filingPartyId);
@@ -167,6 +169,7 @@ public class UserDatabase extends Database {
       insertSt.setString(16, tmpls.neutralSubject());
       insertSt.setString(17, caseTitle);
       insertSt.setString(18, envelopeId);
+      insertSt.setString(19, tmpls.fromEmail());
       insertSt.executeUpdate();
     }
   }

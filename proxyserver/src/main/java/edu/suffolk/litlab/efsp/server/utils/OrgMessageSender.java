@@ -75,10 +75,14 @@ public class OrgMessageSender {
     this.sendMsg = sendMsg;
   }
 
-  public MessageInfo getSettings(UUID serverId) {
+  public MessageInfo getSettings(UUID serverId, Optional<String> fromEmail) {
     Optional<MessageInfo> maybeInfo = Optional.empty();
     try (MessageSettingsDatabase md = mdSupplier.get()) {
-      maybeInfo = md.findMessageInfo(serverId);
+      if (fromEmail.isPresent()) {
+        maybeInfo = md.findMessageInfo(serverId, fromEmail.get());
+      } else {
+        maybeInfo = md.findMessageInfo(serverId);
+      }
     } catch (SQLException ex) {
       log.error("Couldn't connect to message settings database", ex);
     }
@@ -124,7 +128,11 @@ public class OrgMessageSender {
       String messageUrl,
       String courtName,
       String theirCaseTitle) {
-    MessageInfo msgSettings = getSettings(trans.serverId);
+    Optional<String> maybeFromEmail =
+        trans.fromEmail == null || trans.fromEmail.isBlank()
+            ? Optional.empty()
+            : Optional.of(trans.fromEmail);
+    MessageInfo msgSettings = getSettings(trans.serverId, maybeFromEmail);
     SendMessage customSendMsg = sendMsg.customSender(msgSettings.sendgridApiKey());
     Map<String, Object> templateVars = new HashMap<String, Object>();
     String template = msgSettings.emailResponseTemplate();
@@ -195,7 +203,7 @@ public class OrgMessageSender {
       String caseType,
       String caseTitle,
       String envelopeId) {
-    MessageInfo msgSettings = getSettings(serverId);
+    MessageInfo msgSettings = getSettings(serverId, tmpls.checkFromEmail());
     SendMessage customSendMsg = sendMsg.customSender(msgSettings.sendgridApiKey());
 
     String emailTemplate = tmpls.confirmationTemplate();
