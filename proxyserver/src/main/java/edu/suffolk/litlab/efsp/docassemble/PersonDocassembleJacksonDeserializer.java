@@ -159,11 +159,7 @@ public class PersonDocassembleJacksonDeserializer {
     if (personType.equalsIgnoreCase("business") || personType.equalsIgnoreCase("organization")) {
       isOrg = true;
     }
-    collector.pushAttributeStack("name");
-    Name name = NameDocassembleDeserializer.fromNode(node.get("name"), isOrg, parser, collector);
-    collector.popAttributeStack();
-
-    Optional<String> efmId = getStringMember(node, "tyler_id");
+    var isNewBool = false;
     if (node.has("is_new")) {
       var isNew = node.get("is_new");
       if (!isNew.isBoolean()) {
@@ -175,29 +171,37 @@ public class PersonDocassembleJacksonDeserializer {
                 List.of(),
                 Optional.of(isNew.toString())));
       }
-      if (isNew.asBoolean() && efmId.isPresent()) {
-        collector.addWrong(
-            collector.requestVar(
-                "is_new",
-                "Can't have an EFM (tyler) ID on a "
-                    + "brand new party to the case: their tyler id shouldn't exist yet",
-                "bool",
-                List.of(),
-                Optional.of(isNew.toString())));
-      }
-      if (!isNew.asBoolean() && efmId.isEmpty()) {
-        collector.addWrong(
-            collector.requestVar(
-                "tyler_id",
-                "Can't be marked as not new, but not have an EFM ID",
-                "text",
-                List.of(),
-                Optional.of(isNew.toString())));
-      }
-      // if marked as is_new and no EFM id, that's fine! They're brand new to the case
+      isNewBool = isNew.asBoolean();
     }
-    // if not marked as new, completely depend on the presence of "tyler_id"
 
+    collector.pushAttributeStack("name");
+    Name name =
+        NameDocassembleDeserializer.fromNode(node.get("name"), isOrg, parser, collector, isNewBool);
+    collector.popAttributeStack();
+
+    Optional<String> efmId = getStringMember(node, "tyler_id");
+    // if marked as is_new and no EFM id, that's fine! They're brand new to the case
+    if (isNewBool && efmId.isPresent()) {
+      collector.addWrong(
+          collector.requestVar(
+              "is_new",
+              "Can't have an EFM (tyler) ID on a "
+                  + "brand new party to the case: their tyler id shouldn't exist yet",
+              "bool",
+              List.of(),
+              Optional.of("" + isNewBool)));
+    }
+    if (node.has("is_new") && !isNewBool && efmId.isEmpty()) {
+      collector.addWrong(
+          collector.requestVar(
+              "tyler_id",
+              "Can't be marked as not new, but not have an EFM ID",
+              "text",
+              List.of(),
+              Optional.of("" + isNewBool)));
+    }
+
+    // if not marked as new, completely depend on the presence of "tyler_id"
     Person per =
         Person.FromInput(
             name, info, gender, language, birthdate, isOrg, isFormFiller, partyType, efmId);

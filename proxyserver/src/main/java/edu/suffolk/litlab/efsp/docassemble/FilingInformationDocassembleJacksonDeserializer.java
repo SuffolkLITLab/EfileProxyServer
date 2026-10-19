@@ -674,7 +674,8 @@ public class FilingInformationDocassembleJacksonDeserializer
     } else if (jsonLowerCase.get("judge").isObject()) {
       collector.pushAttributeStack("judge");
       judgeName =
-          NameDocassembleDeserializer.fromNode(jsonLowerCase.get("judge"), false, parser, collector)
+          NameDocassembleDeserializer.fromNode(
+                  jsonLowerCase.get("judge"), false, parser, collector, true)
               .makeFullName();
       collector.popAttributeStack();
     }

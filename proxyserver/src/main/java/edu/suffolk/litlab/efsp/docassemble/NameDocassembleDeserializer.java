@@ -14,7 +14,7 @@ import edu.suffolk.litlab.efsp.utils.InterviewVariable;
 public class NameDocassembleDeserializer {
 
   public static Name fromNode(
-      JsonNode node, boolean isOrg, CodesParser parser, InfoCollector collector)
+      JsonNode node, boolean isOrg, CodesParser parser, InfoCollector collector, boolean isNew)
       throws FilingError {
     if (node == null || node.isNull()) {
       InterviewVariable var =
@@ -46,20 +46,32 @@ public class NameDocassembleDeserializer {
             .varBuilder()
             .name("first")
             .description("The first name of a person / name of a business");
-    String firstName =
-        collector.unwrap(parser.vetFirstName(getStringMember(node, "first")), firstBuilder);
+
+    String firstName = getStringDefault(node, "first", "");
+    if (isNew) {
+      firstName =
+          collector.unwrap(parser.vetFirstName(getStringMember(node, "first")), firstBuilder);
+    }
     var middleBuilder =
         collector.varBuilder().name("middle").description("The middle name of a person");
-    String middleName =
-        collector.unwrap(parser.vetMiddleName(getStringMember(node, "middle")), middleBuilder);
+    String middleName = getStringDefault(node, "middle", "");
+    if (isNew) {
+      middleName =
+          collector.unwrap(parser.vetMiddleName(getStringMember(node, "middle")), middleBuilder);
+    }
     var lastBuilder = collector.varBuilder().name("last").description("The last name of a person");
-    String lastName =
-        collector.unwrap(parser.vetLastName(getStringMember(node, "last")), lastBuilder);
+    String lastName = getStringDefault(node, "last", "");
+    if (isNew) {
+      lastName = collector.unwrap(parser.vetLastName(getStringMember(node, "last")), lastBuilder);
+    }
 
     var suffixBuilder =
         collector.varBuilder().name("name.suffix").description("The suffix of a person's name");
-    var suffix =
-        collector.unwrapCode(parser.vetSuffix(getStringMember(node, "suffix")), suffixBuilder);
+    var suffix = getStringDefault(node, "suffix", "");
+    if (isNew) {
+      suffix =
+          collector.unwrapCode(parser.vetSuffix(getStringMember(node, "suffix")), suffixBuilder);
+    }
 
     Name name =
         new Name(
