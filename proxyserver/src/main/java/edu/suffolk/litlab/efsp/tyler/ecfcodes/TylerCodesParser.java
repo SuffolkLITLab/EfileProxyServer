@@ -764,29 +764,23 @@ public class TylerCodesParser implements CodesParser {
                     if (phoneRow.matchRegex(number)) {
                       return entry;
                     }
+                    var bestNumber =
+                        number.replace("-", "").replace("(", "").replace(")", "").replace(" ", "");
                     // HACK(brycew): Massachusetts doesn't like dashes in the number, just wants
                     // numbers, but also requires a space between the country code and the rest of
-                    // it?
-                    if (number.contains("+")) {
+                    // it
+                    if (bestNumber.contains("+")) {
                       // there should be a space between the country code and the rest of the
                       // number, but no where else??
                       // TODO(brycew): really just needs to be checked in docassemble itself
-                      var tmp_number =
-                          number.replace("-", "").replace("(", "").replace(")", "").strip();
-                      if (tmp_number.startsWith("+1") || tmp_number.startsWith("+0")) {
-                        tmp_number = tmp_number.replace("+1", "+1 ");
-                        tmp_number = tmp_number.replace("+0", "+0 ");
+                      if (bestNumber.startsWith("+1") || bestNumber.startsWith("+01")) {
+                        bestNumber = bestNumber.replace("+1", "+1 ");
+                        bestNumber = bestNumber.replace("+01", "+01 ");
+                      } else if (bestNumber.startsWith("+0")) {
+                        bestNumber = bestNumber.replace("+0", "+0 ");
                       }
-                      return Map.entry(entry.getKey(), tmp_number);
-                    } else {
-                      var bestNumber =
-                          number
-                              .replace("-", "")
-                              .replace("(", "")
-                              .replace(")", "")
-                              .replace(" ", "");
-                      return Map.entry(entry.getKey(), bestNumber);
                     }
+                    return Map.entry(entry.getKey(), bestNumber);
                   })
               .filter(
                   entry -> {
