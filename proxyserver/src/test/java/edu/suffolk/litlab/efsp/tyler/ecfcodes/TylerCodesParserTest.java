@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.server.ecf4.tyler;
+package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
 import static com.hubspot.assertj.algebra.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,18 +18,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.NameAndCodeType;
 import edu.suffolk.litlab.efsp.model.ContactInformation.PhoneType;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CourtLocationInfo;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.CrossReference;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.DataFieldRow;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.DataFields;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.DocumentTypeTableRow;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingCode;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingComponent;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.OptionalServiceCode;
-import edu.suffolk.litlab.efsp.tyler.ecfcodes.TylerCodesParser;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -577,9 +565,18 @@ public class TylerCodesParserTest {
 
     @Test
     public void testNormalPhoneNumber() {
-      var phones = Map.of(PhoneType.DEFAULT, "4092345678");
-      var res = parser.vetPhoneNumbers(phones);
-      assertThat(res).containsOk(phones);
+      for (String number :
+          List.of(
+              "4092345678",
+              "+1 (983) 885-1222",
+              "+1     983 885 1222",
+              "+1 409-234-5678",
+              "+018883456789")) {
+        var phones = Map.of(PhoneType.DEFAULT, number);
+        var res = parser.vetPhoneNumbers(phones);
+        assertThat(res).isOk();
+        assertThat(res.expect("")).containsKey(PhoneType.DEFAULT);
+      }
     }
 
     @Test
