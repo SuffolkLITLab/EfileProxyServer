@@ -22,7 +22,7 @@ COPY Docker/docker_run_dev.sh /app/
 EXPOSE 9000
 CMD [ "/bin/sh", "/app/docker_run_dev.sh" ]
 
-FROM eclipse-temurin:21.0.7_6-jre-alpine AS release
+FROM eclipse-temurin:21.0.12.1_1-jre-alpine AS release
 ARG CI_COMMIT_SHA
 LABEL git-commit=$CI_COMMIT_SHA
 COPY --from=build  /app/proxyserver/target/efspserver-with-deps.jar /app/
