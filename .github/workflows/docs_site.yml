@@ -27,15 +27,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/configure-pages@v5
-      - uses: actions/setup-python@v5
+      - uses: actions/configure-pages@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.10'
       - name: Build Mkdocs
         run: |
             pip install mkdocs mkdocs-awesome-nav mkdocs-mermaid2-plugin
             mkdocs build
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           java-version: '21'
           distribution: 'adopt'
@@ -49,7 +49,7 @@ jobs:
             # Not active right now, but keeping around in case we want to change
             # sed -i 's/url\: url/url\: url\, supportedSubmitMethods\: \[\]/' site/endpoints/ui/swagger-initializer.js
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site/
-      - uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v5
