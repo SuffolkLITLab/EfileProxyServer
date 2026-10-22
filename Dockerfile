@@ -1,4 +1,4 @@
-FROM maven:3.8-eclipse-temurin-21 AS build
+FROM maven:3.10-eclipse-temurin-21-noble AS build
 ARG CI_COMMIT_SHA
 LABEL git-commit=$CI_COMMIT_SHA
 COPY pom.xml /app/
