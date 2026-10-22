@@ -19,5 +19,6 @@ java \
 exec java \
     $TLS_SECRETS_ARG \
     $JACOCO_ARG \
+    -Dcom.sun.net.ssl.checkRevocation=true -Dcom.sun.security.enableCRLDP=true \
     -XX:+HeapDumpOnOutOfMemoryError \
     -jar efspserver-with-deps.jar

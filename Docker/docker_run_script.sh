@@ -17,4 +17,5 @@ exec java \
     -XX:+HeapDumpOnOutOfMemoryError \
     -XX:InitialRAMPercentage=20.0 \
     -XX:MaxRAMPercentage=75.0 \
+    -Dcom.sun.net.ssl.checkRevocation=true -Dcom.sun.security.enableCRLDP=true \
     -jar efspserver-with-deps.jar
