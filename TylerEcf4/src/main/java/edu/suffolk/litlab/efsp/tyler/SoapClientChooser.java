@@ -125,7 +125,6 @@ public class SoapClientChooser {
     loggingFeature.addSensitiveProtocolHeaderNames(
         Set.of("IntegratorId", "X-API-KEY", "x-api-key", "X-Api-Key"));
     loggingFeature.setPrettyLogging(true);
-    loggingFeature.setPrettyLogging(true);
     return loggingFeature;
   }
 }
