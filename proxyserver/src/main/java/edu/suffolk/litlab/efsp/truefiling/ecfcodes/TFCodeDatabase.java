@@ -193,6 +193,10 @@ public class TFCodeDatabase extends CodeDatabaseAPI {
     if (conn == null) {
       throw new SQLException();
     }
+    if (tableName.equalsIgnoreCase("installedversion")) {
+      // Do nothing; no versions for AK.
+      return true;
+    }
     final String deleteFromTable = CodeTableConstants.getAllDeleteFrom(tableName);
     try (PreparedStatement st = conn.prepareStatement(deleteFromTable)) {
       st.setString(1, jurisStr());

@@ -83,7 +83,7 @@ public class SoapClientChooser {
   private static WebServiceFeature getLoggingFeature() {
     LoggingFeature loggingFeature = new LoggingFeature();
     loggingFeature.addSensitiveElementNames(
-        Set.of("api_key", "password", "Password", "BinaryBase64Object"));
+        Set.of("api_key", "password", "Password", "BinaryBase64Object", "ns2:BinaryBase64Object"));
     loggingFeature.addSensitiveProtocolHeaderNames(
         Set.of("IntegratorId", "X-API-KEY", "x-api-key", "X-Api-Key"));
     loggingFeature.setPrettyLogging(true);

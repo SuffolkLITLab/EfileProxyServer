@@ -75,7 +75,7 @@ public class EcfCourtSpecificSerializer {
     if (per.isOrg()) {
       return ecfOf.createEntityOrganization(serializeOrganization(per, contactInfoList));
     } else {
-      return ecfOf.createEntityPerson(serializePerson(per, contactInfoList));
+      return ecfOf.createEntityPerson(serializePerson(per, contactInfoList, false));
     }
   }
 
@@ -87,7 +87,7 @@ public class EcfCourtSpecificSerializer {
       org.setId(null);
       et.setEntityRepresentation(ecfOf.createEntityOrganization(org));
     } else {
-      var person = serializePerson(per, contactInfoList);
+      var person = serializePerson(per, contactInfoList, true);
       person.setId(null);
       et.setEntityRepresentation(ecfOf.createEntityPerson(person));
     }
@@ -107,7 +107,8 @@ public class EcfCourtSpecificSerializer {
     return ot;
   }
 
-  private PersonType serializePerson(Person per, List<ContactInformationType> infos) {
+  private PersonType serializePerson(
+      Person per, List<ContactInformationType> infos, boolean isDocumentSubmitter) {
     // Else, it's a person: add other optional person stuff
     PersonType pt = ecfOf.createPersonType();
     pt.setId(per.getIdString());
@@ -133,8 +134,10 @@ public class EcfCourtSpecificSerializer {
               pt.getPersonOtherIdentification().add(partyId);
             });
 
-    // NOTE: where the Bar number goes for attorneys, should always be this for individuals
-    pt.setPersonStateIdentification(Ecf4Helper.convertId("Pro Per"));
+    if (isDocumentSubmitter) {
+      // NOTE: where the Bar number goes for attorneys, should always be this for individuals
+      pt.setPersonStateIdentification(Ecf4Helper.convertId("Pro Per"));
+    }
 
     per.getGender()
         .ifPresent(

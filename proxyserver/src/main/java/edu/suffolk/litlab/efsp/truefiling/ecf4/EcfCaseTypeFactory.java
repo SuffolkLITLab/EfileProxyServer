@@ -413,15 +413,6 @@ public class EcfCaseTypeFactory {
     return Pair.of(ecfCommonObjFac.createCaseAugmentation(ecfAug), partyIdToRefObj);
   }
 
-  /*private Optional<ProcedureRemedyType> makeProcedureRemedyType(Optional<NameAndCode> procRemCode) {
-    return procRemCode.map(
-        code -> {
-          ProcedureRemedyType type = new ProcedureRemedyType();
-          type.getRemedyCode().add(Ecf4Helper.convertText(code.getCode()));
-          return type;
-        });
-  }*/
-
   /**
    * Makes a civil case to include in queries like FeesQuery and ReviewFiling.
    *
