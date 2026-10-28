@@ -67,6 +67,7 @@ public class AddressDocassembleJacksonDeserializer {
       collector.error(err);
       throw err;
     }
+    var zipVetted = parser.vetZipCode(zip);
     var stateRes = parser.vetStateCode(state, country);
     if (stateRes.isErr()) {
       var stateBuilder = collector.varBuilder().name("state");
@@ -74,7 +75,7 @@ public class AddressDocassembleJacksonDeserializer {
     } else {
       state = stateRes.expect("");
     }
-    Address addr = new Address(address, unit, city, state, zip, country);
+    Address addr = new Address(address, unit, city, state, zipVetted, country);
     return Optional.of(addr);
   }
 }

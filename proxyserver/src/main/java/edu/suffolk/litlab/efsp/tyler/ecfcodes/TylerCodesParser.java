@@ -1047,4 +1047,12 @@ public class TylerCodesParser implements CodesParser {
   public boolean useFilingAssociations() {
     return allDataFields.getFieldRow("FilingEventCaseParties").isrequired();
   }
+
+  @Override
+  public String vetZipCode(String zip) {
+    if (zip == null) {
+      return "";
+    }
+    return zip;
+  }
 }

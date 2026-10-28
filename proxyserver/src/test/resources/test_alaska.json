@@ -10,7 +10,7 @@
                 "unit": "Apt 2",
                 "city": "Boston",
                 "state": "MA",
-                "zip": "02127",
+                "zip": "02127-1234",
                 "country": "US" 
             },
             "email": "cooldude1@example.com",

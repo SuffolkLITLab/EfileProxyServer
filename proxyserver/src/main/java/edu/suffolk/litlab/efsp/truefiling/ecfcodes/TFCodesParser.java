@@ -460,4 +460,15 @@ public class TFCodesParser implements CodesParser {
   public boolean useFilingAssociations() {
     return false;
   }
+
+  @Override
+  public String vetZipCode(String zip) {
+    if (zip == null) {
+      return "";
+    }
+    if (zip.length() > 5) {
+      return zip.substring(0, 5);
+    }
+    return zip;
+  }
 }
