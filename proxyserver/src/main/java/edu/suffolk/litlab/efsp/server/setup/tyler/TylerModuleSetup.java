@@ -42,6 +42,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.quartz.CronScheduleBuilder;
@@ -74,6 +75,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private final String togaKey;
   private final String togaUrl;
   private final OrgMessageSender sender;
+  private final List<String> globalServerAdmins;
+
   private Scheduler scheduler;
 
   public static class CreationArgs {
@@ -83,6 +86,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     public String pgPassword;
     public String x509Password;
     public String togaUrl;
+    public List<String> globalServerAdmins;
   }
 
   /** Use this factory method instead of the class constructor. */
@@ -129,6 +133,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     this.pgPassword = args.pgPassword;
     this.jurisdiction = jurisdiction;
     this.x509Password = args.x509Password;
+    this.globalServerAdmins = args.globalServerAdmins;
     this.togaKey = togaKey;
     this.togaUrl = args.togaUrl;
     this.sender = sender;
@@ -164,6 +169,11 @@ public class TylerModuleSetup implements EfmModuleSetup {
       return Optional.empty();
     }
     args.togaUrl = maybeTogaUrl.get();
+    args.globalServerAdmins =
+        GetEnv("GLOBAL_SERVER_ADMINS")
+            .map(j -> Stream.of(j.split(" ")))
+            .orElse(Stream.empty())
+            .toList();
     return Optional.of(args);
   }
 
@@ -357,7 +367,9 @@ public class TylerModuleSetup implements EfmModuleSetup {
         new FilingReviewService(
             getJurisdiction(), udSupplier, converterMap, filingMap, callbackMap, this.sender);
     var firmAttorney = new FirmAttorneyAndServiceService(jurisdiction, cdSupplier);
-    var payments = new PaymentsService(jurisdiction, this.togaKey, this.togaUrl, cdSupplier);
+    var payments =
+        new PaymentsService(
+            jurisdiction, this.togaKey, this.togaUrl, cdSupplier, globalServerAdmins);
     JurisdictionServiceHandle handle =
         new JurisdictionServiceHandle(
             getJurisdiction(),
