@@ -131,7 +131,7 @@ public class LoginDatabase extends Database {
       st.setString(1, hash);
       ResultSet rs = st.executeQuery();
       if (!rs.next()) {
-        log.warn("API Key hash not present in at rest: {}", hash);
+        log.warn("API Key hash not present in at rest");
         return Optional.empty();
       }
       AtRest atRest = new AtRest();
@@ -158,7 +158,7 @@ public class LoginDatabase extends Database {
     String hash = Hasher.makeHash(apiKey);
     final String atRestUpdate =
         """
-               UPDATE at_rest_keys SET server_name = ? WHERE server_id = ? AND api_key = ?
+        UPDATE at_rest_keys SET server_name = ? WHERE server_id = ? AND api_key = ?
         """;
 
     try (PreparedStatement st = conn.prepareStatement(atRestUpdate)) {
