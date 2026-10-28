@@ -43,7 +43,7 @@ public class AuthenticateRequestInterceptor implements ContainerRequestFilter {
     try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
       if (atRest.isEmpty()) {
-        log.warn("No matching server API key found for {}, aborting this call", apiKey);
+        log.warn("No matching server API key found, aborting this call");
         requestContext.abortWith(Response.status(401).build());
         return;
       }
