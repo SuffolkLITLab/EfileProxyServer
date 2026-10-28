@@ -84,6 +84,8 @@ public interface CodesParser extends AutoCloseable {
 
   public Result<String, CodeError> vetStateCode(String state, String countryString);
 
+  public String vetZipCode(String zip);
+
   public Result<Map<String, String>, CrossReferenceError> getCrossRefIds(
       Map<String, String> crossRefs, NameAndCode caseType);
 
