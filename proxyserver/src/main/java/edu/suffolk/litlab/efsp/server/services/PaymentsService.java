@@ -14,6 +14,7 @@ import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.server.auth.EfspSecurityContext;
 import edu.suffolk.litlab.efsp.server.auth.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.auth.NullUserCreds;
+import edu.suffolk.litlab.efsp.server.auth.UserCreds;
 import edu.suffolk.litlab.efsp.server.auth.UserNamePassword;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
@@ -53,10 +54,10 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
@@ -108,12 +109,15 @@ public class PaymentsService {
   private final TylerFirmFactory firmFactory;
   private final Supplier<CodeDatabase> cdSupplier;
   private final Jurisdiction jurisdiction;
+  private final Map<String, TempAccount> tempAccounts;
+  private final List<String> globalServerAdmins;
 
   public PaymentsService(
       Jurisdiction jurisdiction,
       String togaKey,
       String togaUrl,
-      Supplier<CodeDatabase> cdSupplier) {
+      Supplier<CodeDatabase> cdSupplier,
+      List<String> globalServerAdmins) {
     this.jurisdiction = jurisdiction;
     this.callbackToUsUrl =
         ServiceHelpers.EXTERNAL_URL
@@ -124,7 +128,7 @@ public class PaymentsService {
     this.transactionIdGen = new RandomString(21);
     this.togaKey = togaKey;
     this.togaUrl = togaUrl;
-    this.tempAccounts = new HashMap<String, TempAccount>();
+    this.tempAccounts = new ConcurrentHashMap<String, TempAccount>();
     var maybeFirmFactory = TylerClients.getEfmFirmFactory(jurisdiction);
     if (maybeFirmFactory.isPresent()) {
       this.firmFactory = maybeFirmFactory.get();
@@ -132,6 +136,14 @@ public class PaymentsService {
       throw new RuntimeException(jurisdiction + " not in SoapClientChooser for EFMFirm");
     }
     this.cdSupplier = cdSupplier;
+    this.globalServerAdmins = globalServerAdmins;
+  }
+
+  private boolean isAllowedGlobalOperations(UserCreds userCreds) {
+    if (userCreds.getUserName() != null && !userCreds.getUserName().isBlank()) {
+      return globalServerAdmins.contains(userCreds.getUserName());
+    }
+    return false;
   }
 
   @GET
@@ -193,6 +205,10 @@ public class PaymentsService {
   public Response createGlobalWaiverAccount(@Context SecurityContext security, String accountName) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.createGlobalWaiverAccount");
     var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    if (!isAllowedGlobalOperations(userCreds)) {
+      return Response.status(401).build();
+    }
+
     Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -207,6 +223,10 @@ public class PaymentsService {
       @Context SecurityContext security, @PathParam("account_id") String accountId, String json) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.updateGlobalPaymentAccount");
     var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    if (!isAllowedGlobalOperations(userCreds)) {
+      return Response.status(401).build();
+    }
+
     Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -231,6 +251,10 @@ public class PaymentsService {
       @Context SecurityContext security, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.removeGlobalPaymentAccount");
     var userCreds = ((EfspSecurityContext) security).getUserCreds();
+    if (!isAllowedGlobalOperations(userCreds)) {
+      return Response.status(401).build();
+    }
+
     Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, userCreds);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -427,7 +451,7 @@ public class PaymentsService {
           <head>
           </head>
           <body>
-            Sorry, but an error has occured. Please restart your redirect process.
+            Sorry, but an error has occured. Please go back and try again.
 
             The error: %s
           </body>
@@ -451,6 +475,11 @@ public class PaymentsService {
               + " account.";
       log.error(err);
       return Response.status(422).entity(errorHtml.formatted(err)).build();
+    }
+    if (global && !isAllowedGlobalOperations(maybeCreds.get())) {
+      log.warn(
+          "Trying to make a global payment account, but not allowed to. Making normal payment account instead");
+      global = false;
     }
     PaymentAccountTypeListResponseType types = firmPort.get().getPaymentAccountTypeList();
     // If this Tyler system dosen't support this payment account type (Credit, bank, etc.), error
@@ -608,9 +637,10 @@ public class PaymentsService {
       newAccount.setCardLast4(last4);
       createAccount.setPaymentAccount(newAccount);
       CreatePaymentAccountResponseType accountResp;
-      if (tempInfo.global) {
+      if (tempInfo.global && isAllowedGlobalOperations(maybeCreds.get())) {
         accountResp = firmPort.createGlobalPaymentAccount(createAccount);
       } else {
+        // Do this even if they are trying to make a global and can't; just let them use it.
         accountResp = firmPort.createPaymentAccount(createAccount);
       }
       if (TylerErrorCodes.hasError(accountResp)) {
@@ -735,6 +765,4 @@ public class PaymentsService {
     String originalUrl;
     String errorUrl;
   }
-
-  private final Map<String, TempAccount> tempAccounts;
 }
