@@ -264,7 +264,7 @@ public class AdminUserService {
    *     should match the complexity requirements for the jurisdiction. For example: <code>
    *   { "email": "bob@example.com", "newPassword": "wow_new_P@ssword1"}
    *   </code>
-   * @return The password hash as a string, if successful
+   * @return 200 on success
    */
   @StatusCodes({
     @ResponseCode(
@@ -296,7 +296,7 @@ public class AdminUserService {
     resetReq.setEmail(params.email);
     resetReq.setPassword(params.newPassword);
     ResetPasswordResponseType resp = port.get().resetUserPassword(resetReq);
-    return makeResponse(resp, () -> Response.ok("\"" + resp.getPasswordHash() + "\"").build());
+    return makeResponse(resp, () -> Response.ok().build());
   }
 
   public static class SetPasswordParams {
