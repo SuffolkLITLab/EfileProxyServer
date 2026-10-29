@@ -78,12 +78,13 @@ public class MessageSettingsService {
       log.error("You need to pass a JSON string to /settings; we got {}", newInfoStr, e);
       return Response.status(400).build();
     }
-    MessageInfo newInfo = new MessageInfo(node);
+    var justServerIdInfo = new MessageInfo(serverId, null, null, null, null, null);
+    // Always use the auth'd serverId, not the passed in one
+    MessageInfo newInfo = justServerIdInfo.overlayOn(new MessageInfo(node));
 
     try (var md = mdSupplier.get()) {
       MessageInfo existingInfo =
-          md.findMessageInfo(serverId)
-              .orElse(new MessageInfo(serverId, null, null, null, null, null));
+          md.findMessageInfo(serverId).orElse(justServerIdInfo);
       md.updateTable(newInfo.overlayOn(existingInfo));
       return Response.status(200).build();
     } catch (SQLException ex) {
