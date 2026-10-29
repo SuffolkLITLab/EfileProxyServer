@@ -60,6 +60,11 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -592,11 +597,14 @@ public class PaymentsService {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.makeNewPaymentAccount");
     MDC.put(MDCWrappers.SERVER_ID, "jurisdiction-" + this.jurisdiction);
     MDC.put(MDCWrappers.SERVER_NAME, "jurisdiction-" + this.jurisdiction);
-    log.info("Making new payment account with Tyler's response: {}", body);
+    log.info("Making new payment account with Tyler's response");
     try {
       JAXBContext jaxContext = JAXBContext.newInstance(TogaResponseXml.class);
+      XMLInputFactory xif = XMLInputFactory.newFactory();
+      xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+      xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
       Unmarshaller unmar = jaxContext.createUnmarshaller();
-      InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
+      XMLStreamReader stream = xif.createXMLStreamReader(new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)));
       TogaResponseXml resp = (TogaResponseXml) unmar.unmarshal(stream);
 
       CreatePaymentAccountRequestType createAccount = new CreatePaymentAccountRequestType();
@@ -649,10 +657,10 @@ public class PaymentsService {
         return Response.status(302).header("Location", tempInfo.errorUrl).build();
       }
       return Response.status(302).header("Location", tempInfo.originalUrl).build();
-    } catch (JAXBException jaxbEx) {
+    } catch (JAXBException | XMLStreamException jaxbEx) {
       log.error("Couldn't process the TOGA response in XML: {}", body, jaxbEx);
       return Response.status(400).entity(paymentsErrorHtml).build();
-    }
+	}
   }
 
   /**
