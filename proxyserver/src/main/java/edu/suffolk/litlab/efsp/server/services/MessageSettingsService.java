@@ -83,8 +83,7 @@ public class MessageSettingsService {
     MessageInfo newInfo = justServerIdInfo.overlayOn(new MessageInfo(node));
 
     try (var md = mdSupplier.get()) {
-      MessageInfo existingInfo =
-          md.findMessageInfo(serverId).orElse(justServerIdInfo);
+      MessageInfo existingInfo = md.findMessageInfo(serverId).orElse(justServerIdInfo);
       md.updateTable(newInfo.overlayOn(existingInfo));
       return Response.status(200).build();
     } catch (SQLException ex) {

@@ -49,6 +49,7 @@ import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -119,17 +120,22 @@ public class EfspServer {
     if (ConfigurationLoader.shouldLogRequests()) {
       LoggingFeature loggingFeature = new LoggingFeature();
       // TODO(brycew): control this from a cofig
-      loggingFeature.addSensitiveElementNames(
-          Set.of("api_key", "password", "Password", "TYLER-TOKEN-ILLINOIS", "TYLER-ID-ILLINOIS"));
-      loggingFeature.addSensitiveProtocolHeaderNames(
+      Set<String> sensitiveNames = new HashSet<>();
+      sensitiveNames.addAll(
           Set.of(
-              "TYLER-TOKEN-ILLINOIS",
-              "TYLER-TOKEN-MASSACHUSETTS",
-              "TYLER-TOKEN-VERMONT",
-              "TYLER-ID-ILLINOIS",
               "X-API-KEY",
+              "X-API-Key",
+              "X-Api-Key",
               "x-api-key",
-              "X-Api-Key"));
+              "api_key",
+              "password",
+              "Password"));
+      for (var state : Jurisdiction.values()) {
+        sensitiveNames.add("TYLER-TOKEN-" + state.getName().toUpperCase());
+        sensitiveNames.add("TYLER-ID-" + state.getName().toUpperCase());
+      }
+      loggingFeature.addSensitiveElementNames(sensitiveNames);
+      loggingFeature.addSensitiveProtocolHeaderNames(sensitiveNames);
       loggingFeature.setPrettyLogging(true);
       sf.setFeatures(List.of(loggingFeature));
     }

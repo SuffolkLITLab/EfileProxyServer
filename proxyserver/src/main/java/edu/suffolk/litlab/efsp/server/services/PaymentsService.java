@@ -51,7 +51,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.List;
@@ -60,11 +59,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -604,7 +601,9 @@ public class PaymentsService {
       xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
       xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
       Unmarshaller unmar = jaxContext.createUnmarshaller();
-      XMLStreamReader stream = xif.createXMLStreamReader(new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)));
+      XMLStreamReader stream =
+          xif.createXMLStreamReader(
+              new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)));
       TogaResponseXml resp = (TogaResponseXml) unmar.unmarshal(stream);
 
       CreatePaymentAccountRequestType createAccount = new CreatePaymentAccountRequestType();
@@ -660,7 +659,7 @@ public class PaymentsService {
     } catch (JAXBException | XMLStreamException jaxbEx) {
       log.error("Couldn't process the TOGA response in XML: {}", body, jaxbEx);
       return Response.status(400).entity(paymentsErrorHtml).build();
-	}
+    }
   }
 
   /**
