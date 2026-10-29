@@ -504,9 +504,9 @@ public class FirmAttorneyAndServiceService {
     try {
       JsonNode node = mapper.readTree(json);
       getStringMember(node, "firstName").ifPresent(first -> msg.setFirstName(first));
-      getStringMember(node, "lastName").ifPresent(last -> msg.setFirstName(last));
-      getStringMember(node, "firmName").ifPresent(firmName -> msg.setFirstName(firmName));
-      getStringMember(node, "email").ifPresent(email -> msg.setFirstName(email));
+      getStringMember(node, "lastName").ifPresent(last -> msg.setLastName(last));
+      getStringMember(node, "firmName").ifPresent(firmName -> msg.setFirmName(firmName));
+      getStringMember(node, "email").ifPresent(email -> msg.setEmail(email));
       ServiceContactListResponseType resp = firmPort.get().getPublicList(msg);
       // For "PublicServiceContactShowEmail" Datafield, we force API keys: the restriction of
       // "programmatic harvesting of emails" will have to be done on the DA side
