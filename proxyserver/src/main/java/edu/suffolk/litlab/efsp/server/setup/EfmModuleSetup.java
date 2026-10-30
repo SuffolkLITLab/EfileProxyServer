@@ -21,8 +21,6 @@ public interface EfmModuleSetup {
 
   JurisdictionServiceHandle getServiceHandle();
 
-  Optional<EfmRestCallbackInterface> getCallback();
-
   Jurisdiction getJurisdiction();
 
   void setupGlobals();

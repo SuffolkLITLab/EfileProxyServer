@@ -25,7 +25,6 @@ public class ServiceHelpers {
   public static final String BASE_LOCAL_URL;
   public static final String EXTERNAL_URL;
   public static final String SERVICE_URL;
-  public static final String REST_CALLBACK_URL;
   public static final String SENDING_MDE_LOCATION;
 
   static {
@@ -35,7 +34,12 @@ public class ServiceHelpers {
     if (EXTERNAL_DOMAIN.startsWith("http://")) {
       EXTERNAL_DOMAIN = EXTERNAL_DOMAIN.substring(7);
     }
-    EXTERNAL_URL = "http://" + EXTERNAL_DOMAIN;
+    if (GetEnv("FLY_MACHINE_ID").isPresent()) {
+      // If Fly is present, it's doing HTTPS reverse proxy for us, so make it HTTPS
+      EXTERNAL_URL = "https://" + EXTERNAL_DOMAIN;
+    } else {
+      EXTERNAL_URL = "http://" + EXTERNAL_DOMAIN;
+    }
     BASE_LOCAL_URL = "http://0.0.0.0:9009";
 
     // NOTE: using GetEnv here instead of ServerEnv.fromEnvVar because I don't want the lack of the
@@ -50,7 +54,6 @@ public class ServiceHelpers {
         };
 
     SERVICE_URL = EXTERNAL_URL + ASSEMBLY_PORT;
-    REST_CALLBACK_URL = EXTERNAL_URL + "/filingreview/jurisdictions/%s/courts/%s/filing/status";
   }
 
   public static void changeTimeout(BindingProvider bp, int timeoutMs) {

@@ -25,7 +25,6 @@ import edu.suffolk.litlab.efsp.server.services.JurisdictionSwitch;
 import edu.suffolk.litlab.efsp.server.services.MessageSettingsService;
 import edu.suffolk.litlab.efsp.server.services.RootService;
 import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
-import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.setup.truefiling.TrueFilingModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.tyler.TylerModuleSetup;
 import edu.suffolk.litlab.efsp.server.utils.ObservabilityHeadersInterceptor;
@@ -85,14 +84,11 @@ public class EfspServer {
       throws SQLException, NoSuchAlgorithmException {
 
     var jurisdictionMap = new HashMap<Jurisdiction, JurisdictionServiceHandle>();
-    var callbackMap = new HashMap<Jurisdiction, Optional<EfmRestCallbackInterface>>();
     for (EfmModuleSetup mod : modules) {
       mod.preSetup();
       mod.setupGlobals();
       JurisdictionServiceHandle handle = mod.getServiceHandle();
-      Optional<EfmRestCallbackInterface> maybeCallback = mod.getCallback();
       jurisdictionMap.put(mod.getJurisdiction(), handle);
-      callbackMap.put(mod.getJurisdiction(), maybeCallback);
     }
 
     Supplier<LoginDatabase> ldSupplier = () -> LoginDatabase.fromDS(userDs);

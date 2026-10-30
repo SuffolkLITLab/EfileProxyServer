@@ -17,7 +17,6 @@ import edu.suffolk.litlab.efsp.server.auth.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.auth.UserCreds;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.services.api.EfmFilingInterface;
-import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
@@ -65,7 +64,6 @@ public class FilingReviewService {
   /** From court to FilingInterface (could be different on a court to court basis. */
   private final Map<String, EfmFilingInterface> filingInterfaces;
 
-  private final Map<String, EfmRestCallbackInterface> callbackInterfaces;
   private final OrgMessageSender msgSender;
   private final Supplier<UserDatabase> udSupplier;
   private final EndpointReflection ef;
@@ -75,11 +73,9 @@ public class FilingReviewService {
       Supplier<UserDatabase> udSupplier,
       Map<String, InterviewToFilingInformationConverter> converterMap,
       Map<String, EfmFilingInterface> filingInterfaces,
-      Map<String, EfmRestCallbackInterface> callbackInterfaces,
       OrgMessageSender msgSender) {
     this.converterMap = converterMap;
     this.filingInterfaces = filingInterfaces;
-    this.callbackInterfaces = callbackInterfaces;
     this.udSupplier = udSupplier;
     this.msgSender = msgSender;
     this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction.getName() + "/filingreview");
@@ -326,20 +322,6 @@ public class FilingReviewService {
     var userCreds = ((EfspSecurityContext) security).getUserCreds();
 
     var toRet = filer.getPolicy(courtId, userCreds);
-    return toRet;
-  }
-
-  @POST
-  @Path("/courts/{court_id}/filing/status")
-  public Response filingUpdateWebhook(
-      @Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId,
-      String statusReport) {
-    MDC.put(MDCWrappers.OPERATION, "FilingReviewService.filingUpdateWebhook");
-    if (!callbackInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Court " + courtId + " doesn't exist").build();
-    }
-    var toRet = callbackInterfaces.get(courtId).statusCallback(httpHeaders, statusReport);
     return toRet;
   }
 
