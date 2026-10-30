@@ -19,7 +19,6 @@ import edu.suffolk.litlab.efsp.server.services.impl.Ecf4Filer;
 import edu.suffolk.litlab.efsp.server.services.impl.TylerCaseSearch;
 import edu.suffolk.litlab.efsp.server.services.impl.TylerCodesService;
 import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
-import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.utils.CodesSanityCheckJob;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.server.utils.PolicyCacher;
@@ -314,7 +313,6 @@ public class TylerModuleSetup implements EfmModuleSetup {
   @Override
   public JurisdictionServiceHandle getServiceHandle() {
     var filingMap = new HashMap<String, EfmFilingInterface>();
-    var callbackMap = new HashMap<String, EfmRestCallbackInterface>();
 
     Supplier<CodeDatabase> cdSupplier =
         () -> {
@@ -325,7 +323,6 @@ public class TylerModuleSetup implements EfmModuleSetup {
     EfmFilingInterface filer = new Ecf4Filer(jurisdiction, cdSupplier, policyCacher);
     for (String court : getCourts()) {
       filingMap.put(court, filer);
-      getCallback().ifPresent(call -> callbackMap.put(court, call));
     }
 
     Function<String, Result<NullValue, String>> passwordChecker =
@@ -365,7 +362,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     }
     var filingReview =
         new FilingReviewService(
-            getJurisdiction(), udSupplier, converterMap, filingMap, callbackMap, this.sender);
+            getJurisdiction(), udSupplier, converterMap, filingMap, this.sender);
     var firmAttorney = new FirmAttorneyAndServiceService(jurisdiction, cdSupplier);
     var payments =
         new PaymentsService(
@@ -381,11 +378,6 @@ public class TylerModuleSetup implements EfmModuleSetup {
             firmAttorney,
             payments);
     return handle;
-  }
-
-  @Override
-  public Optional<EfmRestCallbackInterface> getCallback() {
-    return Optional.empty();
   }
 
   @Override
