@@ -13,9 +13,9 @@ fi
 # -Djava.util.concurrent.ForkJoinPool.common.threadFactory=edu.suffolk.litlab.efsp.server.JAXBForkJoinWorkerThreadFactory \
 # if needed to debug http logs:
 # https://stackoverflow.com/questions/53215038/how-to-log-request-response-using-java-net-http-httpclient
+# -Dcom.sun.net.ssl.checkRevocation=true -Dcom.sun.security.enableCRLDP=true \
 exec java \
     -XX:+HeapDumpOnOutOfMemoryError \
     -XX:InitialRAMPercentage=20.0 \
     -XX:MaxRAMPercentage=75.0 \
-    -Dcom.sun.net.ssl.checkRevocation=true -Dcom.sun.security.enableCRLDP=true \
     -jar efspserver-with-deps.jar

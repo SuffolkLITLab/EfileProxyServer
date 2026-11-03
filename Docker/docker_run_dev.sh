@@ -16,9 +16,9 @@ java \
 # -Djava.util.concurrent.ForkJoinPool.common.threadFactory=edu.suffolk.litlab.efsp.server.JAXBForkJoinWorkerThreadFactory \
 # if needed to debug http logs:
 # https://stackoverflow.com/questions/53215038/how-to-log-request-response-using-java-net-http-httpclient
+# -Dcom.sun.net.ssl.checkRevocation=true -Dcom.sun.security.enableCRLDP=true \
 exec java \
     $TLS_SECRETS_ARG \
     $JACOCO_ARG \
-    -Dcom.sun.net.ssl.checkRevocation=true -Dcom.sun.security.enableCRLDP=true \
     -XX:+HeapDumpOnOutOfMemoryError \
     -jar efspserver-with-deps.jar
