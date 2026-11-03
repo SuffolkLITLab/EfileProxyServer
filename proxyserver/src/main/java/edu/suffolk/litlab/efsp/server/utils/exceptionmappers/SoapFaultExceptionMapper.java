@@ -14,7 +14,18 @@ public class SoapFaultExceptionMapper implements ExceptionMapper<SOAPFaultExcept
 
   @Override
   public Response toResponse(SOAPFaultException exception) {
-    log.error("Soap error: {}", exception.getFault().getDetail().getTextContent(), exception);
+    var fault = exception.getFault();
+    if (fault != null) {
+      var detail = fault.getDetail();
+      if (detail != null) {
+        var text = detail.getTextContent();
+        log.error("Soap error: {}", text, exception);
+      } else {
+        log.error("Soap error (no text content?): {}", fault.getFaultString(), exception);
+      }
+    } else {
+      log.error("Soap error (no fault?)", exception);
+    }
     return Response.status(502).entity("\"Got an error response from a SOAP server\"").build();
   }
 }
