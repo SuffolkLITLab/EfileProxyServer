@@ -431,7 +431,7 @@ public class TrueFilingFiler extends EfmCheckableFilingInterface {
                       .reduce(
                           "",
                           (str, err) -> {
-                            return str + ", " + err.getErrorText();
+                            return str + ", " + err.getErrorText().getValue();
                           },
                           (str, str2) -> str + str2)));
     }
