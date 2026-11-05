@@ -26,16 +26,15 @@ SSL/TLS is handled by Let's Encrypt. However, the certificate renewal is current
 
 ## Fly.io Stack
 
-The updated stack uses Fly.io, Supabase, Papertrail, and Cloudflare.
+The updated stack uses Fly.io, Supabase, Grafana, and Cloudflare.
 
 * Fly.io runs the dockerized EFSP application.
 * Supabase is the Postgres database.
-* Papertrail serves as the cloud-hosted log management system, making it easy to aggregate, manage, and share logs.
 * Cloudflare provides SSL/TLS encryption and DNS. (TODO: are we planning to use the DDoS protection?)
 
 The overall goal is to make it easier to run and operate EFSP as a service, with the tradeoff being a small monthly cost. Web interfaces are favored over the CLI (Command-Line Interface), although there is still lots of CLI and all existing commands are supported. Ideally, the learning curve will be shortened and day-to-day operational tasks can be done without needing to use the CLI.
 
-The current setup keeps a single machine running at all times within the Boston region. Because Fly.io, Supabase, Papertrail, and Cloudflare are all cloud services, scaling up and out is pretty easy. The trade-off is one of increased cost as more scale is requested. Fly.io also supports auto-scaling. Given the current volume, scaling was not explored and we opted for the simplest conceptual model of a single, continuously instance of the application.
+The current setup keeps a single machine running at all times within the Boston region. Because Fly.io, Supabase, and Cloudflare are all cloud services, scaling up and out is pretty easy. The trade-off is one of increased cost as more scale is requested. Fly.io also supports auto-scaling. Given the current volume, scaling was not explored and we opted for the simplest conceptual model of a single, continuously instance of the application.
 
 The EFSP application itself is mostly clusterable, the exceptions being:
 
@@ -48,7 +47,7 @@ In a scale-out scenario, the simplest approach of disabling the updates is suppo
 
 ## Secrets/Configuration
 
-All the supported variables are enumerated in the env.example file. Most of these are the same between the Lightsail and Fly.io setups. There are new variables for Papertrail and to configure the Quartz Scheduler. Details are in the env.example file.
+All the supported variables are enumerated in the env.example file. Most of these are the same between the Lightsail and Fly.io setups. There are new variables to configure the Quartz Scheduler. Details are in the env.example file.
 
 You should have separate .env files for each environment. For example, staging values would be stored in a .env.staging and production values in .env.production.
 
@@ -155,7 +154,7 @@ One thing to keep in mind is that the manual deployment builds the Docker image 
 
 ## Viewing Logs
 
-You can view the logs directly on Fly.io. The application logs are also shipped over to Papertrail, which will be covered in more detail. Papertrail is the recommended interface to view logs because it has search, filtering, and aggregation capabilities. However, checking on Fly.io is helpful if you are troubleshooting, as you will be able to see the platform logs in additional to the applications logs. Plus, even if there is an error preventing the application from sending logs to Papertrail, the information will be stored within Fly.io's logs.
+You can view the logs directly on Fly.io. The application logs are also shipped over to Grafana, which will be covered in more detail. Grafana is the recommended interface to view logs because it has search, filtering, and aggregation capabilities. However, checking on Fly.io is helpful if you are troubleshooting, as you will be able to see the platform logs in additional to the applications logs. Plus, even if there is an error preventing the application from sending logs to Grafana, the information will be stored within Fly.io's logs.
 
 ### Viewing Logs with Fly.io
 
@@ -169,55 +168,6 @@ You should now see a web view displaying the live logs.
 
 For more information on viewing metrics and logs on Fly.io, check out:
 https://fly.io/docs/metrics-and-logs/
-
-
-### Papertrail
-
-You can read this overview of the log viewer to familiarize yourself with Papertrail:
-https://www.papertrail.com/help/event-viewer/
-
-### Papertrail Configuration
-
-The Papertrail system documented here has already been configured. If you do not have access to this Papertrail account, you will need to set up your own account on the service. Please refer to the Papertrail documentation for more information:
-https://www.papertrail.com/help/papertrail-documentation/
-
-#### Groups
-
-Groups were set up for each environment (dev, staging, and prod). Dev is used for local machines and other testing.
-
-#### Log Destinations
-
-The EFSP app is configured in logback to send logs to Papertrail via the TLS Syslog method. This uses TCP(TLS) sent to a specific host and port, which is displayed in the log destination page after you set that up.
-
-![Papertrail Example Log Destination](./papertrail_log_destination.png)
-
-For more details, check out:
-https://www.papertrail.com/help/log-destinations/
-
-#### Dashboard
-
-After you log into Papertrail, you will see the dashboard page. The list of groups and systems are displayed here.
-![Papertrail Dashboard](./papertrail_dashboard.png)
-
-### Viewing Logs
-
-Click on "Events" in the top menu to go to the log viewer. You will probably spend most of your time in the log viewer. The middle of the page displays the logs. At the bottom of the page, you can adjust the filtering and search criteria.
-
-![Papertrail Log Viewer](./papertrail_events.png)
-
-You can type in words to search for in the search box. For example, here the search term "Started" is used to search for only the log messages associated with the application being started:
-![Papertrail Search](./papertrail_search.png)
-
-You can choose to only see the logs for a specific group (e.g. staging, prod) by adjusting the group selector at the left-hand side.
-![Papertrail Group Selector](./papertrail_group_selector.png)
-
-The search box also supports more advanced syntax. For more details, check out:
-https://www.papertrail.com/help/search-syntax/
-
-### Alerts
-
-You can configure Papertrail to send alerts when it sees certain patterns in the logs. For more details, check out:
-https://www.papertrail.com/help/alerts/
 
 ### Scaling Up Fly.io
 
