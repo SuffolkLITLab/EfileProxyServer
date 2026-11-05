@@ -1,0 +1,113 @@
+{
+    "efile_case_category": "civil", 
+    "efile_case_type": "CIPO1KE", 
+    "users": [
+        {
+            "mobile_number": "0000000000",
+            "phone_number": "0000000000",
+            "address": {
+                "address": "123 Main St",
+                "unit": "Apt 2",
+                "city": "Boston",
+                "state": "MA",
+                "zip": "02127-1234",
+                "country": "US" 
+            },
+            "email": "cooldude1@example.com",
+            "party_type": "PET", 
+            "prefered_language": "EN", 
+            "gender": "male", 
+            "date_of_birth": "1995-01-01",
+            "is_form_filler": true,
+            "name": {
+                "first": "John",
+                "middle": "FakeFiler2",
+                "last": "Doe",
+                "suffix": "" 
+            },
+            "is_new": true
+        }
+    ],
+    "other_parties": [
+        {
+            "mobile_number": "617-123-4567", 
+            "phone_number": "617-456-7890",
+            "address": {
+                "address": "123 Main St",
+                "unit": "Apt 2",
+                "city": "Boston",
+                "state": "MA",
+                "zip": "02127",
+                "country": "US" 
+            },
+            "email": "cool_dude2@example.com",
+            "party_type": "RESP", 
+            "prefered_language": "EN", 
+            "gender": "male", 
+            "date_of_birth": "1996-01-01",
+            "name": {
+                "first": "Jack",
+                "middle": "FakeDefendant",
+                "last": "Doe",
+                "suffix": "" 
+            },
+            "is_new": true 
+        }
+    ],
+    "user_preferred_language": "EN", 
+    "user_started_case": true,
+    "user_role": "plaintiff", 
+
+    "al_court_bundle": [
+        { 
+            "proxy_enabled": true, 
+            "filing_type": "e5c9ad4c-fcd2-435c-ac44-ec2eaf0dd2c9",
+            "filing_description": "A full user written description",
+            "filing_parties": [
+                "users[0]"
+            ],
+            "tyler_merge_attachments": false, 
+
+            "elements": [
+                {
+                    "filing_component": "e5c9ad4c-fcd2-435c-ac44-ec2eaf0dd2c9",
+                    "filename": "something.pdf",
+                    "data_url": "https://pdfobject.com/pdf/sample.pdf",
+                    "proxy_enabled": true
+                }
+            ]
+        },
+        { 
+            "proxy_enabled": true, 
+            "filing_type": "71062b67-5af4-4098-96ff-7e3091ddc93d",
+            "filing_description": "A full user written description",
+            "filing_parties": [
+                "users[0]"
+            ],
+            "tyler_merge_attachments": false, 
+
+            "elements": [
+                {
+                    "filing_component": "71062b67-5af4-4098-96ff-7e3091ddc93d",
+                    "filename": "something.pdf",
+                    "data_url": "https://pdfobject.com/pdf/sample.pdf",
+                    "proxy_enabled": true
+                }
+            ]
+        }
+    ],
+
+    "comments_to_clerk": "I worked with clerk John Brown to complete this at the law library.",
+    "lead_contact": {
+        "email": "cooldude1@example.com"
+    },
+
+    "email_confirmation_subject": "Your filing was submitted",
+    "email_confirmation_contents": "<html><body><h1>Your Filing was submitted</h1>...</body></html>",
+    "acceptance_subject": "Your filing was accepted",
+    "acceptance_contents": "<html><body><h1>Your Filing was accepted</h1>...</body></html>",
+    "rejected_subject": "Your filing was rejected",
+    "rejected_contents": "<html><body><h1>Your Filing was rejected</h1>...</body></html>",
+    "neutral_subject": "Your filing was responded to",
+    "neutral_contents": "<html><body><h1>Your Filing was responded to</h1>...</body></html>"
+}
