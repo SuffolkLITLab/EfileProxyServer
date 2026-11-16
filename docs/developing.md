@@ -27,6 +27,8 @@ Here is an example of when we added the sendgrid library:
         </dependency>
 ```
 
+To see what versions of dependencies should be updated, run `mvn org.owasp:dependency-check-maven:aggregate`.
+
 ### General Tips
 This [REST/JAX book](https://dennis-xlc.gitbooks.io/restful-java-with-jax-rs-2-0-2rd-edition/content/en/part1/chapter3/developing_a_jax_rs_restful_service.html) is a good place to learn about the basics of JAX.
 
