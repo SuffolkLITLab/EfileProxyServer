@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efsp.server.setup.truefiling;
 
+import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
+
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.server.services.FilingReviewService;
@@ -76,6 +78,9 @@ public class TrueFilingModuleSetup implements EfmModuleSetup {
       // There is always one hard-coded location in AK, so check a different table.
       List<String> locations = cd.getAllLocations();
       boolean downloadAll = (cd.getBundleStatuses(locations.get(0)).size() == 0);
+      if (GetEnv("TF_ALWAYS_REFRESH").map(s -> Boolean.valueOf(s)).orElse(false)) {
+        downloadAll = true;
+      }
       if (downloadAll) {
         log.info("Downloading all codes for {}: please wait a bit", jurisdiction);
         TrueFilingCodeUpdater.executeCommand(() -> cd, jurisdiction, List.of("replaceall"));
