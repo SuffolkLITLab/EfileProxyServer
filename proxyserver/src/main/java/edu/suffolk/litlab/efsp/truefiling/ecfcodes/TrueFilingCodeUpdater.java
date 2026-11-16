@@ -34,6 +34,7 @@ public class TrueFilingCodeUpdater {
 
   public static boolean executeCommand(
       Supplier<CodeDatabaseAPI> cdSupplier, Jurisdiction jurisdiction, List<String> args) {
+    MDC.put(MDCWrappers.USER_ID, jurisdiction.getName());
     String command = args.get(0);
     CodeUpdater cu = new CodeUpdater();
     CodeUrlGetter urlGetter = new TFCodeUrlGetter();
@@ -82,7 +83,7 @@ public class TrueFilingCodeUpdater {
         };
 
     try (CodeDatabaseAPI cd = cdSupplier.get()) {
-      if (command.equalsIgnoreCase("replaceall")) {
+      if (command.equalsIgnoreCase("replaceall") || command.equalsIgnoreCase("refresh")) {
         return cu.replaceAll(courtUrls, codelistGetter, urlGetter, cd);
       } else if (command.equalsIgnoreCase("replacesome")) {
         return cu.replaceSome(

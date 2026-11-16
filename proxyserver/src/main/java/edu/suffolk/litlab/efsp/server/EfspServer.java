@@ -18,6 +18,7 @@ import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.docassemble.DocassembleToFilingInformationConverter;
 import edu.suffolk.litlab.efsp.server.auth.AuthenticateRequestInterceptor;
 import edu.suffolk.litlab.efsp.server.auth.SecurityHub;
+import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.services.ApiUserSettingsService;
 import edu.suffolk.litlab.efsp.server.services.AuthenticationService;
 import edu.suffolk.litlab.efsp.server.services.JurisdictionServiceHandle;
@@ -65,6 +66,7 @@ import org.apache.cxf.jaxrs.provider.JAXBElementProvider;
 // import org.apache.cxf.transport.http.HttpServerEngineSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 public class EfspServer {
   private static final Logger log = LoggerFactory.getLogger(EfspServer.class);
@@ -85,11 +87,13 @@ public class EfspServer {
 
     var jurisdictionMap = new HashMap<Jurisdiction, JurisdictionServiceHandle>();
     for (EfmModuleSetup mod : modules) {
+      MDC.put(MDCWrappers.USER_ID, mod.getJurisdiction().getName());
       mod.preSetup();
       mod.setupGlobals();
       JurisdictionServiceHandle handle = mod.getServiceHandle();
       jurisdictionMap.put(mod.getJurisdiction(), handle);
     }
+    MDCWrappers.removeAllMDCs();
 
     Supplier<LoginDatabase> ldSupplier = () -> LoginDatabase.fromDS(userDs);
     Supplier<MessageSettingsDatabase> mdSupplier = () -> MessageSettingsDatabase.fromDS(userDs);
