@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <cxf.version>4.1.6</cxf.version>
+        <cxf.version>4.2.4</cxf.version>
         <slf4j.version>2.0.7</slf4j.version>
         <jackson.version>2.21.2</jackson.version>
         <jacoco.skip>false</jacoco.skip>
@@ -140,6 +140,15 @@
                     <version>1.7.0</version>
                     <configuration>
                         <failOnError>true</failOnError>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>12.2.1</version>
+                    <configuration>
+                        <failOnError>false</failOnError>
+                        <nvdApiKey>${env.NIST_VD_KEY}</nvdApiKey>
                     </configuration>
                 </plugin>
                 <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->

@@ -12,7 +12,7 @@
     <description>For Tyler's EFMUserService and EFMFirmService. Lets you choose the specific version that you want to interact with.</description>
 
     <properties>
-        <cxf.version>4.1.6</cxf.version>
+        <cxf.version>4.2.4</cxf.version>
         <!-- automatically run annotation processors within the incremental compilation -->
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
     </properties>

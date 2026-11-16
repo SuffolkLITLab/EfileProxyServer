@@ -16,7 +16,7 @@
     <url>https://suffolklitlab.org</url>
 
     <properties>
-        <cxf.version>4.1.6</cxf.version>
+        <cxf.version>4.2.4</cxf.version>
         <slf4j.version>2.0.7</slf4j.version>
         <jackson.version>2.21.2</jackson.version>
         <bouncycastle.version>1.81</bouncycastle.version>
@@ -216,7 +216,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>5.3.22</version>
+            <version>7.0.10</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
@@ -414,10 +414,6 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>12.2.1</version>
-                <configuration>
-                    <failOnError>false</failOnError>
-                </configuration>
             </plugin>
         </plugins>
     </build>
